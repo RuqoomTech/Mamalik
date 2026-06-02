@@ -9,7 +9,7 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [x] S1-001: Initialize repository foundation and persistent memory files.
 - [x] S1-002: Initialize minimal monorepo structure: `apps/web`, `packages/db`, `packages/game`, `packages/config`, `workers/tick-worker`.
 - [x] S1-003: Install/configure Next.js, TypeScript, Tailwind, lint, and basic scripts.
-- [ ] S1-004: Configure environment file examples.
+- [x] S1-004: Configure environment file examples.
 - [ ] S1-005: Configure Prisma and PostgreSQL/PostGIS foundation.
 - [ ] S1-006: Create initial Prisma models for User, Kingdom, District, ResourceStockpile, BuildingInstance, UnitStack, LandPurchaseCooldown, and Report.
 - [ ] S1-007: Implement register/login/logout.

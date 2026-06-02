@@ -40,6 +40,13 @@ Status: the minimal directory skeleton exists. `apps/web` now contains the Next.
 - Web dependencies are app-local under `apps/web`.
 - Shared package manifests can be added when `packages/db`, `packages/game`, `packages/config`, or `workers/tick-worker` receive implementation code.
 
+## Environment files
+
+- `apps/web/.env.example` is the committed web app environment template.
+- `apps/web/.env.local` is the local developer secret file and must remain ignored.
+- Public browser-safe variables use `NEXT_PUBLIC_`.
+- Server-only values such as `DATABASE_URL`, OAuth secrets, session secrets, admin allowlists, and worker secrets must stay server-side.
+
 ## App responsibilities
 
 ### `apps/web`

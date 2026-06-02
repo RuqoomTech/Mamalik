@@ -15,6 +15,8 @@ All notable Mamalik project changes are recorded here.
 - Added the minimal Sprint 1 monorepo directory skeleton: `apps/web`, `packages/db`, `packages/game`, `packages/config`, and `workers/tick-worker`.
 - Added the Next.js 16 web app foundation in `apps/web` with TypeScript, Tailwind, ESLint, App Router, npm, and `src/`.
 - Added root npm forwarding scripts for `dev`, `build`, `lint`, and `typecheck`.
+- Added `apps/web/.env.example` with placeholders for app URL, database, auth, map, admin, and tick worker settings.
+- Added `docs/ENVIRONMENT.md` for local environment setup and secret handling.
 
 ### Changed
 
@@ -22,7 +24,9 @@ All notable Mamalik project changes are recorded here.
 - Clarified that existing v0.2 material is future-only until v0.1 is complete.
 - Marked Sprint 1 Task S1-002 complete in the active task files.
 - Marked Sprint 1 Task S1-003 complete in the active task files.
+- Marked Sprint 1 Task S1-004 complete in the active task files.
 - Recorded npm as the current package manager convention.
+- Clarified that real `.env*` files stay ignored while `.env.example` is trackable.
 
 ### Fixed
 
@@ -30,11 +34,11 @@ All notable Mamalik project changes are recorded here.
 
 ### Deferred
 
-- Environment file examples are deferred to Sprint 1 Task 4.
+- Prisma and PostgreSQL/PostGIS foundation is deferred to Sprint 1 Task 5.
 - Game code implementation is deferred until after the repository foundation is locked.
 
 ### Known issues
 
-- No Prisma schema, environment examples, database setup, or automated test runner exists yet.
+- No Prisma schema, database setup, or automated test runner exists yet.
 - Legacy unpadded sprint docs and generated JSON/CSV task files remain present as reference artifacts.
 - `npm run build` currently emits a Node deprecation warning for `module.register()` under Node v26.1.0, but the build passes.
