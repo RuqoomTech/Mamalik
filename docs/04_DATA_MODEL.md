@@ -1,23 +1,45 @@
 # 04 - Data Model
 
-This is the canonical v0.1 data-model plan. It is not yet a final Prisma schema.
+This is the canonical v0.1 data-model plan. Sprint 1 Task 6 added the first Prisma implementation in `packages/db/prisma/schema.prisma`.
 
-## Core Models
+## Implemented Prisma Enums
+
+- `UserRole`: `PLAYER`, `ADMIN`
+- `AuthProvider`: `EMAIL`, `GOOGLE`
+- `AreaType`: `STANDARD`
+- `DistrictType`: `ECONOMIC`, `MILITARY`, `RESIDENTIAL`, `RESEARCH`, `DEFENSIVE`
+- `BuildingType`: `FARM`, `MARKET`, `TAX_OFFICE`, `PALACE`, `HOUSES`, `BARRACKS`, `STABLES`, `WATCHTOWER`, `WALL`, `SCHOLAR_HALL`
+- `BuildingStatus`: `ACTIVE`, `CONSTRUCTING`, `UPGRADING`
+- `UnitType`: `INFANTRY`, `ARCHERS`, `CAVALRY`, `SCOUTS`, `SIEGE`
+- `UnitLocationType`: `GARRISON`, `MOVING`
+- `ReportType`: `BATTLE`, `SCOUT`, `LAND_PURCHASE`, `CONSTRUCTION`, `TRAINING`
+
+## Implemented Prisma Models
 
 ### User
 
 - `id`
 - `email`
 - `displayName`
+- `passwordHash`
+- `googleSubject`
 - `authProvider`
 - `role`
+- `kingdom`
 - `createdAt`
 - `updatedAt`
+
+Notes:
+
+- `passwordHash` supports Sprint 1 email/password auth.
+- `googleSubject` supports Sprint 1 Google login without adding a separate account-linking model yet.
+- One user can own one kingdom in v0.1.
 
 ### Kingdom
 
 - `id`
 - `userId`
+- `user`
 - `name`
 - `slug`
 - `centerLat`
@@ -29,47 +51,129 @@ This is the canonical v0.1 data-model plan. It is not yet a final Prisma schema.
 - `population`
 - `protectionEndsAt`
 - `areaType`
+- `districts`
+- `resourceStockpile`
+- `buildings`
+- `unitStacks`
+- `landCooldowns`
+- `reports`
 - `createdAt`
 - `updatedAt`
+
+Notes:
+
+- `usableLandM2` defaults to the locked 50,000 m2 starting land credit.
+- `population` defaults to the locked 1,000 starting population.
+- `visibleBorderGeojson` stores the visible map polygon separately from gameplay land credit.
+- `centerLat` and `centerLng` are indexed for Sprint 1 temporary proximity checks.
+- `AreaType.STANDARD` is the only initial area type. More area categories may be added when land pricing needs them; area-type bonuses remain post-v0.1.
 
 ### District
 
 - `id`
 - `kingdomId`
-- `type`: `ECONOMIC | MILITARY | RESIDENTIAL | RESEARCH | DEFENSIVE`
+- `kingdom`
+- `type`
 - `allocatedLandM2`
 - `usedLandM2`
+- `buildings`
+- `createdAt`
+- `updatedAt`
+
+Notes:
+
+- District type is unique per kingdom.
+- Starting district allocations remain locked in `docs/01_LOCKED_DECISIONS.md`.
 
 ### ResourceStockpile
 
 - `id`
 - `kingdomId`
+- `kingdom`
 - `money`
 - `food`
 - `manpower`
 - `knowledge`
 - `updatedAt`
 
+Defaults:
+
+- Money: 10,000
+- Food: 5,000
+- Manpower: 500
+- Knowledge: 0
+
 ### BuildingInstance
 
 - `id`
 - `kingdomId`
+- `kingdom`
 - `districtId`
+- `district`
 - `type`
 - `level`
-- `status`: `ACTIVE | CONSTRUCTING | UPGRADING`
+- `status`
 - `landUsedM2`
 - `constructionRemainingTicks`
+- `createdAt`
+- `updatedAt`
+
+Notes:
+
+- Buildings consume land through districts, not manual map placement.
+- Construction and upgrade queue tables are deferred until Sprint 2.
 
 ### UnitStack
 
 - `id`
 - `kingdomId`
-- `unitType`: `INFANTRY | ARCHERS | CAVALRY | SCOUTS | SIEGE`
+- `kingdom`
+- `unitType`
 - `quantity`
-- `locationType`: `GARRISON | MOVING`
+- `locationType`
+- `createdAt`
+- `updatedAt`
 
-## Queue Models
+Notes:
+
+- One stack per kingdom, unit type, and location type.
+- Starting units remain locked at 100 Infantry and 25 Archers.
+- Movement order tables are deferred until Sprint 5.
+
+### LandPurchaseCooldown
+
+- `id`
+- `kingdomId`
+- `kingdom`
+- `packageSizeM2`
+- `availableAt`
+- `createdAt`
+- `updatedAt`
+
+Notes:
+
+- Package size is unique per kingdom.
+- Purchase history and price records are deferred until Sprint 3.
+
+### Report
+
+- `id`
+- `kingdomId`
+- `kingdom`
+- `type`
+- `title`
+- `bodyJson`
+- `readAt`
+- `createdAt`
+
+Notes:
+
+- Sprint 1 only needs the storage foundation.
+- Report center behavior is deferred until Sprint 6.
+
+## Deferred Queue Models
+
+These remain planned but are not part of Sprint 1 Task 6:
 
 ### ConstructionQueueItem
 
@@ -90,14 +194,7 @@ This is the canonical v0.1 data-model plan. It is not yet a final Prisma schema.
 - `remainingTicks`
 - `status`
 
-## Land Models
-
-### LandPurchaseCooldown
-
-- `id`
-- `kingdomId`
-- `packageSizeM2`
-- `availableAt`
+## Deferred Land Models
 
 ### LandPurchase
 
@@ -115,7 +212,7 @@ This is the canonical v0.1 data-model plan. It is not yet a final Prisma schema.
 - `geometry`
 - `enabled`
 
-## Movement And Combat Models
+## Deferred Movement And Combat Models
 
 ### MovementOrder
 
@@ -151,17 +248,7 @@ This is the canonical v0.1 data-model plan. It is not yet a final Prisma schema.
 
 Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 
-## Reports, Alliances, Rankings
-
-### Report
-
-- `id`
-- `kingdomId`
-- `type`: `BATTLE | SCOUT | LAND_PURCHASE | CONSTRUCTION | TRAINING`
-- `title`
-- `bodyJson`
-- `readAt`
-- `createdAt`
+## Deferred Alliances, Rankings, And Tick Logs
 
 ### Alliance
 
@@ -200,7 +287,7 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 
 ## Implementation Notes
 
-- Prisma foundation is configured in `packages/db`; the schema is intentionally model-free until Sprint 1 Task 6.
-- Final Prisma model names and field types should be locked during Sprint 1 database setup.
+- Prisma tooling lives in `packages/db`.
+- The generated Prisma client output path is `packages/db/generated/prisma` and is ignored.
 - PostGIS geometry fields may require raw SQL migration support.
 - Domain constants should live in `packages/game` once the project is initialized.

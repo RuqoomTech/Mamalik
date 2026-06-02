@@ -7,7 +7,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 ## Scope
 
 - Repository foundation and persistent memory files.
-- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, and database foundation are complete; initial Prisma models remain next.
+- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, and initial Prisma models are complete; email/password auth remains next.
 - Email/password auth and Google login.
 - Database foundation.
 - Basic MapLibre map screen.
@@ -15,6 +15,11 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 - Kingdom creation with locked starter state.
 - Basic dashboard.
 - Basic admin view.
+
+## Database Foundation Status
+
+- Initial Prisma models exist for users, kingdoms, districts, resource stockpiles, buildings, unit stacks, land purchase cooldowns, and reports.
+- Queue, tick, movement, combat, alliance, ranking, and full report-center models remain out of scope for Sprint 1 Task 6 and are deferred to their owning sprint tasks.
 
 ## Required Starter State
 
@@ -62,7 +67,7 @@ Real valid land, water rejection, restricted zones, OSM parcel style, and dynami
 
 ## Acceptance Criteria
 
-- [ ] Required memory and documentation files exist.
+- [x] Required memory and documentation files exist.
 - [ ] A user can register/login.
 - [ ] Google login works.
 - [ ] A user without a kingdom is sent to create one.

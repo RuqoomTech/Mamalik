@@ -6,3 +6,187 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum UserRole {
+  PLAYER
+  ADMIN
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+}
+
+enum AreaType {
+  STANDARD
+}
+
+enum DistrictType {
+  ECONOMIC
+  MILITARY
+  RESIDENTIAL
+  RESEARCH
+  DEFENSIVE
+}
+
+enum BuildingType {
+  FARM
+  MARKET
+  TAX_OFFICE
+  PALACE
+  HOUSES
+  BARRACKS
+  STABLES
+  WATCHTOWER
+  WALL
+  SCHOLAR_HALL
+}
+
+enum BuildingStatus {
+  ACTIVE
+  CONSTRUCTING
+  UPGRADING
+}
+
+enum UnitType {
+  INFANTRY
+  ARCHERS
+  CAVALRY
+  SCOUTS
+  SIEGE
+}
+
+enum UnitLocationType {
+  GARRISON
+  MOVING
+}
+
+enum ReportType {
+  BATTLE
+  SCOUT
+  LAND_PURCHASE
+  CONSTRUCTION
+  TRAINING
+}
+
+model User {
+  id            String       @id @default(cuid())
+  email         String       @unique
+  displayName   String
+  passwordHash  String?
+  googleSubject String?      @unique
+  authProvider  AuthProvider @default(EMAIL)
+  role          UserRole     @default(PLAYER)
+  kingdom       Kingdom?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Kingdom {
+  id                   String                 @id @default(cuid())
+  userId               String                 @unique
+  user                 User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                 String
+  slug                 String                 @unique
+  centerLat            Float
+  centerLng            Float
+  visibleBorderGeojson Json
+  visibleAreaM2        Int
+  usableLandM2         Int                    @default(50000)
+  usedLandM2           Int                    @default(0)
+  population           Int                    @default(1000)
+  protectionEndsAt     DateTime
+  areaType             AreaType               @default(STANDARD)
+  districts            District[]
+  resourceStockpile    ResourceStockpile?
+  buildings            BuildingInstance[]
+  unitStacks           UnitStack[]
+  landCooldowns        LandPurchaseCooldown[]
+  reports              Report[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  @@index([centerLat, centerLng])
+}
+
+model District {
+  id              String             @id @default(cuid())
+  kingdomId       String
+  kingdom         Kingdom            @relation(fields: [kingdomId], references: [id], onDelete: Cascade)
+  type            DistrictType
+  allocatedLandM2 Int
+  usedLandM2      Int                @default(0)
+  buildings       BuildingInstance[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@unique([kingdomId, type])
+}
+
+model ResourceStockpile {
+  id        String   @id @default(cuid())
+  kingdomId String   @unique
+  kingdom   Kingdom  @relation(fields: [kingdomId], references: [id], onDelete: Cascade)
+  money     Int      @default(10000)
+  food      Int      @default(5000)
+  manpower  Int      @default(500)
+  knowledge Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model BuildingInstance {
+  id                         String         @id @default(cuid())
+  kingdomId                  String
+  kingdom                    Kingdom        @relation(fields: [kingdomId], references: [id], onDelete: Cascade)
+  districtId                 String
+  district                   District       @relation(fields: [districtId], references: [id], onDelete: Cascade)
+  type                       BuildingType
+  level                      Int            @default(1)
+  status                     BuildingStatus @default(ACTIVE)
+  landUsedM2                 Int
+  constructionRemainingTicks Int            @default(0)
+  createdAt                  DateTime       @default(now())
+  updatedAt                  DateTime       @updatedAt
+
+  @@index([kingdomId])
+  @@index([districtId])
+  @@index([type])
+}
+
+model UnitStack {
+  id           String           @id @default(cuid())
+  kingdomId    String
+  kingdom      Kingdom          @relation(fields: [kingdomId], references: [id], onDelete: Cascade)
+  unitType     UnitType
+  quantity     Int
+  locationType UnitLocationType @default(GARRISON)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([kingdomId, unitType, locationType])
+}
+
+model LandPurchaseCooldown {
+  id            String   @id @default(cuid())
+  kingdomId     String
+  kingdom       Kingdom  @relation(fields: [kingdomId], references: [id], onDelete: Cascade)
+  packageSizeM2 Int
+  availableAt   DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([kingdomId, packageSizeM2])
+}
+
+model Report {
+  id        String     @id @default(cuid())
+  kingdomId String
+  kingdom   Kingdom    @relation(fields: [kingdomId], references: [id], onDelete: Cascade)
+  type      ReportType
+  title     String
+  bodyJson  Json
+  readAt    DateTime?
+  createdAt DateTime   @default(now())
+
+  @@index([kingdomId, createdAt])
+}

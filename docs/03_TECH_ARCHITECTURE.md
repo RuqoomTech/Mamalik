@@ -68,7 +68,7 @@ Status: the minimal directory skeleton exists. `apps/web` now contains the Next.
 - seed scripts
 - raw SQL helpers for PostGIS
 
-Status: Prisma config, PostgreSQL datasource, package-local dependencies, generated client output path, and the first PostGIS enablement migration are configured. v0.1 game models are added in Sprint 1 Task 6.
+Status: Prisma config, PostgreSQL datasource, package-local dependencies, generated client output path, the PostGIS enablement migration, and the initial v0.1 model migration are configured.
 
 ### `packages/game`
 
@@ -107,9 +107,10 @@ Examples of PostGIS-heavy actions:
 ## Prisma strategy
 
 - Prisma tooling lives in `packages/db`.
-- The Prisma schema is currently model-free and validates the database foundation only.
+- The Prisma schema contains the first v0.1 model set for users, kingdoms, districts, stockpiles, buildings, units, land cooldowns, and reports.
 - The generated Prisma client output path is `packages/db/generated/prisma` and is ignored.
 - The first migration enables PostGIS with `CREATE EXTENSION IF NOT EXISTS postgis;`.
+- The second migration creates the initial v0.1 relational model foundation.
 - Applying migrations requires a reachable PostgreSQL database with permission to create PostGIS extensions.
 
 ## Realtime strategy

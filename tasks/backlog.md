@@ -9,7 +9,7 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S1-003: Configure Next.js, TypeScript, Tailwind, lint, and basic scripts.
 - [x] S1-004: Configure environment file examples.
 - [x] S1-005: Configure Prisma and PostgreSQL/PostGIS foundation.
-- [ ] S1-006: Create initial v0.1 Prisma models.
+- [x] S1-006: Create initial v0.1 Prisma models.
 - [ ] S1-007: Implement email/password auth.
 - [ ] S1-008: Implement Google login.
 - [ ] S1-009: Add protected route behavior for no-kingdom users.

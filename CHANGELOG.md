@@ -20,6 +20,8 @@ All notable Mamalik project changes are recorded here.
 - Added `packages/db` Prisma/PostgreSQL/PostGIS foundation with package-local dependencies, config, schema, PostGIS migration, and environment example.
 - Added root DB scripts for Prisma validation, generation, migrations, Studio, and DB package typecheck.
 - Added `docs/DATABASE.md`.
+- Added initial v0.1 Prisma enums and models for `User`, `Kingdom`, `District`, `ResourceStockpile`, `BuildingInstance`, `UnitStack`, `LandPurchaseCooldown`, and `Report`.
+- Added `packages/db/prisma/migrations/000002_initial_v0_1_models/migration.sql`.
 
 ### Changed
 
@@ -29,8 +31,10 @@ All notable Mamalik project changes are recorded here.
 - Marked Sprint 1 Task S1-003 complete in the active task files.
 - Marked Sprint 1 Task S1-004 complete in the active task files.
 - Marked Sprint 1 Task S1-005 complete in the active task files.
+- Marked Sprint 1 Task S1-006 complete in the active task files.
 - Recorded npm as the current package manager convention.
 - Clarified that real `.env*` files stay ignored while `.env.example` is trackable.
+- Updated the data-model, architecture, database, sprint, and context documentation for the initial Prisma model foundation.
 
 ### Fixed
 
@@ -38,13 +42,14 @@ All notable Mamalik project changes are recorded here.
 
 ### Deferred
 
-- Initial v0.1 Prisma models are deferred to Sprint 1 Task 6.
 - Game code implementation is deferred until after the repository foundation is locked.
+- Queue, tick, movement, combat, alliance, ranking, and full report-center models remain deferred to later v0.1 sprint tasks.
 
 ### Known issues
 
-- No v0.1 Prisma models, live database setup, or automated test runner exists yet.
+- No live database setup or automated test runner exists yet.
 - Legacy unpadded sprint docs and generated JSON/CSV task files remain present as reference artifacts.
 - `npm run build` currently emits a Node deprecation warning for `module.register()` under Node v26.1.0, but the build passes.
 - Local `psql` and Docker are not available in the current environment, so the PostGIS migration has not been applied locally.
 - `npm install` for the DB package reported three moderate npm audit findings.
+- Prisma `migrate diff` did not emit SQL from the local schema in this toolchain, so the S1-006 model migration was added manually from the validated Prisma schema.
