@@ -1,0 +1,82 @@
+[
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-001",
+    "Epic": "Tick Engine",
+    "Task": "Create tick worker package",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-002",
+    "Epic": "Tick Engine",
+    "Task": "Create TickLog model",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-003",
+    "Epic": "Tick Engine",
+    "Task": "Prevent duplicate tick processing",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-004",
+    "Epic": "Economy",
+    "Task": "Implement resource generation formulas",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-005",
+    "Epic": "Economy",
+    "Task": "Implement population and army food consumption",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-006",
+    "Epic": "Buildings",
+    "Task": "Implement construction queue",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-007",
+    "Epic": "Buildings",
+    "Task": "Implement building upgrade completion",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-008",
+    "Epic": "Army",
+    "Task": "Implement training queue",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-009",
+    "Epic": "Dashboard",
+    "Task": "Show per-tick resource changes and queues",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-010",
+    "Epic": "Admin",
+    "Task": "Add run test tick admin action",
+    "Priority": "Medium",
+    "Status": "Planned"
+  }
+]

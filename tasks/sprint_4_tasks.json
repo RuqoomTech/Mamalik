@@ -1,0 +1,74 @@
+[
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-001",
+    "Epic": "Map Validation",
+    "Task": "Implement valid land checks",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-002",
+    "Epic": "Map Validation",
+    "Task": "Implement water rejection",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-003",
+    "Epic": "Map Validation",
+    "Task": "Implement restricted zone placeholder",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-004",
+    "Epic": "Map Validation",
+    "Task": "Implement dynamic buffer",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-005",
+    "Epic": "Map Validation",
+    "Task": "Implement overlap checks",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-006",
+    "Epic": "Borders",
+    "Task": "Implement visible border generation",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-007",
+    "Epic": "Borders",
+    "Task": "Implement dynamic tolerance fallback",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-008",
+    "Epic": "Map UX",
+    "Task": "Implement nearby valid point suggestions",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-009",
+    "Epic": "Map UX",
+    "Task": "Show preview border and invalid reasons",
+    "Priority": "High",
+    "Status": "Planned"
+  }
+]

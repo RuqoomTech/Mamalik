@@ -1,0 +1,30 @@
+{
+  "project": "Mamalik / ممالك",
+  "version": "v2",
+  "description": "Complete v0.1 documentation package with full sprint breakdown Sprint 1-6.",
+  "files": [
+    "README.md",
+    "docs/00_PROJECT_OVERVIEW.md",
+    "docs/01_LOCKED_DECISIONS.md",
+    "docs/02_V0_1_SCOPE.md",
+    "docs/03_TECH_ARCHITECTURE.md",
+    "docs/04_FULL_SPRINT_ROADMAP.md",
+    "docs/05_DATA_MODEL_DRAFT.md",
+    "docs/06_DEFINITION_OF_DONE.md",
+    "docs/07_REFERENCE_SOURCES.md",
+    "docs/sprints/SPRINT_1_FOUNDATION.md",
+    "docs/sprints/SPRINT_2_TICK_ENGINE_ECONOMY.md",
+    "docs/sprints/SPRINT_3_LAND_DISTRICTS.md",
+    "docs/sprints/SPRINT_4_MAP_VALIDATION_BORDERS.md",
+    "docs/sprints/SPRINT_5_COMBAT_SCOUTING.md",
+    "docs/sprints/SPRINT_6_ALLIANCES_REPORTS_RANKINGS.md",
+    "tasks/full_v0_1_backlog.csv",
+    "tasks/full_v0_1_backlog.json",
+    "tasks/sprint_1_tasks.json",
+    "tasks/sprint_2_tasks.json",
+    "tasks/sprint_3_tasks.json",
+    "tasks/sprint_4_tasks.json",
+    "tasks/sprint_5_tasks.json",
+    "tasks/sprint_6_tasks.json"
+  ]
+}

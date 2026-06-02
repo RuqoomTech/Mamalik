@@ -1,0 +1,82 @@
+[
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-001",
+    "Epic": "Movement",
+    "Task": "Create movement order model",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-002",
+    "Epic": "Movement",
+    "Task": "Implement distance-based travel time",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-003",
+    "Epic": "Scouting",
+    "Task": "Implement scout orders",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-004",
+    "Epic": "Scouting",
+    "Task": "Generate approximate scout reports",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-005",
+    "Epic": "Combat",
+    "Task": "Implement attack order validation",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-006",
+    "Epic": "Combat",
+    "Task": "Implement battle power formula",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-007",
+    "Epic": "Combat",
+    "Task": "Apply defender bonuses",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-008",
+    "Epic": "Combat",
+    "Task": "Implement siege requirement for high walls",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-009",
+    "Epic": "Combat",
+    "Task": "Implement 1000 m² land capture rule",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-010",
+    "Epic": "Reports",
+    "Task": "Create battle reports",
+    "Priority": "High",
+    "Status": "Planned"
+  }
+]

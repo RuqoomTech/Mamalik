@@ -1,0 +1,82 @@
+[
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-001",
+    "Epic": "Alliances",
+    "Task": "Create alliance model and pages",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-002",
+    "Epic": "Alliances",
+    "Task": "Implement create join leave alliance",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-003",
+    "Epic": "Alliances",
+    "Task": "Enforce 20 member limit",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-004",
+    "Epic": "Diplomacy",
+    "Task": "Implement Neutral Ally War states",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-005",
+    "Epic": "Diplomacy",
+    "Task": "Enforce friendly fire block",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-006",
+    "Epic": "Notifications",
+    "Task": "Create notification center",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-007",
+    "Epic": "Reports",
+    "Task": "Create report center filters",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-008",
+    "Epic": "Rankings",
+    "Task": "Create land military economy knowledge rankings",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-009",
+    "Epic": "Admin",
+    "Task": "Polish admin inspection tools",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-010",
+    "Epic": "QA",
+    "Task": "Run v0.1 manual QA checklist",
+    "Priority": "High",
+    "Status": "Planned"
+  }
+]

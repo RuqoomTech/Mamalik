@@ -1,0 +1,66 @@
+[
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-001",
+    "Epic": "Land",
+    "Task": "Define land packages and cooldowns",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-002",
+    "Epic": "Land",
+    "Task": "Implement land price formula",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-003",
+    "Epic": "Land",
+    "Task": "Implement kingdom size multiplier",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-004",
+    "Epic": "Land",
+    "Task": "Create land buying API",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-005",
+    "Epic": "Land",
+    "Task": "Create land buying UI",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-006",
+    "Epic": "Land",
+    "Task": "Create land purchase report",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-007",
+    "Epic": "Districts",
+    "Task": "Implement district reassignment validation",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-008",
+    "Epic": "Districts",
+    "Task": "Create district reassignment UI",
+    "Priority": "High",
+    "Status": "Planned"
+  }
+]

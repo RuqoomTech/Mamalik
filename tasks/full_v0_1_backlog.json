@@ -1,0 +1,490 @@
+[
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-001",
+    "Epic": "Foundation",
+    "Task": "Create monorepo structure",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-002",
+    "Epic": "Foundation",
+    "Task": "Install Next.js TypeScript Tailwind Prisma",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-003",
+    "Epic": "Foundation",
+    "Task": "Configure ESLint Prettier env files",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-004",
+    "Epic": "Database",
+    "Task": "Setup PostgreSQL with PostGIS",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-005",
+    "Epic": "Database",
+    "Task": "Create initial Prisma models",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-006",
+    "Epic": "Auth",
+    "Task": "Implement register login logout",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-007",
+    "Epic": "Auth",
+    "Task": "Implement Google login",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-008",
+    "Epic": "Map",
+    "Task": "Create create-kingdom map page",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-009",
+    "Epic": "Map",
+    "Task": "Add click marker coordinate selection",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-010",
+    "Epic": "Kingdom",
+    "Task": "Create temporary validate-location API",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-011",
+    "Epic": "Kingdom",
+    "Task": "Create kingdom creation API",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-012",
+    "Epic": "Kingdom",
+    "Task": "Seed starter districts resources buildings units",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-013",
+    "Epic": "Dashboard",
+    "Task": "Create basic kingdom dashboard",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-014",
+    "Epic": "Admin",
+    "Task": "Create basic admin views",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-001",
+    "Epic": "Tick Engine",
+    "Task": "Create tick worker package",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-002",
+    "Epic": "Tick Engine",
+    "Task": "Create TickLog model",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-003",
+    "Epic": "Tick Engine",
+    "Task": "Prevent duplicate tick processing",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-004",
+    "Epic": "Economy",
+    "Task": "Implement resource generation formulas",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-005",
+    "Epic": "Economy",
+    "Task": "Implement population and army food consumption",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-006",
+    "Epic": "Buildings",
+    "Task": "Implement construction queue",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-007",
+    "Epic": "Buildings",
+    "Task": "Implement building upgrade completion",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-008",
+    "Epic": "Army",
+    "Task": "Implement training queue",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-009",
+    "Epic": "Dashboard",
+    "Task": "Show per-tick resource changes and queues",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 2",
+    "ID": "S2-010",
+    "Epic": "Admin",
+    "Task": "Add run test tick admin action",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-001",
+    "Epic": "Land",
+    "Task": "Define land packages and cooldowns",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-002",
+    "Epic": "Land",
+    "Task": "Implement land price formula",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-003",
+    "Epic": "Land",
+    "Task": "Implement kingdom size multiplier",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-004",
+    "Epic": "Land",
+    "Task": "Create land buying API",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-005",
+    "Epic": "Land",
+    "Task": "Create land buying UI",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-006",
+    "Epic": "Land",
+    "Task": "Create land purchase report",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-007",
+    "Epic": "Districts",
+    "Task": "Implement district reassignment validation",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 3",
+    "ID": "S3-008",
+    "Epic": "Districts",
+    "Task": "Create district reassignment UI",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-001",
+    "Epic": "Map Validation",
+    "Task": "Implement valid land checks",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-002",
+    "Epic": "Map Validation",
+    "Task": "Implement water rejection",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-003",
+    "Epic": "Map Validation",
+    "Task": "Implement restricted zone placeholder",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-004",
+    "Epic": "Map Validation",
+    "Task": "Implement dynamic buffer",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-005",
+    "Epic": "Map Validation",
+    "Task": "Implement overlap checks",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-006",
+    "Epic": "Borders",
+    "Task": "Implement visible border generation",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-007",
+    "Epic": "Borders",
+    "Task": "Implement dynamic tolerance fallback",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-008",
+    "Epic": "Map UX",
+    "Task": "Implement nearby valid point suggestions",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 4",
+    "ID": "S4-009",
+    "Epic": "Map UX",
+    "Task": "Show preview border and invalid reasons",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-001",
+    "Epic": "Movement",
+    "Task": "Create movement order model",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-002",
+    "Epic": "Movement",
+    "Task": "Implement distance-based travel time",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-003",
+    "Epic": "Scouting",
+    "Task": "Implement scout orders",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-004",
+    "Epic": "Scouting",
+    "Task": "Generate approximate scout reports",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-005",
+    "Epic": "Combat",
+    "Task": "Implement attack order validation",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-006",
+    "Epic": "Combat",
+    "Task": "Implement battle power formula",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-007",
+    "Epic": "Combat",
+    "Task": "Apply defender bonuses",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-008",
+    "Epic": "Combat",
+    "Task": "Implement siege requirement for high walls",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-009",
+    "Epic": "Combat",
+    "Task": "Implement 1000 m² land capture rule",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 5",
+    "ID": "S5-010",
+    "Epic": "Reports",
+    "Task": "Create battle reports",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-001",
+    "Epic": "Alliances",
+    "Task": "Create alliance model and pages",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-002",
+    "Epic": "Alliances",
+    "Task": "Implement create join leave alliance",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-003",
+    "Epic": "Alliances",
+    "Task": "Enforce 20 member limit",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-004",
+    "Epic": "Diplomacy",
+    "Task": "Implement Neutral Ally War states",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-005",
+    "Epic": "Diplomacy",
+    "Task": "Enforce friendly fire block",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-006",
+    "Epic": "Notifications",
+    "Task": "Create notification center",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-007",
+    "Epic": "Reports",
+    "Task": "Create report center filters",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-008",
+    "Epic": "Rankings",
+    "Task": "Create land military economy knowledge rankings",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-009",
+    "Epic": "Admin",
+    "Task": "Polish admin inspection tools",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 6",
+    "ID": "S6-010",
+    "Epic": "QA",
+    "Task": "Run v0.1 manual QA checklist",
+    "Priority": "High",
+    "Status": "Planned"
+  }
+]

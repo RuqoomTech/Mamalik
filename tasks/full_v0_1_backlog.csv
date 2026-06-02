@@ -1,0 +1,62 @@
+Sprint,ID,Epic,Task,Priority,Status
+Sprint 1,S1-001,Foundation,Create monorepo structure,High,Planned
+Sprint 1,S1-002,Foundation,Install Next.js TypeScript Tailwind Prisma,High,Planned
+Sprint 1,S1-003,Foundation,Configure ESLint Prettier env files,Medium,Planned
+Sprint 1,S1-004,Database,Setup PostgreSQL with PostGIS,High,Planned
+Sprint 1,S1-005,Database,Create initial Prisma models,High,Planned
+Sprint 1,S1-006,Auth,Implement register login logout,High,Planned
+Sprint 1,S1-007,Auth,Implement Google login,High,Planned
+Sprint 1,S1-008,Map,Create create-kingdom map page,High,Planned
+Sprint 1,S1-009,Map,Add click marker coordinate selection,High,Planned
+Sprint 1,S1-010,Kingdom,Create temporary validate-location API,High,Planned
+Sprint 1,S1-011,Kingdom,Create kingdom creation API,High,Planned
+Sprint 1,S1-012,Kingdom,Seed starter districts resources buildings units,High,Planned
+Sprint 1,S1-013,Dashboard,Create basic kingdom dashboard,High,Planned
+Sprint 1,S1-014,Admin,Create basic admin views,Medium,Planned
+Sprint 2,S2-001,Tick Engine,Create tick worker package,High,Planned
+Sprint 2,S2-002,Tick Engine,Create TickLog model,High,Planned
+Sprint 2,S2-003,Tick Engine,Prevent duplicate tick processing,High,Planned
+Sprint 2,S2-004,Economy,Implement resource generation formulas,High,Planned
+Sprint 2,S2-005,Economy,Implement population and army food consumption,High,Planned
+Sprint 2,S2-006,Buildings,Implement construction queue,High,Planned
+Sprint 2,S2-007,Buildings,Implement building upgrade completion,High,Planned
+Sprint 2,S2-008,Army,Implement training queue,High,Planned
+Sprint 2,S2-009,Dashboard,Show per-tick resource changes and queues,High,Planned
+Sprint 2,S2-010,Admin,Add run test tick admin action,Medium,Planned
+Sprint 3,S3-001,Land,Define land packages and cooldowns,High,Planned
+Sprint 3,S3-002,Land,Implement land price formula,High,Planned
+Sprint 3,S3-003,Land,Implement kingdom size multiplier,High,Planned
+Sprint 3,S3-004,Land,Create land buying API,High,Planned
+Sprint 3,S3-005,Land,Create land buying UI,High,Planned
+Sprint 3,S3-006,Land,Create land purchase report,Medium,Planned
+Sprint 3,S3-007,Districts,Implement district reassignment validation,High,Planned
+Sprint 3,S3-008,Districts,Create district reassignment UI,High,Planned
+Sprint 4,S4-001,Map Validation,Implement valid land checks,High,Planned
+Sprint 4,S4-002,Map Validation,Implement water rejection,High,Planned
+Sprint 4,S4-003,Map Validation,Implement restricted zone placeholder,Medium,Planned
+Sprint 4,S4-004,Map Validation,Implement dynamic buffer,High,Planned
+Sprint 4,S4-005,Map Validation,Implement overlap checks,High,Planned
+Sprint 4,S4-006,Borders,Implement visible border generation,High,Planned
+Sprint 4,S4-007,Borders,Implement dynamic tolerance fallback,High,Planned
+Sprint 4,S4-008,Map UX,Implement nearby valid point suggestions,Medium,Planned
+Sprint 4,S4-009,Map UX,Show preview border and invalid reasons,High,Planned
+Sprint 5,S5-001,Movement,Create movement order model,High,Planned
+Sprint 5,S5-002,Movement,Implement distance-based travel time,High,Planned
+Sprint 5,S5-003,Scouting,Implement scout orders,High,Planned
+Sprint 5,S5-004,Scouting,Generate approximate scout reports,High,Planned
+Sprint 5,S5-005,Combat,Implement attack order validation,High,Planned
+Sprint 5,S5-006,Combat,Implement battle power formula,High,Planned
+Sprint 5,S5-007,Combat,Apply defender bonuses,High,Planned
+Sprint 5,S5-008,Combat,Implement siege requirement for high walls,Medium,Planned
+Sprint 5,S5-009,Combat,Implement 1000 m² land capture rule,High,Planned
+Sprint 5,S5-010,Reports,Create battle reports,High,Planned
+Sprint 6,S6-001,Alliances,Create alliance model and pages,High,Planned
+Sprint 6,S6-002,Alliances,Implement create join leave alliance,High,Planned
+Sprint 6,S6-003,Alliances,Enforce 20 member limit,High,Planned
+Sprint 6,S6-004,Diplomacy,Implement Neutral Ally War states,High,Planned
+Sprint 6,S6-005,Diplomacy,Enforce friendly fire block,High,Planned
+Sprint 6,S6-006,Notifications,Create notification center,High,Planned
+Sprint 6,S6-007,Reports,Create report center filters,High,Planned
+Sprint 6,S6-008,Rankings,Create land military economy knowledge rankings,High,Planned
+Sprint 6,S6-009,Admin,Polish admin inspection tools,Medium,Planned
+Sprint 6,S6-010,QA,Run v0.1 manual QA checklist,High,Planned

@@ -1,0 +1,114 @@
+[
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-001",
+    "Epic": "Foundation",
+    "Task": "Create monorepo structure",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-002",
+    "Epic": "Foundation",
+    "Task": "Install Next.js TypeScript Tailwind Prisma",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-003",
+    "Epic": "Foundation",
+    "Task": "Configure ESLint Prettier env files",
+    "Priority": "Medium",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-004",
+    "Epic": "Database",
+    "Task": "Setup PostgreSQL with PostGIS",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-005",
+    "Epic": "Database",
+    "Task": "Create initial Prisma models",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-006",
+    "Epic": "Auth",
+    "Task": "Implement register login logout",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-007",
+    "Epic": "Auth",
+    "Task": "Implement Google login",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-008",
+    "Epic": "Map",
+    "Task": "Create create-kingdom map page",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-009",
+    "Epic": "Map",
+    "Task": "Add click marker coordinate selection",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-010",
+    "Epic": "Kingdom",
+    "Task": "Create temporary validate-location API",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-011",
+    "Epic": "Kingdom",
+    "Task": "Create kingdom creation API",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-012",
+    "Epic": "Kingdom",
+    "Task": "Seed starter districts resources buildings units",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-013",
+    "Epic": "Dashboard",
+    "Task": "Create basic kingdom dashboard",
+    "Priority": "High",
+    "Status": "Planned"
+  },
+  {
+    "Sprint": "Sprint 1",
+    "ID": "S1-014",
+    "Epic": "Admin",
+    "Task": "Create basic admin views",
+    "Priority": "Medium",
+    "Status": "Planned"
+  }
+]

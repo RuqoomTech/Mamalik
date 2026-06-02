@@ -1,0 +1,30 @@
+id,sprint,epic,title,acceptance_criteria
+S1-01,Sprint 1,Foundation,Create project structure,Repo has apps/web packages/db packages/game workers/tick-worker docs tasks
+S1-02,Sprint 1,Foundation,Configure Next.js TypeScript Tailwind,App runs locally with Tailwind and TypeScript
+S1-03,Sprint 1,Database,Configure PostgreSQL + PostGIS,"DB connects, PostGIS enabled, migration runs"
+S1-04,Sprint 1,Database,Create initial Prisma schema,Core tables generated and seeded
+S1-05,Sprint 1,Auth,Add email/password and Google login,Protected dashboard works
+S1-06,Sprint 1,Auth,Add no-kingdom redirect,Users route to create-kingdom or dashboard correctly
+S1-07,Sprint 1,Map,Create map selection page,Player can click map and select lat/lng
+S1-08,Sprint 1,Map,Create validation endpoint,Endpoint validates location and returns preview
+S1-09,Sprint 1,Kingdom,Create confirmation UI,Player can edit name and confirm valid location
+S1-10,Sprint 1,Kingdom,Create kingdom endpoint,Kingdom and all seed records created transactionally
+S1-11,Sprint 1,Dashboard,Create basic dashboard,"Shows kingdom, land, resources, districts, buildings, army"
+S1-12,Sprint 1,Admin,Create simple admin panel,Admin can view users and kingdoms
+S2-01,Sprint 2,Tick,Create tick model and worker skeleton,Worker can run manually and record tick
+S2-02,Sprint 2,Economy,Implement resource production,Money Food Manpower Knowledge update per tick
+S2-03,Sprint 2,Economy,Implement food consumption,Population and army consume Food per tick
+S2-04,Sprint 2,Progression,Implement construction progress,Construction jobs progress and complete
+S2-05,Sprint 2,Progression,Implement training progress,Training jobs progress and complete
+S3-01,Sprint 3,Buildings,Build district UI,District allocated/used/free land visible
+S3-02,Sprint 3,Buildings,Build construction actions,Player can build and upgrade buildings
+S3-03,Sprint 3,Army,Build training actions,Player can train units with queue limits
+S4-01,Sprint 4,Land,Implement land package UI,Packages show price and cooldown
+S4-02,Sprint 4,Land,Implement land price formula,Hybrid price uses area and size multipliers
+S4-03,Sprint 4,Land,Implement land purchase cooldowns,Each package has its own cooldown
+S5-01,Sprint 5,Movement,Implement army movement,Armies travel by distance and ticks
+S5-02,Sprint 5,Scouting,Implement approximate scout reports,Scout reports show ranges not exact values
+S5-03,Sprint 5,Combat,Implement battle formula,Attack/defense formula resolves battle
+S6-01,Sprint 6,Alliances,Implement simple alliances,"Create/join/leave, max 20 members"
+S6-02,Sprint 6,Rankings,Implement rankings,"Land, military, economy, knowledge rankings"
+S6-03,Sprint 6,Notifications,Implement notifications and reports center,Basic notification and report UI works
