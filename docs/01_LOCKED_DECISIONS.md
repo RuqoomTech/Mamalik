@@ -1,4 +1,6 @@
-# 01 — Locked Decisions
+# 01 - Locked Decisions
+
+This file is the canonical source of locked Mamalik v0.1 product and gameplay decisions.
 
 ## Identity
 
@@ -10,113 +12,153 @@
 | Scope | Global from day one |
 | World type | Endless persistent MMO |
 | Victory condition | None; leaderboard system only |
+| Originality rule | Do not copy any existing game's code, UI, art, text, branding, or protected expression |
 
-## Land and map
+## World
+
+- Global real-world map from day one.
+- Players can start anywhere globally if the location is valid.
+- Valid land only: no water, restricted zones, impossible geometry, overlap, or invalid border generation.
+- Persistent endless MMO.
+- No seasons.
+- No final victory condition.
+- Progression is leaderboard-based.
+
+## Land And Map
 
 | System | Decision |
 |---|---|
-| Starting kingdom land | 50,000 m² usable land credit |
+| Starting kingdom land | 50,000 m2 usable land credit |
 | Border style | Real land parcel style |
 | Area model | Land credit system |
+| Visible border | Virtual polygon |
+| Gameplay land vs visible border | Separate systems |
 | Visible border tolerance | Dynamic tolerance |
 | Starting locations | Valid land only |
 | Kingdom spacing | Dynamic buffer |
-| Location selection | Hybrid: search/pan, click, validate, suggest valid points |
-| Kingdom naming | Hybrid suggested names + editable final name |
+| Location selection | Search/pan map, click point, validate, suggest valid points |
+| Kingdom naming | Suggested from player/location, editable before confirmation |
 
-## Dynamic tolerance
+## Visible Border Tolerance
 
 The generator tries:
 
-1. 49,000–51,000 m² visible polygon area.
-2. 45,000–55,000 m² if the first attempt fails.
-3. Custom fallback polygon if needed.
+1. 49,000-51,000 m2 visible polygon area.
+2. 45,000-55,000 m2 if the first attempt fails.
+3. Fallback generated polygon if needed.
 
-Gameplay still uses exact usable land credit even if the visible polygon is slightly above or below the target.
+Gameplay uses exact usable land credit even if visible polygon area is slightly above or below the target.
 
-## Beginner protection
+## Land Buying
+
+| Package | Cooldown |
+|---|---:|
+| 500 m2 | none |
+| 1,000 m2 | 6 hours |
+| 5,000 m2 | 24 hours |
+| 10,000 m2 | 48 hours |
+
+- Land price depends on kingdom size and area type.
+- War land capture allows a winner to gain 1,000 m2 usable land credit from the same enemy player once per 30 days.
+
+## Beginner Protection
 
 | Rule | Decision |
 |---|---|
 | Protection duration | 3 days |
-| Can be attacked during protection | No |
-| Can attack players during protection | No |
-| Can be scouted by players during protection | No |
-| Can buy land during protection | Yes |
-| Can build/train/research during protection | Yes |
-| Can scout NPC/wild areas later | Yes |
+| Protected kingdoms can attack players | No |
+| Protected kingdoms can be attacked | No |
+| Protected kingdoms can be scouted by players | No |
+| Protected kingdoms can build/train/buy land/prepare | Yes |
+| Protected kingdoms can later scout NPC/wild areas | Yes |
 
-## Land buying
+## Districts
 
-| System | Decision |
-|---|---|
-| Pricing model | Hybrid: kingdom size + area type |
-| Purchase amount | Fixed packages |
-| Packages | 500, 1,000, 5,000, 10,000 m² |
-| Cooldown model | Soft cooldown per package |
-
-| Package | Cooldown |
+| District | Starting allocation |
 |---|---:|
-| 500 m² | none |
-| 1,000 m² | 6 hours |
-| 5,000 m² | 24 hours |
-| 10,000 m² | 48 hours |
+| Economic | 15,000 m2 |
+| Residential | 12,000 m2 |
+| Military | 8,000 m2 |
+| Defensive | 8,000 m2 |
+| Research | 7,000 m2 |
 
-## Districts and buildings
+- Buildings are not manually placed on the map.
+- Buildings consume land inside districts.
+- Allocation is fixed at start and editable later using unused land.
 
-| System | Decision |
-|---|---|
-| Building placement | District system |
-| Districts | Economic, Military, Residential, Research, Defensive |
-| District allocation | Fixed start, editable later |
-| Starting buildings | Basic starter buildings; area bonuses later |
-| Buildings have levels | Yes |
-| Construction time | Measured in ticks |
-| Starting construction slots | 1 |
+## Starting State
 
-## Economy
+| Item | Value |
+|---|---:|
+| Money | 10,000 |
+| Food | 5,000 |
+| Manpower | 500 |
+| Knowledge | 0 |
+| Population | 1,000 |
+| Infantry | 100 |
+| Archers | 25 |
 
-| System | Decision |
-|---|---|
-| Tick speed | 10 minutes |
-| v0.1 resources | Money, Food, Manpower, Knowledge |
-| Future resources | Wood, Stone, Iron later if needed |
-| Starting Money | 10,000 |
-| Starting Food | 5,000 |
-| Starting Manpower | 500 |
-| Starting Knowledge | 0 |
-| Starting population | 1,000 |
-| Population affects | Taxes, manpower growth, food consumption |
-| Food consumption | Population and army consume food every tick |
-| Research | Simple tech tree |
+## Resources
 
-## Units and combat
+- Money comes from taxes and markets.
+- Food comes from farms and population support.
+- Manpower comes from population and houses.
+- Knowledge comes from scholar/research buildings.
+- Resources generate every 10-minute tick.
+- Population and army consume Food every tick.
 
-| System | Decision |
-|---|---|
-| Starting army | 100 Infantry, 25 Archers |
-| v0.1 unit types | Infantry, Archers, Cavalry, Scouts, Siege |
-| Unit upkeep | Units consume Food every tick |
-| Starting training queues | 1 |
-| Army movement | Distance-based travel time |
-| Global attacks | Allowed, but far attacks are slow and expensive |
-| Battle formula | Simple attack power vs defense power |
-| Defender bonuses | Wall, Watchtower, Defensive District, Defense tech, garrisoned units |
-| Scouting | Approximate enemy information |
-| Siege | Required to seriously damage high-level walls |
-| War land capture | Winner can gain 1,000 m² from same enemy per 30 days |
+## Buildings
 
-## Alliances and interaction
+v0.1 buildings:
 
-| System | Decision |
-|---|---|
-| Alliances | Simple v0.1 alliances |
-| Member limit | 20 members |
-| Friendly fire | Alliance members cannot attack each other |
-| Diplomacy states | Neutral, Ally, War |
-| Chat | Not in v0.1, except possible simple alliance announcements |
-| Notifications | Basic notifications in v0.1 |
-| Reports | Battle, scout, land purchase, construction reports |
+- Farm
+- Market
+- Tax Office
+- Palace
+- Houses
+- Barracks
+- Stables later
+- Watchtower
+- Wall
+- Scholar Hall
+
+Rules:
+
+- Buildings have levels.
+- Construction/upgrades are measured in ticks.
+- 1 active construction slot at start.
+- Research uses a simple tech tree.
+
+## Units And Combat
+
+v0.1 units:
+
+- Infantry
+- Archers
+- Cavalry
+- Scouts
+- Siege
+
+Rules:
+
+- 1 active training queue at start.
+- Armies take distance-based travel time.
+- Global attacks are allowed, but far attacks are slow and expensive.
+- v0.1 battle formula is simple attack power versus defense power.
+- Defenders get bonuses from Wall, Watchtower, Defensive District, Defense tech, and garrisoned units.
+- Scouts reveal approximate enemy information.
+- Siege is required to seriously damage high-level walls.
+
+## Alliances
+
+- Simple v0.1 alliances.
+- Create, join, and leave.
+- Alliance name, tag, description, and member list.
+- Leader role.
+- Member limit: 20.
+- Alliance members cannot attack each other.
+- Diplomacy states: Neutral, Ally, War.
+- No full chat in v0.1, only possible alliance announcements.
 
 ## Rankings
 
@@ -127,5 +169,19 @@ v0.1 rankings:
 - Economy score
 - Knowledge/technology score
 
-Alliance score comes later.
+Alliance score is deferred until later.
 
+## Locked Tech Stack
+
+| Layer | Decision |
+|---|---|
+| Frontend | Next.js, TypeScript, Tailwind |
+| Map | MapLibre GL JS |
+| Backend | Next.js API routes / route handlers first |
+| Database | PostgreSQL + PostGIS |
+| ORM | Prisma |
+| Spatial SQL | Raw SQL / TypedSQL for PostGIS-heavy operations |
+| Worker | Separate tick worker process every 10 minutes |
+| Realtime | Polling/refresh first; WebSockets later |
+| Auth | Email/password and Google login |
+| Admin | Simple admin panel in v0.1 |
