@@ -30,7 +30,11 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 
 ## Notes For Later Sprint 1 Tasks
 
-- `DATABASE_URL` becomes active when Prisma and PostgreSQL/PostGIS are configured.
+- `DATABASE_URL` is active for Prisma validation and generation in `packages/db`.
 - Google OAuth variables become active during the Google login task.
 - `NEXT_PUBLIC_MAP_STYLE_URL` becomes active during the MapLibre task.
 - `TICK_WORKER_SECRET` is reserved for the tick worker/admin test tick flow.
+
+## Database Package
+
+`packages/db/.env.example` mirrors the database connection value for package-local Prisma CLI usage. Copy it to `packages/db/.env` when running DB commands locally.

@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# generated output
+packages/db/generated/
+apps/web/.next/
+apps/web/out/
+
+# environment files
+.env*
+!.env.example
+**/.env*
+!**/.env.example
+
+# logs and caches
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.tsbuildinfo
+
+# OS/editor
+.DS_Store
+Thumbs.db

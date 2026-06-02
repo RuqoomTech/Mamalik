@@ -11,7 +11,7 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 | Repository/docs | `rg --files`, `git diff --check` |
 | Environment examples | `rg --files -g ".env.example"`, `git check-ignore -q apps/web/.env.example` should exit as not ignored, and local secret files should stay ignored |
 | TypeScript app | `npm run typecheck`, `npm run lint`, `npm run build`, unit tests where available |
-| Prisma schema | Prisma validate, migration validation |
+| Prisma schema | `npm run db:validate`, `npm run db:generate`, migration validation when a database is available |
 | Game formulas | unit tests for deterministic outputs and edge cases |
 | API routes | unit/integration tests where practical plus manual API smoke notes |
 | Map/spatial logic | unit tests for helpers, PostGIS validation, manual map smoke notes |
@@ -22,7 +22,8 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 
 - Tooling checks after project setup: `npm run typecheck`, `npm run lint`, `npm run build`.
 - Environment examples check: confirm `.env.example` exists and real `.env*` files stay ignored.
-- Prisma validation after database foundation.
+- Prisma validation after database foundation: `npm run db:validate`, `npm run db:generate`, `npm run db:typecheck`.
+- Migration application after database foundation requires local PostgreSQL/PostGIS access.
 - Auth route smoke checks after auth.
 - Kingdom creation API validation and starter state checks.
 - Dashboard/admin manual smoke checks.

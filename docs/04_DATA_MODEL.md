@@ -200,6 +200,7 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 
 ## Implementation Notes
 
+- Prisma foundation is configured in `packages/db`; the schema is intentionally model-free until Sprint 1 Task 6.
 - Final Prisma model names and field types should be locked during Sprint 1 database setup.
 - PostGIS geometry fields may require raw SQL migration support.
 - Domain constants should live in `packages/game` once the project is initialized.

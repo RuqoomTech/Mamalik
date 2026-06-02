@@ -7,7 +7,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 ## Scope
 
 - Repository foundation and persistent memory files.
-- Minimum project setup. The monorepo directory skeleton, web app tooling, and environment examples are complete; database foundation remains next.
+- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, and database foundation are complete; initial Prisma models remain next.
 - Email/password auth and Google login.
 - Database foundation.
 - Basic MapLibre map screen.

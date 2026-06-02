@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 1 - Foundation + Kingdom Creation
-- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, and environment examples are complete; database foundation is next
+- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, and database foundation are complete; initial Prisma models are next
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -176,9 +176,12 @@ v0.1 must include:
 
 - npm is the current package manager.
 - Root scripts delegate to app-local scripts in `apps/web`.
-- Web dependencies and lockfile live in `apps/web` until shared packages need their own manifests.
+- Web dependencies and lockfile live in `apps/web`.
+- Database dependencies and lockfile live in `packages/db`.
 - Commit environment templates only. Real secrets belong in ignored local files such as `apps/web/.env.local`.
 - Public browser-safe web environment variables must use `NEXT_PUBLIC_`; server secrets must stay server-side.
+- Prisma foundation uses a model-free PostgreSQL schema until Sprint 1 Task 6 adds v0.1 models.
+- PostGIS is enabled by the first database migration.
 
 ## Glossary
 
