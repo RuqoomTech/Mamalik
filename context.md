@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 1 - Foundation + Kingdom Creation
-- Active task sequence: repository foundation and monorepo skeleton are complete; project tooling setup is next
+- Active task sequence: repository foundation, monorepo skeleton, and web tooling setup are complete; environment file examples are next
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -171,6 +171,12 @@ v0.1 must include:
 - Realtime: polling/refresh first; WebSockets later.
 - Auth: email/password and Google login.
 - Admin: simple admin panel in v0.1.
+
+## Tooling Conventions
+
+- npm is the current package manager.
+- Root scripts delegate to app-local scripts in `apps/web`.
+- Web dependencies and lockfile live in `apps/web` until shared packages need their own manifests.
 
 ## Glossary
 

@@ -31,7 +31,14 @@ mamalik/
   tasks/
 ```
 
-Status: the minimal directory skeleton exists. The directories are tracked with placeholder files until Sprint 1 tooling and application code are added.
+Status: the minimal directory skeleton exists. `apps/web` now contains the Next.js, TypeScript, Tailwind, and ESLint foundation. Other package/worker directories remain placeholders until their Sprint 1 tasks.
+
+## Package manager
+
+- Current package manager: npm.
+- Root scripts delegate to `apps/web`.
+- Web dependencies are app-local under `apps/web`.
+- Shared package manifests can be added when `packages/db`, `packages/game`, `packages/config`, or `workers/tick-worker` receive implementation code.
 
 ## App responsibilities
 
