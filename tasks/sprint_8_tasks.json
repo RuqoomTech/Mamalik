@@ -1,0 +1,68 @@
+[
+  {
+    "sprint": 8,
+    "key": "V02-S8-T1",
+    "title": "Add WildArea model",
+    "description": "Create model and seed definitions for NPC/wild areas.",
+    "acceptanceCriteria": [
+      "WildArea records can exist",
+      "Types are enumerated",
+      "No land reward is included"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 8,
+    "key": "V02-S8-T2",
+    "title": "Seed starter wild areas",
+    "description": "Add dev seed data for bandit camp, ruins, abandoned village, trade caravan, wild farmland.",
+    "acceptanceCriteria": [
+      "Seed command creates targets",
+      "Targets have difficulty/rewards",
+      "Targets are visible to admin"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 8,
+    "key": "V02-S8-T3",
+    "title": "Scout wild areas",
+    "description": "Allow scout missions against wild areas.",
+    "acceptanceCriteria": [
+      "Protected players can scout valid wild areas",
+      "Scout report is created",
+      "Travel time is respected if implemented"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 8,
+    "key": "V02-S8-T4",
+    "title": "Attack wild areas",
+    "description": "Allow combat against wild areas with rewards and reports.",
+    "acceptanceCriteria": [
+      "Battle resolves",
+      "Rewards paid once",
+      "Report created",
+      "No land transferred"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 8,
+    "key": "V02-S8-T5",
+    "title": "Wild respawn rules",
+    "description": "Add respawn/refresh timing for cleared wild targets.",
+    "acceptanceCriteria": [
+      "Cleared target has respawn time",
+      "Unavailable targets cannot be farmed repeatedly",
+      "Admin can inspect status"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  }
+]

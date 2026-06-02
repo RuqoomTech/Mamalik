@@ -1,0 +1,54 @@
+[
+  {
+    "sprint": 7,
+    "key": "V02-S7-T1",
+    "title": "Add area profile model",
+    "description": "Add data structures for kingdom area classification with fallback UNKNOWN state.",
+    "acceptanceCriteria": [
+      "Area profile exists",
+      "Existing kingdoms can default to UNKNOWN",
+      "No v0.1 flow breaks"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 7,
+    "key": "V02-S7-T2",
+    "title": "Create area bonus config",
+    "description": "Define simple multipliers for dense city, urban, residential, commercial, farmland, desert, coastal, mixed, unknown.",
+    "acceptanceCriteria": [
+      "Config is centralized",
+      "Unknown uses neutral multipliers",
+      "Values are documented"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 7,
+    "key": "V02-S7-T3",
+    "title": "Show area profile in dashboard",
+    "description": "Expose area type and multipliers in a simple dashboard panel.",
+    "acceptanceCriteria": [
+      "Player can see area type",
+      "Player can see bonuses",
+      "No hidden bonus ambiguity"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 7,
+    "key": "V02-S7-T4",
+    "title": "Admin area override",
+    "description": "Allow admin to inspect and override kingdom area type for testing/balance.",
+    "acceptanceCriteria": [
+      "Admin can set type",
+      "Override is logged",
+      "Player-visible data updates"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  }
+]

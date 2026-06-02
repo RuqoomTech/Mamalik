@@ -1,0 +1,80 @@
+[
+  {
+    "sprint": 12,
+    "key": "V02-S12-T1",
+    "title": "Quest definition system",
+    "description": "Add quest definition data model and seed first-hour missions.",
+    "acceptanceCriteria": [
+      "Quest definitions exist",
+      "Missions are ordered",
+      "Rewards are defined"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T2",
+    "title": "Quest progress tracking",
+    "description": "Track quest progress from real game actions.",
+    "acceptanceCriteria": [
+      "Progress updates",
+      "Completed quests are claimable",
+      "Cannot claim twice"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T3",
+    "title": "Quest UI",
+    "description": "Show onboarding quest panel on dashboard.",
+    "acceptanceCriteria": [
+      "Active quest visible",
+      "Progress visible",
+      "Rewards visible"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T4",
+    "title": "Notification delivery layer",
+    "description": "Add important-event notification delivery with realtime or polling fallback.",
+    "acceptanceCriteria": [
+      "Notifications stored",
+      "Delivery state tracked",
+      "Polling fallback works"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T5",
+    "title": "Alliance announcements",
+    "description": "Add leader/officer style alliance announcements without full chat.",
+    "acceptanceCriteria": [
+      "Announcement can be created",
+      "Pinned announcement supported",
+      "Notification generated"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T6",
+    "title": "v0.2 regression pass",
+    "description": "Run full v0.2 acceptance and v0.1 regression checklist.",
+    "acceptanceCriteria": [
+      "All sprint criteria reviewed",
+      "Known issues documented",
+      "Release notes prepared"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  }
+]

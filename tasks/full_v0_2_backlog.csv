@@ -1,0 +1,30 @@
+version,sprint,key,title,description,status,acceptanceCriteria
+v0.2,7,V02-S7-T1,Add area profile model,Add data structures for kingdom area classification with fallback UNKNOWN state.,planned,Area profile exists | Existing kingdoms can default to UNKNOWN | No v0.1 flow breaks
+v0.2,7,V02-S7-T2,Create area bonus config,"Define simple multipliers for dense city, urban, residential, commercial, farmland, desert, coastal, mixed, unknown.",planned,Config is centralized | Unknown uses neutral multipliers | Values are documented
+v0.2,7,V02-S7-T3,Show area profile in dashboard,Expose area type and multipliers in a simple dashboard panel.,planned,Player can see area type | Player can see bonuses | No hidden bonus ambiguity
+v0.2,7,V02-S7-T4,Admin area override,Allow admin to inspect and override kingdom area type for testing/balance.,planned,Admin can set type | Override is logged | Player-visible data updates
+v0.2,8,V02-S8-T1,Add WildArea model,Create model and seed definitions for NPC/wild areas.,planned,WildArea records can exist | Types are enumerated | No land reward is included
+v0.2,8,V02-S8-T2,Seed starter wild areas,"Add dev seed data for bandit camp, ruins, abandoned village, trade caravan, wild farmland.",planned,Seed command creates targets | Targets have difficulty/rewards | Targets are visible to admin
+v0.2,8,V02-S8-T3,Scout wild areas,Allow scout missions against wild areas.,planned,Protected players can scout valid wild areas | Scout report is created | Travel time is respected if implemented
+v0.2,8,V02-S8-T4,Attack wild areas,Allow combat against wild areas with rewards and reports.,planned,Battle resolves | Rewards paid once | Report created | No land transferred
+v0.2,8,V02-S8-T5,Wild respawn rules,Add respawn/refresh timing for cleared wild targets.,planned,Cleared target has respawn time | Unavailable targets cannot be farmed repeatedly | Admin can inspect status
+v0.2,9,V02-S9-T1,Add tech definition registry,Create configurable technology definitions and categories.,planned,Tech definitions load | Categories exist | Prerequisites are representable
+v0.2,9,V02-S9-T2,Implement research progress,Allow a kingdom to start and complete research over ticks.,planned,Cost is paid | Remaining ticks decrease | Completion persists
+v0.2,9,V02-S9-T3,Apply economy/agriculture effects,Apply basic tech effects to Money/Food formulas.,planned,Effects are tested | Dashboard reflects values | No negative outputs from normal states
+v0.2,9,V02-S9-T4,Apply military/defense/scouting effects,Apply basic tech effects to combat and scouting formulas.,planned,Effects are included in calculations | Reports show relevant modifiers | Tests cover at least one effect per category
+v0.2,9,V02-S9-T5,Tech tree UI,"Add basic UI for categories, locked/available/researching/complete states.",planned,Player can inspect tech tree | Unavailable tech shows requirements | Active research is clear
+v0.2,10,V02-S10-T1,Scout accuracy formula,"Create formula using scout count, scouting tech, target defense, and randomness.",planned,Formula is deterministic in tests with seeded/random stub | Low tiers remain approximate | Higher tiers improve detail
+v0.2,10,V02-S10-T2,Improved player scout report,Expand report bands to include unit-type estimates and building/defense quality.,planned,Report remains approximate | Sensitive exact values require high tier | UI supports new sections
+v0.2,10,V02-S10-T3,Scout failure and detection,Add chance that defender detects or blocks scouts.,planned,Failed missions create reports | Defender notification can be generated | Protected kingdoms remain blocked
+v0.2,10,V02-S10-T4,Counter-scouting hooks,Connect Watchtower/Defense tech to scout detection chance.,planned,Watchtower affects detection | Defense tech affects detection | Tests cover modifiers
+v0.2,11,V02-S11-T1,Map layer toggle UI,Add UI component for toggling strategic layers.,planned,Toggles appear on map | Settings can be changed | No default clutter
+v0.2,11,V02-S11-T2,Kingdom and alliance layers,Render kingdom borders and alliance coloring.,planned,Borders render | Alliance color applies | Neutral/ally/war states are distinguishable
+v0.2,11,V02-S11-T3,War/protection layers,Add visual layers for war zones and protected kingdoms.,planned,Protected kingdoms visible when layer enabled | War conflicts visible | Layer can be disabled
+v0.2,11,V02-S11-T4,Wild area layer,Render wild areas on map with type/difficulty hints.,planned,Wild targets render | Click opens summary | Layer toggle works
+v0.2,11,V02-S11-T5,Persist map preferences,Save player map layer preferences.,planned,Preferences persist | Defaults are safe | No auth leakage
+v0.2,12,V02-S12-T1,Quest definition system,Add quest definition data model and seed first-hour missions.,planned,Quest definitions exist | Missions are ordered | Rewards are defined
+v0.2,12,V02-S12-T2,Quest progress tracking,Track quest progress from real game actions.,planned,Progress updates | Completed quests are claimable | Cannot claim twice
+v0.2,12,V02-S12-T3,Quest UI,Show onboarding quest panel on dashboard.,planned,Active quest visible | Progress visible | Rewards visible
+v0.2,12,V02-S12-T4,Notification delivery layer,Add important-event notification delivery with realtime or polling fallback.,planned,Notifications stored | Delivery state tracked | Polling fallback works
+v0.2,12,V02-S12-T5,Alliance announcements,Add leader/officer style alliance announcements without full chat.,planned,Announcement can be created | Pinned announcement supported | Notification generated
+v0.2,12,V02-S12-T6,v0.2 regression pass,Run full v0.2 acceptance and v0.1 regression checklist.,planned,All sprint criteria reviewed | Known issues documented | Release notes prepared

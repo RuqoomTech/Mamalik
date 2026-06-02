@@ -1,0 +1,67 @@
+[
+  {
+    "sprint": 9,
+    "key": "V02-S9-T1",
+    "title": "Add tech definition registry",
+    "description": "Create configurable technology definitions and categories.",
+    "acceptanceCriteria": [
+      "Tech definitions load",
+      "Categories exist",
+      "Prerequisites are representable"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 9,
+    "key": "V02-S9-T2",
+    "title": "Implement research progress",
+    "description": "Allow a kingdom to start and complete research over ticks.",
+    "acceptanceCriteria": [
+      "Cost is paid",
+      "Remaining ticks decrease",
+      "Completion persists"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 9,
+    "key": "V02-S9-T3",
+    "title": "Apply economy/agriculture effects",
+    "description": "Apply basic tech effects to Money/Food formulas.",
+    "acceptanceCriteria": [
+      "Effects are tested",
+      "Dashboard reflects values",
+      "No negative outputs from normal states"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 9,
+    "key": "V02-S9-T4",
+    "title": "Apply military/defense/scouting effects",
+    "description": "Apply basic tech effects to combat and scouting formulas.",
+    "acceptanceCriteria": [
+      "Effects are included in calculations",
+      "Reports show relevant modifiers",
+      "Tests cover at least one effect per category"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 9,
+    "key": "V02-S9-T5",
+    "title": "Tech tree UI",
+    "description": "Add basic UI for categories, locked/available/researching/complete states.",
+    "acceptanceCriteria": [
+      "Player can inspect tech tree",
+      "Unavailable tech shows requirements",
+      "Active research is clear"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  }
+]

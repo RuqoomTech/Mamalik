@@ -1,0 +1,380 @@
+[
+  {
+    "sprint": 7,
+    "key": "V02-S7-T1",
+    "title": "Add area profile model",
+    "description": "Add data structures for kingdom area classification with fallback UNKNOWN state.",
+    "acceptanceCriteria": [
+      "Area profile exists",
+      "Existing kingdoms can default to UNKNOWN",
+      "No v0.1 flow breaks"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 7,
+    "key": "V02-S7-T2",
+    "title": "Create area bonus config",
+    "description": "Define simple multipliers for dense city, urban, residential, commercial, farmland, desert, coastal, mixed, unknown.",
+    "acceptanceCriteria": [
+      "Config is centralized",
+      "Unknown uses neutral multipliers",
+      "Values are documented"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 7,
+    "key": "V02-S7-T3",
+    "title": "Show area profile in dashboard",
+    "description": "Expose area type and multipliers in a simple dashboard panel.",
+    "acceptanceCriteria": [
+      "Player can see area type",
+      "Player can see bonuses",
+      "No hidden bonus ambiguity"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 7,
+    "key": "V02-S7-T4",
+    "title": "Admin area override",
+    "description": "Allow admin to inspect and override kingdom area type for testing/balance.",
+    "acceptanceCriteria": [
+      "Admin can set type",
+      "Override is logged",
+      "Player-visible data updates"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 8,
+    "key": "V02-S8-T1",
+    "title": "Add WildArea model",
+    "description": "Create model and seed definitions for NPC/wild areas.",
+    "acceptanceCriteria": [
+      "WildArea records can exist",
+      "Types are enumerated",
+      "No land reward is included"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 8,
+    "key": "V02-S8-T2",
+    "title": "Seed starter wild areas",
+    "description": "Add dev seed data for bandit camp, ruins, abandoned village, trade caravan, wild farmland.",
+    "acceptanceCriteria": [
+      "Seed command creates targets",
+      "Targets have difficulty/rewards",
+      "Targets are visible to admin"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 8,
+    "key": "V02-S8-T3",
+    "title": "Scout wild areas",
+    "description": "Allow scout missions against wild areas.",
+    "acceptanceCriteria": [
+      "Protected players can scout valid wild areas",
+      "Scout report is created",
+      "Travel time is respected if implemented"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 8,
+    "key": "V02-S8-T4",
+    "title": "Attack wild areas",
+    "description": "Allow combat against wild areas with rewards and reports.",
+    "acceptanceCriteria": [
+      "Battle resolves",
+      "Rewards paid once",
+      "Report created",
+      "No land transferred"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 8,
+    "key": "V02-S8-T5",
+    "title": "Wild respawn rules",
+    "description": "Add respawn/refresh timing for cleared wild targets.",
+    "acceptanceCriteria": [
+      "Cleared target has respawn time",
+      "Unavailable targets cannot be farmed repeatedly",
+      "Admin can inspect status"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 9,
+    "key": "V02-S9-T1",
+    "title": "Add tech definition registry",
+    "description": "Create configurable technology definitions and categories.",
+    "acceptanceCriteria": [
+      "Tech definitions load",
+      "Categories exist",
+      "Prerequisites are representable"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 9,
+    "key": "V02-S9-T2",
+    "title": "Implement research progress",
+    "description": "Allow a kingdom to start and complete research over ticks.",
+    "acceptanceCriteria": [
+      "Cost is paid",
+      "Remaining ticks decrease",
+      "Completion persists"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 9,
+    "key": "V02-S9-T3",
+    "title": "Apply economy/agriculture effects",
+    "description": "Apply basic tech effects to Money/Food formulas.",
+    "acceptanceCriteria": [
+      "Effects are tested",
+      "Dashboard reflects values",
+      "No negative outputs from normal states"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 9,
+    "key": "V02-S9-T4",
+    "title": "Apply military/defense/scouting effects",
+    "description": "Apply basic tech effects to combat and scouting formulas.",
+    "acceptanceCriteria": [
+      "Effects are included in calculations",
+      "Reports show relevant modifiers",
+      "Tests cover at least one effect per category"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 9,
+    "key": "V02-S9-T5",
+    "title": "Tech tree UI",
+    "description": "Add basic UI for categories, locked/available/researching/complete states.",
+    "acceptanceCriteria": [
+      "Player can inspect tech tree",
+      "Unavailable tech shows requirements",
+      "Active research is clear"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 10,
+    "key": "V02-S10-T1",
+    "title": "Scout accuracy formula",
+    "description": "Create formula using scout count, scouting tech, target defense, and randomness.",
+    "acceptanceCriteria": [
+      "Formula is deterministic in tests with seeded/random stub",
+      "Low tiers remain approximate",
+      "Higher tiers improve detail"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 10,
+    "key": "V02-S10-T2",
+    "title": "Improved player scout report",
+    "description": "Expand report bands to include unit-type estimates and building/defense quality.",
+    "acceptanceCriteria": [
+      "Report remains approximate",
+      "Sensitive exact values require high tier",
+      "UI supports new sections"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 10,
+    "key": "V02-S10-T3",
+    "title": "Scout failure and detection",
+    "description": "Add chance that defender detects or blocks scouts.",
+    "acceptanceCriteria": [
+      "Failed missions create reports",
+      "Defender notification can be generated",
+      "Protected kingdoms remain blocked"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 10,
+    "key": "V02-S10-T4",
+    "title": "Counter-scouting hooks",
+    "description": "Connect Watchtower/Defense tech to scout detection chance.",
+    "acceptanceCriteria": [
+      "Watchtower affects detection",
+      "Defense tech affects detection",
+      "Tests cover modifiers"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 11,
+    "key": "V02-S11-T1",
+    "title": "Map layer toggle UI",
+    "description": "Add UI component for toggling strategic layers.",
+    "acceptanceCriteria": [
+      "Toggles appear on map",
+      "Settings can be changed",
+      "No default clutter"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 11,
+    "key": "V02-S11-T2",
+    "title": "Kingdom and alliance layers",
+    "description": "Render kingdom borders and alliance coloring.",
+    "acceptanceCriteria": [
+      "Borders render",
+      "Alliance color applies",
+      "Neutral/ally/war states are distinguishable"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 11,
+    "key": "V02-S11-T3",
+    "title": "War/protection layers",
+    "description": "Add visual layers for war zones and protected kingdoms.",
+    "acceptanceCriteria": [
+      "Protected kingdoms visible when layer enabled",
+      "War conflicts visible",
+      "Layer can be disabled"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 11,
+    "key": "V02-S11-T4",
+    "title": "Wild area layer",
+    "description": "Render wild areas on map with type/difficulty hints.",
+    "acceptanceCriteria": [
+      "Wild targets render",
+      "Click opens summary",
+      "Layer toggle works"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 11,
+    "key": "V02-S11-T5",
+    "title": "Persist map preferences",
+    "description": "Save player map layer preferences.",
+    "acceptanceCriteria": [
+      "Preferences persist",
+      "Defaults are safe",
+      "No auth leakage"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T1",
+    "title": "Quest definition system",
+    "description": "Add quest definition data model and seed first-hour missions.",
+    "acceptanceCriteria": [
+      "Quest definitions exist",
+      "Missions are ordered",
+      "Rewards are defined"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T2",
+    "title": "Quest progress tracking",
+    "description": "Track quest progress from real game actions.",
+    "acceptanceCriteria": [
+      "Progress updates",
+      "Completed quests are claimable",
+      "Cannot claim twice"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T3",
+    "title": "Quest UI",
+    "description": "Show onboarding quest panel on dashboard.",
+    "acceptanceCriteria": [
+      "Active quest visible",
+      "Progress visible",
+      "Rewards visible"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T4",
+    "title": "Notification delivery layer",
+    "description": "Add important-event notification delivery with realtime or polling fallback.",
+    "acceptanceCriteria": [
+      "Notifications stored",
+      "Delivery state tracked",
+      "Polling fallback works"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T5",
+    "title": "Alliance announcements",
+    "description": "Add leader/officer style alliance announcements without full chat.",
+    "acceptanceCriteria": [
+      "Announcement can be created",
+      "Pinned announcement supported",
+      "Notification generated"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 12,
+    "key": "V02-S12-T6",
+    "title": "v0.2 regression pass",
+    "description": "Run full v0.2 acceptance and v0.1 regression checklist.",
+    "acceptanceCriteria": [
+      "All sprint criteria reviewed",
+      "Known issues documented",
+      "Release notes prepared"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  }
+]

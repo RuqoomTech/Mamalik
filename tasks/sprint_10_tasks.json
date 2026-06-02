@@ -1,0 +1,54 @@
+[
+  {
+    "sprint": 10,
+    "key": "V02-S10-T1",
+    "title": "Scout accuracy formula",
+    "description": "Create formula using scout count, scouting tech, target defense, and randomness.",
+    "acceptanceCriteria": [
+      "Formula is deterministic in tests with seeded/random stub",
+      "Low tiers remain approximate",
+      "Higher tiers improve detail"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 10,
+    "key": "V02-S10-T2",
+    "title": "Improved player scout report",
+    "description": "Expand report bands to include unit-type estimates and building/defense quality.",
+    "acceptanceCriteria": [
+      "Report remains approximate",
+      "Sensitive exact values require high tier",
+      "UI supports new sections"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 10,
+    "key": "V02-S10-T3",
+    "title": "Scout failure and detection",
+    "description": "Add chance that defender detects or blocks scouts.",
+    "acceptanceCriteria": [
+      "Failed missions create reports",
+      "Defender notification can be generated",
+      "Protected kingdoms remain blocked"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 10,
+    "key": "V02-S10-T4",
+    "title": "Counter-scouting hooks",
+    "description": "Connect Watchtower/Defense tech to scout detection chance.",
+    "acceptanceCriteria": [
+      "Watchtower affects detection",
+      "Defense tech affects detection",
+      "Tests cover modifiers"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  }
+]

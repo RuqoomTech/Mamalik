@@ -1,0 +1,67 @@
+[
+  {
+    "sprint": 11,
+    "key": "V02-S11-T1",
+    "title": "Map layer toggle UI",
+    "description": "Add UI component for toggling strategic layers.",
+    "acceptanceCriteria": [
+      "Toggles appear on map",
+      "Settings can be changed",
+      "No default clutter"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 11,
+    "key": "V02-S11-T2",
+    "title": "Kingdom and alliance layers",
+    "description": "Render kingdom borders and alliance coloring.",
+    "acceptanceCriteria": [
+      "Borders render",
+      "Alliance color applies",
+      "Neutral/ally/war states are distinguishable"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 11,
+    "key": "V02-S11-T3",
+    "title": "War/protection layers",
+    "description": "Add visual layers for war zones and protected kingdoms.",
+    "acceptanceCriteria": [
+      "Protected kingdoms visible when layer enabled",
+      "War conflicts visible",
+      "Layer can be disabled"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 11,
+    "key": "V02-S11-T4",
+    "title": "Wild area layer",
+    "description": "Render wild areas on map with type/difficulty hints.",
+    "acceptanceCriteria": [
+      "Wild targets render",
+      "Click opens summary",
+      "Layer toggle works"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  },
+  {
+    "sprint": 11,
+    "key": "V02-S11-T5",
+    "title": "Persist map preferences",
+    "description": "Save player map layer preferences.",
+    "acceptanceCriteria": [
+      "Preferences persist",
+      "Defaults are safe",
+      "No auth leakage"
+    ],
+    "status": "planned",
+    "version": "v0.2"
+  }
+]

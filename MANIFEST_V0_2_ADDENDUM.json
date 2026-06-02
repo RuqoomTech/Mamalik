@@ -1,0 +1,58 @@
+{
+  "package": "Mamalik Project Docs v2 + v0.2 Addendum",
+  "date": "2026-06-02",
+  "rule": "Original v0.1 files were not edited; this package adds v0.2 files only.",
+  "addedFiles": [
+    "README_V0_2_ADDENDUM.md",
+    "docs/08_V0_2_SCOPE.md",
+    "docs/09_V0_2_ROADMAP.md",
+    "docs/10_V0_2_DATA_MODEL_EXTENSIONS.md",
+    "docs/11_V0_2_CODEX_PROMPT.md",
+    "docs/12_V0_2_REFERENCE_SOURCES.md",
+    "docs/sprints/SPRINT_7_AREA_BONUSES.md",
+    "docs/sprints/SPRINT_8_NPC_WILD_AREAS.md",
+    "docs/sprints/SPRINT_9_EXPANDED_TECH_TREE.md",
+    "docs/sprints/SPRINT_10_IMPROVED_SCOUTING.md",
+    "docs/sprints/SPRINT_11_MAP_LAYERS_ALLIANCE_VISUALS.md",
+    "docs/sprints/SPRINT_12_ONBOARDING_REALTIME_NOTIFICATIONS.md",
+    "tasks/full_v0_2_backlog.csv",
+    "tasks/full_v0_2_backlog.json",
+    "tasks/sprint_7_tasks.json",
+    "tasks/sprint_8_tasks.json",
+    "tasks/sprint_9_tasks.json",
+    "tasks/sprint_10_tasks.json",
+    "tasks/sprint_11_tasks.json",
+    "tasks/sprint_12_tasks.json"
+  ],
+  "v0_2_sprints": [
+    {
+      "sprint": 7,
+      "name": "Area-Type Bonuses + Map Classification"
+    },
+    {
+      "sprint": 8,
+      "name": "NPC / Wild Areas"
+    },
+    {
+      "sprint": 9,
+      "name": "Expanded Tech Tree"
+    },
+    {
+      "sprint": 10,
+      "name": "Improved Scouting + Intelligence"
+    },
+    {
+      "sprint": 11,
+      "name": "Strategic Map Layers + Alliance Visuals"
+    },
+    {
+      "sprint": 12,
+      "name": "Onboarding Quests + Important Notifications"
+    }
+  ],
+  "notes": [
+    "v0.2 is not to be implemented until v0.1 is complete and accepted.",
+    "Use docs/11_V0_2_CODEX_PROMPT.md when continuing Codex after v0.1.",
+    "v0.2 must preserve v0.1 gameplay and architecture decisions."
+  ]
+}
