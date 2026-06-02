@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 1 - Foundation + Kingdom Creation
-- Active task sequence: start with repository foundation, then project setup
+- Active task sequence: repository foundation and monorepo skeleton are complete; project tooling setup is next
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope

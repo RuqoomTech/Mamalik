@@ -12,11 +12,13 @@ All notable Mamalik project changes are recorded here.
 - Added canonical v0.1 documentation files for locked decisions, scope, architecture, data model, sprint plan, definition of done, testing strategy, and decisions log.
 - Added canonical Sprint 1-6 Markdown files under `docs/sprints/`.
 - Added canonical task Markdown files under `tasks/`.
+- Added the minimal Sprint 1 monorepo directory skeleton: `apps/web`, `packages/db`, `packages/game`, `packages/config`, and `workers/tick-worker`.
 
 ### Changed
 
 - Clarified that Sprint 1 is the active sprint and v0.1 is the active release.
 - Clarified that existing v0.2 material is future-only until v0.1 is complete.
+- Marked Sprint 1 Task S1-002 complete in the active task files.
 
 ### Fixed
 
@@ -24,7 +26,7 @@ All notable Mamalik project changes are recorded here.
 
 ### Deferred
 
-- Next.js project setup is deferred to Sprint 1 Task 2.
+- Next.js project setup is deferred to Sprint 1 Task 3.
 - Game code implementation is deferred until after the repository foundation is locked.
 
 ### Known issues

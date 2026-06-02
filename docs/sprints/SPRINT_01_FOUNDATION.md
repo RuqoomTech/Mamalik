@@ -7,7 +7,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 ## Scope
 
 - Repository foundation and persistent memory files.
-- Minimum project setup.
+- Minimum project setup. The monorepo directory skeleton is complete; tooling and app setup remain next.
 - Email/password auth and Google login.
 - Database foundation.
 - Basic MapLibre map screen.

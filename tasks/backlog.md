@@ -5,7 +5,7 @@ Canonical Markdown backlog for active v0.1 work.
 ## Sprint 1 - Foundation + Kingdom Creation
 
 - [x] S1-001: Initialize repository foundation and persistent memory files.
-- [ ] S1-002: Initialize minimal project structure and tooling.
+- [x] S1-002: Initialize minimal monorepo structure.
 - [ ] S1-003: Configure Next.js, TypeScript, Tailwind, lint, and basic scripts.
 - [ ] S1-004: Configure Prisma and PostgreSQL/PostGIS foundation.
 - [ ] S1-005: Create initial v0.1 Prisma models.

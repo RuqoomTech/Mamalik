@@ -15,7 +15,7 @@
 | Auth | Email/password + Google login |
 | Admin | Simple admin panel in v0.1 |
 
-## Suggested repo structure
+## Repository structure
 
 ```text
 mamalik/
@@ -30,6 +30,8 @@ mamalik/
   docs/
   tasks/
 ```
+
+Status: the minimal directory skeleton exists. The directories are tracked with placeholder files until Sprint 1 tooling and application code are added.
 
 ## App responsibilities
 
