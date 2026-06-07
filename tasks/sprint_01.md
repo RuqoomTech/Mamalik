@@ -12,7 +12,7 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [x] S1-004: Configure environment file examples.
 - [x] S1-005: Configure Prisma and PostgreSQL/PostGIS foundation.
 - [x] S1-006: Create initial Prisma models for User, Kingdom, District, ResourceStockpile, BuildingInstance, UnitStack, LandPurchaseCooldown, and Report.
-- [ ] S1-007: Implement register/login/logout.
+- [x] S1-007: Implement register/login/logout.
 - [ ] S1-008: Implement Google login.
 - [ ] S1-009: Add protected dashboard route behavior.
 - [ ] S1-010: Create `/create-kingdom` MapLibre page.

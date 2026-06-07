@@ -28,6 +28,8 @@ Copy-Item .env.example .env.local
 
 Real `.env*` files stay ignored. Commit only `.env.example`.
 
+Email/password auth uses `DATABASE_URL` and `SESSION_SECRET`. `SESSION_SECRET` must be at least 32 characters.
+
 ## Checks
 
 From the repository root:
@@ -35,5 +37,6 @@ From the repository root:
 ```bash
 npm run typecheck
 npm run lint
+npm run test
 npm run build
 ```

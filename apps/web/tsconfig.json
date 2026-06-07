@@ -13,13 +13,16 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@mamalik/db": ["../../packages/db/src/client.ts"],
+      "@mamalik/db/client": ["../../packages/db/generated/prisma/client.ts"]
     }
   },
   "include": [

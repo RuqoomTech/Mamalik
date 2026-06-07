@@ -7,7 +7,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 ## Scope
 
 - Repository foundation and persistent memory files.
-- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, and initial Prisma models are complete; email/password auth remains next.
+- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, initial Prisma models, and email/password auth are complete; Google login remains next.
 - Email/password auth and Google login.
 - Database foundation.
 - Basic MapLibre map screen.
@@ -20,6 +20,19 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 
 - Initial Prisma models exist for users, kingdoms, districts, resource stockpiles, buildings, unit stacks, land purchase cooldowns, and reports.
 - Queue, tick, movement, combat, alliance, ranking, and full report-center models remain out of scope for Sprint 1 Task 6 and are deferred to their owning sprint tasks.
+
+## Auth Status
+
+- Email/password register, login, and logout are implemented with first-party Next.js route handlers.
+- Passwords are hashed with `crypto.scrypt`.
+- Sessions use signed `mamalik_session` cookies.
+- Google login remains Sprint 1 Task 8.
+- Protected dashboard/create-kingdom route behavior remains Sprint 1 Task 9.
+
+## Brand Asset Status
+
+- A v0.1 logo mark exists at `apps/web/public/brand/mamalik-logo.png`.
+- The mark is text-free; `Mamalik / ممالك` is rendered as real UI text.
 
 ## Required Starter State
 

@@ -14,7 +14,7 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 |---|---|---|
 | `NEXT_PUBLIC_APP_URL` | Public web | Base app URL for callbacks, links, and local smoke tests. |
 | `DATABASE_URL` | Server/database | PostgreSQL/PostGIS connection string for Prisma and database tasks. |
-| `SESSION_SECRET` | Server/auth | Secret used for future session signing/encryption. |
+| `SESSION_SECRET` | Server/auth | Secret used for signed email/password auth session cookies. Must be at least 32 characters. |
 | `GOOGLE_CLIENT_ID` | Server/auth | Google OAuth client id for the Google login task. |
 | `GOOGLE_CLIENT_SECRET` | Server/auth | Google OAuth client secret for the Google login task. |
 | `NEXT_PUBLIC_MAP_STYLE_URL` | Public map | MapLibre style URL used by future map screens. |
@@ -31,6 +31,7 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 ## Notes For Later Sprint 1 Tasks
 
 - `DATABASE_URL` is active for Prisma validation and generation in `packages/db`.
+- `SESSION_SECRET` is active for email/password auth.
 - Google OAuth variables become active during the Google login task.
 - `NEXT_PUBLIC_MAP_STYLE_URL` becomes active during the MapLibre task.
 - `TICK_WORKER_SECRET` is reserved for the tick worker/admin test tick flow.

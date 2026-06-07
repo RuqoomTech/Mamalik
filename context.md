@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 1 - Foundation + Kingdom Creation
-- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, and initial Prisma models are complete; email/password auth is next
+- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, and email/password auth are complete; Google login is next
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -184,6 +184,9 @@ v0.1 must include:
 - PostGIS is enabled by the first database migration.
 - The initial `User` model stores email/password and Google auth fields directly; a separate auth account-linking model is deferred unless v0.1 needs it.
 - The initial `AreaType` enum starts with `STANDARD` only; additional area categories can be added when v0.1 land pricing requires them, while area-type bonuses remain post-v0.1.
+- Email/password auth uses first-party Next.js route handlers, Node `crypto.scrypt` password hashes, and signed `mamalik_session` cookies.
+- Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
+- The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.
 
 ## Glossary
 

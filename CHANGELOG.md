@@ -2,6 +2,39 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-07
+
+### Added
+
+- Added email/password register, login, and logout route handlers.
+- Added `/register` and `/login` pages.
+- Added signed `mamalik_session` cookie helpers and `crypto.scrypt` password hashing.
+- Added focused auth unit tests and app-local `tsx` test runner support.
+- Added `docs/AUTHENTICATION.md`.
+- Added a generated v0.1 logo mark at `apps/web/public/brand/mamalik-logo.png`.
+- Added `docs/BRAND_ASSETS.md`.
+
+### Changed
+
+- Marked Sprint 1 Task S1-007 complete in the active task files.
+- Updated architecture, environment, testing, sprint, context, and decision docs for first-party email/password auth.
+- Updated app metadata and the home page to use the Mamalik logo mark.
+
+### Fixed
+
+- Configured the web build root so Turbopack can build repo-local `packages/db` imports.
+
+### Deferred
+
+- Google login is deferred to Sprint 1 Task 8.
+- Protected dashboard/create-kingdom route behavior is deferred to Sprint 1 Task 9.
+
+### Known issues
+
+- No live database setup exists yet.
+- `npm install` for the web app reported two moderate npm audit findings after adding `tsx`.
+- Live register/login route smoke tests require a reachable database and were not run in this environment.
+
 ## 2026-06-02
 
 ### Added

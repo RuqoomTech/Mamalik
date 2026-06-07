@@ -54,6 +54,7 @@ Status: the minimal directory skeleton exists. `apps/web` now contains the Next.
 - Next.js App Router application
 - Public landing pages later
 - Auth pages
+- Email/password register, login, and logout API route handlers
 - Map selection
 - Dashboard
 - Kingdom management pages
@@ -112,6 +113,18 @@ Examples of PostGIS-heavy actions:
 - The first migration enables PostGIS with `CREATE EXTENSION IF NOT EXISTS postgis;`.
 - The second migration creates the initial v0.1 relational model foundation.
 - Applying migrations requires a reachable PostgreSQL database with permission to create PostGIS extensions.
+
+## Auth Strategy
+
+- Email/password auth is implemented with first-party Next.js route handlers.
+- Passwords use Node `crypto.scrypt` hashes stored in `User.passwordHash`.
+- Sessions use signed `mamalik_session` cookies with `SESSION_SECRET`.
+- Google OAuth remains a separate Sprint 1 Task 8 implementation.
+- Protected dashboard/create-kingdom route behavior remains Sprint 1 Task 9.
+
+## Build Strategy
+
+- `apps/web` uses Turbopack with the repository root configured so it can import repo-local package source from `packages/db`.
 
 ## Realtime strategy
 
