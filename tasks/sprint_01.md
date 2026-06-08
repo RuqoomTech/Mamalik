@@ -13,8 +13,8 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [x] S1-005: Configure Prisma and PostgreSQL/PostGIS foundation.
 - [x] S1-006: Create initial Prisma models for User, Kingdom, District, ResourceStockpile, BuildingInstance, UnitStack, LandPurchaseCooldown, and Report.
 - [x] S1-007: Implement register/login/logout.
-- [ ] S1-008: Implement Google login.
-- [ ] S1-009: Add protected dashboard route behavior.
+- [x] S1-008: Implement Google login.
+- [x] S1-009: Add protected dashboard route behavior.
 - [ ] S1-010: Create `/create-kingdom` MapLibre page.
 - [ ] S1-011: Add search placeholder, pan/zoom, click marker, and selected coordinates.
 - [ ] S1-012: Create `POST /api/kingdom/validate-location` with temporary validation.
@@ -24,13 +24,17 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [ ] S1-016: Create `/dashboard` kingdom overview.
 - [ ] S1-017: Create `/admin` basic read-only views.
 
+## Maintenance
+
+- [x] 2026-06-08: Archive duplicate legacy docs/tasks and lock canonical documentation sources.
+
 ## Acceptance Criteria
 
 - [x] Required memory and documentation files exist.
 - [ ] A user can register/login.
 - [ ] Google login works.
-- [ ] A user without a kingdom is routed to `/create-kingdom`.
-- [ ] A user with a kingdom is routed to `/dashboard`.
+- [x] A user without a kingdom is routed to `/create-kingdom`.
+- [x] A user with a kingdom is routed to `/dashboard`.
 - [ ] A user can click a map location.
 - [ ] Temporary validation returns valid/invalid with a polygon preview.
 - [ ] A user can create a kingdom.
@@ -42,3 +46,5 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 
 - Real map validation and dynamic border generation are Sprint 4.
 - Do not implement tick economy in Sprint 1.
+- S1-008 implementation is complete with automated tests; live Google OAuth smoke testing requires configured credentials and a reachable database.
+- S1-009 protected route behavior is complete with server-side guards and automated destination/admin tests; live route smoke testing requires a reachable database.

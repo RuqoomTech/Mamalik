@@ -2,6 +2,50 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-08
+
+### Added
+
+- Added server-side route guard helpers for authenticated app routes.
+- Added `/dashboard`, `/create-kingdom`, and `/admin` Sprint 1 placeholder pages.
+- Added post-login destination and admin allowlist helpers.
+- Added focused auth tests for kingdom-based destination selection and admin access checks.
+- Added first-party Google OAuth start and callback route handlers.
+- Added short-lived Google OAuth state cookie helpers.
+- Added Google identity normalization and user upsert/linking logic.
+- Added "Continue with Google" links to `/login` and `/register`.
+- Added focused auth tests for OAuth state, Google authorization URL creation, identity normalization, and user linking/creation.
+- Added `docs/archive/` for historical duplicate documentation.
+- Added `tasks/archive/` for historical duplicate task artifacts.
+- Added archive README files explaining that archived materials are read-only historical references.
+
+### Changed
+
+- Marked Sprint 1 Task S1-009 complete in the active task files.
+- Documented protected route behavior and admin allowlist behavior.
+- Redirect signed-in `/login` and `/register` visitors to `/create-kingdom` or `/dashboard`.
+- Marked Sprint 1 Task S1-008 complete in the active task files.
+- Documented Google OAuth configuration, callback URI, state cookie behavior, and account-linking behavior.
+- Added canonical documentation and task source guidance to `AGENTS.md`.
+- Recorded the canonical documentation convention in `context.md` and `docs/DECISIONS_LOG.md`.
+- Moved legacy duplicate v0.1 docs and duplicate Sprint 1-6 task artifacts into archive folders.
+
+### Fixed
+
+- Reduced documentation drift by keeping zero-padded Sprint 1-6 docs and Markdown task files as the active source of truth.
+
+### Deferred
+
+- MapLibre kingdom creation UI remains Sprint 1 Task 10.
+- Full admin read-only views remain Sprint 1 Task 17.
+
+### Known issues
+
+- Live protected route smoke testing requires a reachable PostgreSQL/PostGIS database.
+- Live Google OAuth smoke testing requires configured Google OAuth credentials, matching callback URI, and a reachable PostgreSQL/PostGIS database.
+- v0.2 docs and task artifacts remain future-only references.
+- Export/reference backlog files remain in place and are not active task trackers.
+
 ## 2026-06-07
 
 ### Added

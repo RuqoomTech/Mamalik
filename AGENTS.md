@@ -23,6 +23,46 @@ Before starting any task, read:
 
 If a required file is missing, create it before coding.
 
+## Canonical Documentation Sources
+
+Use these files as the active source of truth for v0.1 work:
+
+- `AGENTS.md`
+- `context.md`
+- `session_state.md`
+- `CHANGELOG.md`
+- `docs/01_LOCKED_DECISIONS.md`
+- `docs/02_V0_1_SCOPE.md`
+- `docs/03_TECH_ARCHITECTURE.md`
+- `docs/04_DATA_MODEL.md`
+- `docs/05_SPRINT_PLAN.md`
+- `docs/DEFINITION_OF_DONE.md`
+- `docs/TESTING_STRATEGY.md`
+- `docs/DECISIONS_LOG.md`
+- `docs/AUTHENTICATION.md`
+- `docs/DATABASE.md`
+- `docs/ENVIRONMENT.md`
+- `docs/BRAND_ASSETS.md`
+- `docs/sprints/SPRINT_01_FOUNDATION.md`
+- `docs/sprints/SPRINT_02_TICK_ENGINE.md`
+- `docs/sprints/SPRINT_03_LAND_DISTRICTS.md`
+- `docs/sprints/SPRINT_04_MAP_VALIDATION.md`
+- `docs/sprints/SPRINT_05_COMBAT_SCOUTING.md`
+- `docs/sprints/SPRINT_06_ALLIANCES_REPORTS_RANKINGS.md`
+- `tasks/backlog.md`
+- `tasks/sprint_01.md`
+- `tasks/sprint_02.md`
+- `tasks/sprint_03.md`
+- `tasks/sprint_04.md`
+- `tasks/sprint_05.md`
+- `tasks/sprint_06.md`
+
+Archived documentation and task files under `docs/archive/` and `tasks/archive/` are read-only historical references. Do not use archived files to determine active scope, active tasks, or implementation details.
+
+v0.2 files remain future-only references until v0.1 is complete and accepted. Do not implement v0.2 work during v0.1.
+
+Export/reference backlog files such as `tasks/full_v0_1_backlog.*` and `tasks/full_v0_2_backlog.*` are reference exports, not active task trackers.
+
 ## Documentation Update Loop
 
 After every completed task, update:

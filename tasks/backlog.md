@@ -11,8 +11,8 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S1-005: Configure Prisma and PostgreSQL/PostGIS foundation.
 - [x] S1-006: Create initial v0.1 Prisma models.
 - [x] S1-007: Implement email/password auth.
-- [ ] S1-008: Implement Google login.
-- [ ] S1-009: Add protected route behavior for no-kingdom users.
+- [x] S1-008: Implement Google login.
+- [x] S1-009: Add protected route behavior for no-kingdom users.
 - [ ] S1-010: Create MapLibre kingdom creation page.
 - [ ] S1-011: Add click marker and coordinate selection.
 - [ ] S1-012: Create temporary validate-location API.
@@ -21,6 +21,10 @@ Canonical Markdown backlog for active v0.1 work.
 - [ ] S1-015: Seed starter districts, resources, buildings, and units.
 - [ ] S1-016: Create basic kingdom dashboard.
 - [ ] S1-017: Create basic admin views.
+
+## Sprint 1 Maintenance
+
+- [x] 2026-06-08: Archive duplicate legacy docs/tasks and lock canonical documentation sources.
 
 ## Sprint 2 - Tick Engine + Economy
 

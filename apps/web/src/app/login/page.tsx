@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirectAuthenticatedUserFromAuthPage } from "@/lib/auth/guards";
 
 type LoginPageProps = {
   searchParams?: Promise<{
@@ -8,9 +9,12 @@ type LoginPageProps = {
 
 const errorMessages: Record<string, string> = {
   "invalid-login": "Email or password is incorrect.",
+  "google-login-failed": "Google login failed. Try again or use email and password.",
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
+  await redirectAuthenticatedUserFromAuthPage();
+
   const params = await searchParams;
   const error = params?.error ? errorMessages[params.error] : null;
 
@@ -32,6 +36,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             {error}
           </div>
         ) : null}
+
+        <Link
+          className="flex w-full items-center justify-center rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-50"
+          href="/api/auth/google"
+        >
+          Continue with Google
+        </Link>
 
         <form action="/api/auth/login" method="post" className="space-y-4">
           <label className="block space-y-2">

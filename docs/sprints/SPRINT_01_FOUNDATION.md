@@ -7,7 +7,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 ## Scope
 
 - Repository foundation and persistent memory files.
-- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, initial Prisma models, and email/password auth are complete; Google login remains next.
+- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, initial Prisma models, email/password auth, Google login, and protected route behavior are complete; the MapLibre create-kingdom page remains next.
 - Email/password auth and Google login.
 - Database foundation.
 - Basic MapLibre map screen.
@@ -26,13 +26,24 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 - Email/password register, login, and logout are implemented with first-party Next.js route handlers.
 - Passwords are hashed with `crypto.scrypt`.
 - Sessions use signed `mamalik_session` cookies.
-- Google login remains Sprint 1 Task 8.
-- Protected dashboard/create-kingdom route behavior remains Sprint 1 Task 9.
+- Google login is implemented with first-party route handlers and reuses the signed `mamalik_session` cookie.
+- Google OAuth state is stored in a short-lived HttpOnly cookie and verified on callback.
+- Google login links existing email users when `googleSubject` is empty, signs in by `googleSubject`, or creates a new `GOOGLE` user.
+- Live Google OAuth smoke testing still requires real Google OAuth credentials and a reachable database.
+- Protected dashboard/create-kingdom route behavior is implemented with server-side guards.
+- `/admin` is restricted to admin users by `User.role === "ADMIN"` first, with optional `ADMIN_EMAILS` allowlist support.
+- `/dashboard`, `/create-kingdom`, and `/admin` are Sprint 1 placeholders until their owning tasks add full content.
 
 ## Brand Asset Status
 
 - A v0.1 logo mark exists at `apps/web/public/brand/mamalik-logo.png`.
 - The mark is text-free; `Mamalik / ممالك` is rendered as real UI text.
+
+## Documentation Status
+
+- Canonical active documentation sources are listed in `AGENTS.md`.
+- Duplicate historical v0.1 docs and task artifacts were moved into `docs/archive/` and `tasks/archive/`.
+- Archived files are read-only references and must not drive active v0.1 implementation.
 
 ## Required Starter State
 
@@ -82,8 +93,8 @@ Real valid land, water rejection, restricted zones, OSM parcel style, and dynami
 
 - [x] Required memory and documentation files exist.
 - [ ] A user can register/login.
-- [ ] Google login works.
-- [ ] A user without a kingdom is sent to create one.
+- [ ] Google login works. Automated auth tests pass; live OAuth smoke test still requires credentials.
+- [x] A user without a kingdom is sent to create one.
 - [ ] A user can click a map location.
 - [ ] The system validates the clicked location with the temporary validation flow.
 - [ ] The user can create a kingdom.

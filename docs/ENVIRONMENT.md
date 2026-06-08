@@ -15,10 +15,10 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 | `NEXT_PUBLIC_APP_URL` | Public web | Base app URL for callbacks, links, and local smoke tests. |
 | `DATABASE_URL` | Server/database | PostgreSQL/PostGIS connection string for Prisma and database tasks. |
 | `SESSION_SECRET` | Server/auth | Secret used for signed email/password auth session cookies. Must be at least 32 characters. |
-| `GOOGLE_CLIENT_ID` | Server/auth | Google OAuth client id for the Google login task. |
-| `GOOGLE_CLIENT_SECRET` | Server/auth | Google OAuth client secret for the Google login task. |
+| `GOOGLE_CLIENT_ID` | Server/auth | Google OAuth client id for Google login. |
+| `GOOGLE_CLIENT_SECRET` | Server/auth | Google OAuth client secret for Google login. |
 | `NEXT_PUBLIC_MAP_STYLE_URL` | Public map | MapLibre style URL used by future map screens. |
-| `ADMIN_EMAILS` | Server/admin | Comma-separated email allowlist for v0.1 admin access. |
+| `ADMIN_EMAILS` | Server/admin | Optional comma-separated email allowlist for v0.1 `/admin` access. `User.role === "ADMIN"` is checked first. |
 | `TICK_WORKER_SECRET` | Server/worker | Shared secret for protected tick worker or admin-triggered tick calls. |
 
 ## Secret Handling
@@ -32,9 +32,22 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 
 - `DATABASE_URL` is active for Prisma validation and generation in `packages/db`.
 - `SESSION_SECRET` is active for email/password auth.
-- Google OAuth variables become active during the Google login task.
+- Google OAuth variables are active for `GET /api/auth/google` and `GET /api/auth/google/callback`.
 - `NEXT_PUBLIC_MAP_STYLE_URL` becomes active during the MapLibre task.
 - `TICK_WORKER_SECRET` is reserved for the tick worker/admin test tick flow.
+
+## Google OAuth Setup
+
+- Configure Google OAuth with the redirect URI `${NEXT_PUBLIC_APP_URL}/api/auth/google/callback`.
+- For local development with the example app URL, use `http://localhost:3000/api/auth/google/callback`.
+- `NEXT_PUBLIC_APP_URL` must be an absolute app origin with no path.
+- Do not commit real Google OAuth client ids or secrets.
+
+## Admin Access
+
+- `/admin` is restricted to authenticated users with `User.role === "ADMIN"` or an email listed in `ADMIN_EMAILS`.
+- `ADMIN_EMAILS` is server-only and must not be exposed to the browser.
+- Keep `ADMIN_EMAILS` empty unless an operator account needs temporary v0.1 access before role management exists.
 
 ## Database Package
 

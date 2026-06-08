@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 1 - Foundation + Kingdom Creation
-- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, and email/password auth are complete; Google login is next
+- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, email/password auth, Google login, and protected route behavior are complete; the MapLibre create-kingdom page is next
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -185,8 +185,14 @@ v0.1 must include:
 - The initial `User` model stores email/password and Google auth fields directly; a separate auth account-linking model is deferred unless v0.1 needs it.
 - The initial `AreaType` enum starts with `STANDARD` only; additional area categories can be added when v0.1 land pricing requires them, while area-type bonuses remain post-v0.1.
 - Email/password auth uses first-party Next.js route handlers, Node `crypto.scrypt` password hashes, and signed `mamalik_session` cookies.
+- Google login uses first-party Next.js route handlers, a short-lived HttpOnly OAuth state cookie, Google OAuth token/userinfo endpoints, and the same signed `mamalik_session` cookie as email/password auth.
+- Google login links an existing email account when the Google email matches and `googleSubject` is empty; otherwise it signs in by `googleSubject` or creates a new `GOOGLE` user.
+- Protected app routes use server-side page guards backed by `getCurrentUser`; `/dashboard`, `/create-kingdom`, and `/admin` do not use client-only protection.
+- Admin access checks `User.role === "ADMIN"` first and also supports the server-side `ADMIN_EMAILS` allowlist.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.
+- Canonical v0.1 documentation sources are listed in `AGENTS.md`; duplicate historical docs and task artifacts live under `docs/archive/` and `tasks/archive/` as read-only references.
+- Active Sprint 1-6 task tracking uses `tasks/backlog.md` and `tasks/sprint_01.md` through `tasks/sprint_06.md`; JSON/CSV exports are reference artifacts only.
 
 ## Glossary
 

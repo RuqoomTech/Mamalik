@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirectAuthenticatedUserFromAuthPage } from "@/lib/auth/guards";
 
 type RegisterPageProps = {
   searchParams?: Promise<{
@@ -9,9 +10,12 @@ type RegisterPageProps = {
 const errorMessages: Record<string, string> = {
   "email-taken": "An account with that email already exists.",
   "invalid-registration": "Check the registration details and try again.",
+  "google-login-failed": "Google login failed. Try again or register with email.",
 };
 
 export default async function RegisterPage({ searchParams }: RegisterPageProps) {
+  await redirectAuthenticatedUserFromAuthPage();
+
   const params = await searchParams;
   const error = params?.error ? errorMessages[params.error] : null;
 
@@ -33,6 +37,13 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
             {error}
           </div>
         ) : null}
+
+        <Link
+          className="flex w-full items-center justify-center rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-50"
+          href="/api/auth/google"
+        >
+          Continue with Google
+        </Link>
 
         <form action="/api/auth/register" method="post" className="space-y-4">
           <label className="block space-y-2">
