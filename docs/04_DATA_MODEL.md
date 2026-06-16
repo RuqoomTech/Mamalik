@@ -177,6 +177,20 @@ Notes:
 - Sprint 1 only needs the storage foundation.
 - Report center behavior is deferred until Sprint 6.
 
+## Dashboard Read Model
+
+Sprint 1 Task 16 adds a server-side dashboard read model in `apps/web/src/lib/kingdom/dashboard-data.ts`.
+
+The dashboard reads:
+
+- `Kingdom`
+- `ResourceStockpile`
+- `District`
+- `BuildingInstance` with `District`
+- `UnitStack`
+
+The read model derives display-only values such as free land, district free land, enum labels, and beginner-protection remaining time. It does not mutate game state.
+
 ## Deferred Queue Models
 
 These remain planned but are not part of Sprint 1 Task 6:

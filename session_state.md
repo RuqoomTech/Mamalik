@@ -2,35 +2,30 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-17 01:09:56 +03:00
+- Current date/time: 2026-06-17 01:31:03 +03:00
 - Current sprint: Sprint 1 - Foundation + Kingdom Creation
 - Current sprint file: `docs/sprints/SPRINT_01_FOUNDATION.md`
-- Current task: S1-016 - Create `/dashboard` kingdom overview
+- Current task: S1-017 - Create `/admin` basic read-only views
 
 ## Last Completed Task
 
-- Sprint 1 Task S1-014 - Create `POST /api/kingdom/create` transaction.
-- Sprint 1 Task S1-015 - Seed starter districts, resources, buildings, units, cooldown records, and beginner protection.
-- Added `POST /api/kingdom/create`.
-- Reused the existing signed `mamalik_session` auth flow through `getCurrentUser`.
-- Re-ran temporary coordinate and proximity validation server-side before creation.
-- Added server-side kingdom name validation, including control-character rejection.
-- Generated unique kingdom slugs from the submitted name.
-- Created the kingdom and full starter state in one database transaction.
-- Seeded five starting districts, resource stockpile, starter buildings, starter unit stacks, land purchase cooldown records, and 3-day beginner protection timestamp.
-- Wired the `/create-kingdom` confirmation panel to call the creation endpoint, show loading/errors, and redirect to `/dashboard` after success.
-- Did not implement dashboard content, tick logic, land buying behavior, real map/water/restricted-zone validation, combat, scouting, alliances, or rankings.
+- Sprint 1 Task S1-016 - Create `/dashboard` kingdom overview.
+- Replaced the Sprint 1 dashboard placeholder with a read-only kingdom overview.
+- Kept `/dashboard` protected by the existing server-side `requireUserWithKingdom` guard.
+- Loaded dashboard data server-side from the database.
+- Displayed kingdom name, slug, selected coordinates, beginner protection end/remaining time, land totals, resources, population, districts, buildings, and army.
+- Added the required Sprint 1 status note for later economy ticks, construction, training, land buying, scouting, combat, and alliances.
+- Added dashboard data helpers for free-land calculations, protection remaining time, enum labels, sorting, and database shaping.
+- Added focused dashboard helper tests.
+- Did not implement tick logic, building actions/upgrades, land buying, combat, scouting, alliances, reports center, rankings, or admin views.
 
 ## Files Changed Recently
 
-Changed for S1-014/S1-015:
+Changed for S1-016:
 
-- `apps/web/src/app/api/kingdom/create/route.ts`
-- `apps/web/src/components/create-kingdom/KingdomConfirmationPanel.tsx`
-- `apps/web/src/lib/kingdom/creation.ts`
-- `apps/web/src/lib/kingdom/kingdom-name.ts`
-- `apps/web/src/lib/kingdom/kingdom-name.test.ts`
-- `packages/game/src/constants.ts`
+- `apps/web/src/app/dashboard/page.tsx`
+- `apps/web/src/lib/kingdom/dashboard-data.ts`
+- `apps/web/src/lib/kingdom/dashboard-data.test.ts`
 - `docs/04_DATA_MODEL.md`
 - `docs/AUTHENTICATION.md`
 - `docs/TESTING_STRATEGY.md`
@@ -55,27 +50,16 @@ Changed for S1-014/S1-015:
 - `Get-Content docs/sprints/SPRINT_01_FOUNDATION.md`
 - `Get-Content tasks/sprint_01.md`
 - `Get-Content tasks/backlog.md`
-- `Get-Content packages/db/prisma/schema.prisma`
-- `rg --files packages/db apps/web/src/lib apps/web/src/app/api packages/game`
-- `Get-Content apps/web/src/app/api/kingdom/validate-location/route.ts`
-- `Get-Content apps/web/src/lib/auth/current-user.ts`
-- `Get-Content apps/web/src/lib/auth/session.ts`
-- `Get-Content packages/game/src/constants.ts`
-- `Get-Content apps/web/tsconfig.json`
-- `Get-Content apps/web/src/lib/db/client.ts`
-- `Get-Content packages/db/src/client.ts`
-- `Get-Content apps/web/src/components/create-kingdom/KingdomConfirmationPanel.tsx`
-- `Get-Content apps/web/src/lib/kingdom/kingdom-name.ts`
+- `Get-Content apps/web/src/app/dashboard/page.tsx`
+- `Get-Content apps/web/src/lib/auth/guards.ts`
+- `Get-Content apps/web/src/lib/auth/route-destinations.ts`
+- `Get-Content packages/db/generated/prisma/models/Kingdom.ts`
+- `Get-Content packages/db/generated/prisma/models/BuildingInstance.ts`
+- `Get-Content packages/db/generated/prisma/models/District.ts`
 - `Get-Content apps/web/src/lib/kingdom/kingdom-name.test.ts`
-- `Get-Content apps/web/src/lib/kingdom/location-validation.ts`
-- `Get-Content packages/db/generated/prisma/enums.ts`
-- `Get-Content packages/db/generated/prisma/client.ts`
-- `Get-Content apps/web/package.json`
-- `Get-Content package.json`
-- `Select-String -Path packages/db/generated/prisma/internal/prismaNamespace.ts -Pattern "InputJsonValue" -Context 0,3`
-- `Get-Content docs/TESTING_STRATEGY.md`
 - `Get-Content CHANGELOG.md`
 - `Get-Content docs/DECISIONS_LOG.md`
+- `Get-Content docs/TESTING_STRATEGY.md`
 - `git status --short`
 - `Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`
 - `npm run test`
@@ -88,26 +72,26 @@ Changed for S1-014/S1-015:
 
 ## Test Status
 
-- Auth and kingdom helper unit tests: passed with `npm run test`; 35 tests passed.
+- Auth and kingdom helper unit tests: passed with `npm run test`; 38 tests passed.
 - App typecheck: passed with `npm run typecheck`.
 - App lint: passed with `npm run lint`.
 - App production build: passed with `npm run build`.
 - Prisma schema validation: passed with temporary local `DATABASE_URL` and `npm run db:validate`.
 - DB package TypeScript check: passed with `npm run db:typecheck`.
 - Whitespace/conflict-marker check: passed with `git diff --check`.
-- Build route table includes `/api/kingdom/create`.
+- Build route table includes `/dashboard`.
 - Build warning: Node emitted `[DEP0205] DeprecationWarning: module.register()`; build still completed successfully.
 - `git diff --check` emitted Windows line-ending warnings but returned exit code 0 with no whitespace errors.
 
 ## Manual Smoke Status
 
-- Full browser smoke testing for kingdom creation was not completed because a signed-in no-kingdom account requires a reachable PostgreSQL/PostGIS database in this environment.
-- Live API verification for second-creation rejection was not completed for the same database/session limitation.
-- Database record verification for Kingdom, districts, resource stockpile, buildings, units, cooldowns, and protection timestamp was not completed because no reachable local PostgreSQL/PostGIS database is available in this environment.
+- Full browser smoke testing for `/dashboard` was not completed because a signed-in account with an existing kingdom requires a reachable PostgreSQL/PostGIS database in this environment.
+- Live redirect smoke tests for unauthenticated users and signed-in users without kingdoms were not completed for the same database/session limitation.
+- Database-value comparison for dashboard rows was not completed because no reachable local PostgreSQL/PostGIS database is available in this environment.
 
 ## Known Issues
 
-- `/dashboard` remains a Sprint 1 placeholder and does not yet show the created kingdom overview.
+- `/admin` remains a Sprint 1 placeholder and does not yet show read-only users/kingdoms.
 - `POST /api/kingdom/validate-location` and `POST /api/kingdom/create` still use temporary Sprint 1 location validation.
 - Real water validation, restricted-zone validation, dynamic buffer/PostGIS validation, and final visible border generation remain Sprint 4 work.
 - Starter building footprints are simple 1,000 m2 constants per starter building and may need later balancing.
@@ -125,4 +109,4 @@ Changed for S1-014/S1-015:
 
 ## Next Recommended Task
 
-Sprint 1 Task S1-016: create `/dashboard` kingdom overview.
+Sprint 1 Task S1-017: create `/admin` basic read-only views.

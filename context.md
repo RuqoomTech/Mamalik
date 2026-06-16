@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 1 - Foundation + Kingdom Creation
-- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, editable kingdom name confirmation, kingdom creation API, and starter state seeding are complete; basic kingdom dashboard is next
+- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, editable kingdom name confirmation, kingdom creation API, starter state seeding, and basic kingdom dashboard are complete; basic admin views are next
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -196,6 +196,8 @@ v0.1 must include:
 - `POST /api/kingdom/create` creates the user's first kingdom in a database transaction and re-runs temporary server-side location validation; it does not trust client-submitted starter state.
 - Sprint 1 starter building footprints are simple 1,000 m2 constants per starter building until later balancing changes them deliberately.
 - Initial land purchase cooldown records are created with `availableAt = now`; package cooldown durations apply after future purchases.
+- `/dashboard` is a read-only server-rendered kingdom overview that uses the existing server-side route guard and loads kingdom state from the database.
+- Dashboard calculations such as free land and beginner-protection remaining time live in `apps/web/src/lib/kingdom/dashboard-data.ts`, not in client-side UI.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.
 - Canonical v0.1 documentation sources are listed in `AGENTS.md`; duplicate historical docs and task artifacts live under `docs/archive/` and `tasks/archive/` as read-only references.

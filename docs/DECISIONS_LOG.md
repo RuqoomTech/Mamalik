@@ -81,3 +81,9 @@
 - Decision: Starter building footprints are simple 1,000 m2 constants per starter building until a later balancing task intentionally changes them.
 - Decision: Initial land purchase cooldown rows use `availableAt = now`; cooldown durations apply after purchases are implemented in Sprint 3.
 - Decision: Real water validation, restricted-zone validation, PostGIS dynamic buffers, and final visible border generation remain Sprint 4 work.
+
+## 2026-06-17 - Sprint 1 Kingdom Dashboard
+
+- Decision: Sprint 1 Task 16 keeps `/dashboard` as a server component protected by the existing `requireUserWithKingdom` guard.
+- Decision: The dashboard is read-only and loads kingdom state directly from the database; it does not implement tick logic, building actions, land buying, combat, scouting, alliances, reports center, or rankings.
+- Decision: Dashboard-derived display values such as free land, district free land, enum labels, and beginner-protection remaining time live in `apps/web/src/lib/kingdom/dashboard-data.ts`.

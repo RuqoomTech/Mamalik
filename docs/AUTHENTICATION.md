@@ -78,7 +78,8 @@ Mamalik v0.1 uses first-party Next.js route handlers for email/password auth and
 
 ## Current Limits
 
-- `/dashboard` and `/admin` are Sprint 1 placeholders until their owning tasks add full functionality.
+- `/dashboard` is a protected read-only kingdom overview.
+- `/admin` is a Sprint 1 placeholder until its owning task adds basic read-only views.
 - `/create-kingdom` has the protected MapLibre location-selection page, temporary server validation, editable confirmation UI, and kingdom creation API.
 - Live kingdom creation smoke tests require a reachable PostgreSQL/PostGIS database.
 - There is no session table yet. Signed cookies are the v0.1 Sprint 1 implementation.

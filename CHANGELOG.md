@@ -16,6 +16,8 @@ All notable Mamalik project changes are recorded here.
 - Added `POST /api/kingdom/create` with authenticated, server-side kingdom creation.
 - Added a database transaction that creates the kingdom, five districts, resource stockpile, starter buildings, starter units, land package cooldown rows, and beginner protection timestamp.
 - Added kingdom creation helpers and tests for slug generation, protection duration, starter district totals, starter units, and land package constants.
+- Added a read-only `/dashboard` kingdom overview loaded server-side from the database.
+- Added dashboard data helpers and tests for free land, district free land, beginner-protection remaining time, and dashboard data shaping.
 
 ### Changed
 
@@ -27,6 +29,7 @@ All notable Mamalik project changes are recorded here.
 - Marked Sprint 1 Task S1-012 complete in the active task files.
 - Marked Sprint 1 Task S1-013 complete in the active task files.
 - Marked Sprint 1 Tasks S1-014 and S1-015 complete in the active task files.
+- Marked Sprint 1 Task S1-016 complete in the active task files.
 - Documented the temporary validation behavior and Sprint 4 replacement path.
 
 ### Fixed
@@ -38,13 +41,14 @@ All notable Mamalik project changes are recorded here.
 ### Deferred
 
 - Real water validation, restricted-zone validation, dynamic buffer/PostGIS validation, and real visible border generation remain deferred to their assigned Sprint 4 tasks.
-- Basic kingdom dashboard remains Sprint 1 Task S1-016.
+- Admin read-only views remain Sprint 1 Task S1-017.
 
 ### Known issues
 
 - Live validate-location route smoke testing requires a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
 - Live confirmation-flow smoke testing also requires a signed-in no-kingdom account and reachable database.
 - Live kingdom creation route and database record smoke testing require a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
+- Live dashboard smoke testing requires a reachable PostgreSQL/PostGIS database and signed-in account that owns a kingdom.
 
 ## 2026-06-16
 
