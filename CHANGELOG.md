@@ -10,12 +10,17 @@ All notable Mamalik project changes are recorded here.
 - Added reusable temporary location validation helpers for coordinate validation, distance checks, suggestions, and preview polygon generation.
 - Added shared game constants for starting usable land, temporary visible area, and temporary minimum kingdom distance.
 - Added unit tests for temporary kingdom location validation helpers.
+- Added an editable `/create-kingdom` confirmation panel after successful location validation.
+- Added shared starter-state constants for resources, population, districts, buildings, units, and beginner protection.
+- Added kingdom name validation helpers and focused tests.
 
 ### Changed
 
 - Wired the `/create-kingdom` validate button to call the temporary validation endpoint and show loading, success, invalid reason, and suggestions.
+- Updated `/create-kingdom` to show selected coordinates, validation status, land values, preview polygon summary, locked starter state, editable kingdom name, and a placeholder Create kingdom action after validation succeeds.
 - Confirmed S1-011 was already completed by the S1-010 map slice and left it marked complete in the active task trackers.
 - Marked Sprint 1 Task S1-012 complete in the active task files.
+- Marked Sprint 1 Task S1-013 complete in the active task files.
 - Documented the temporary validation behavior and Sprint 4 replacement path.
 
 ### Fixed
@@ -25,10 +30,12 @@ All notable Mamalik project changes are recorded here.
 ### Deferred
 
 - Real water validation, restricted-zone validation, dynamic buffer/PostGIS validation, real visible border generation, and kingdom creation remain deferred to their assigned tasks.
+- The actual kingdom creation API, transaction, and database starter-state seeding remain deferred to S1-014 and S1-015.
 
 ### Known issues
 
 - Live validate-location route smoke testing requires a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
+- Live confirmation-flow smoke testing also requires a signed-in no-kingdom account and reachable database.
 
 ## 2026-06-16
 

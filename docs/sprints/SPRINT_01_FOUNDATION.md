@@ -7,7 +7,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 ## Scope
 
 - Repository foundation and persistent memory files.
-- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, and temporary location validation are complete; editable kingdom name confirmation remains next.
+- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, and editable kingdom name confirmation are complete; the kingdom creation API remains next.
 - Email/password auth and Google login.
 - Database foundation.
 - Basic MapLibre map screen.
@@ -47,6 +47,8 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 - The first map slice supports pan, zoom, map click selection, a marker, selected coordinates, a search placeholder, and a validate-location request.
 - S1-011 was already completed by the S1-010 map slice.
 - `POST /api/kingdom/validate-location` performs temporary Sprint 1 validation with coordinate bounds, one-kingdom-per-user rejection, simple proximity rejection, nearby suggestions, and a temporary preview polygon.
+- After successful validation, `/create-kingdom` shows an editable confirmation panel with selected coordinates, validation status, usable land, visible area, preview polygon summary, starter resources, starting districts, starter buildings, starter army, and beginner protection.
+- The confirmation panel validates kingdom names on the client and keeps the Create kingdom action as a placeholder until S1-014.
 - Real land validation, final visible border generation, and kingdom creation API remain deferred to their assigned Sprint 1 and Sprint 4 tasks.
 
 ## Documentation Status
@@ -107,6 +109,7 @@ Real valid land, water rejection, restricted zones, OSM parcel style, and dynami
 - [x] A user without a kingdom is sent to create one.
 - [x] A user can click a map location.
 - [x] The system validates the clicked location with the temporary validation flow.
+- [x] A user can review a validated location and edit a proposed kingdom name before creation.
 - [ ] The user can create a kingdom.
 - [ ] The kingdom starts with correct land, districts, resources, population, buildings, and units.
 - [ ] The user can see the kingdom dashboard.

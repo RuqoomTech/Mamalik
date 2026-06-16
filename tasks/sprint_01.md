@@ -18,7 +18,7 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [x] S1-010: Create `/create-kingdom` MapLibre page.
 - [x] S1-011: Add search placeholder, pan/zoom, click marker, and selected coordinates.
 - [x] S1-012: Create `POST /api/kingdom/validate-location` with temporary validation.
-- [ ] S1-013: Create editable kingdom name confirmation UI.
+- [x] S1-013: Create editable kingdom name confirmation UI.
 - [ ] S1-014: Create `POST /api/kingdom/create` transaction.
 - [ ] S1-015: Seed starter districts, resources, buildings, units, cooldown records, and beginner protection.
 - [ ] S1-016: Create `/dashboard` kingdom overview.
@@ -51,3 +51,4 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - S1-010 includes the first MapLibre page plus the S1-011 interaction requirements because the task instructions required pan/zoom, click marker, selected coordinates, and search placeholder in the same vertical slice.
 - S1-010 does not implement server validation, visible border preview, or kingdom creation API.
 - S1-012 adds only temporary validation. Real water checks, restricted-zone checks, dynamic buffer/PostGIS validation, and final border generation remain deferred to Sprint 4.
+- S1-013 adds the editable post-validation confirmation UI and shared starter-state constants. It does not create a kingdom or write starter state to the database.

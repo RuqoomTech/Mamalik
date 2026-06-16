@@ -291,4 +291,5 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Prisma tooling lives in `packages/db`.
 - The generated Prisma client output path is `packages/db/generated/prisma` and is ignored.
 - PostGIS geometry fields may require raw SQL migration support.
-- Domain constants should live in `packages/game` once the project is initialized.
+- Shared starter-state constants now live in `packages/game/src/constants.ts`, including starting usable land, population, resources, district allocations, starter buildings, starter units, beginner protection, and temporary validation constants.
+- Future kingdom creation server logic should reuse the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

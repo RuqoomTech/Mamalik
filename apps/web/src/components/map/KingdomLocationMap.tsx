@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import maplibregl, { type LngLatLike, type Map, type Marker } from "maplibre-gl";
+import { KingdomConfirmationPanel } from "@/components/create-kingdom/KingdomConfirmationPanel";
 import type {
   LocationSuggestion,
   LocationValidationResponse,
@@ -162,6 +163,11 @@ export function KingdomLocationMap({
     mapRef.current?.panTo([suggestion.lng, suggestion.lat]);
   }
 
+  function handleChangeLocation() {
+    setValidationResult(null);
+    setValidationError(null);
+  }
+
   return (
     <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
       <div className="min-h-[520px] overflow-hidden rounded-md border border-neutral-200 bg-neutral-100">
@@ -267,6 +273,15 @@ export function KingdomLocationMap({
             </div>
           ) : null}
         </section>
+
+        {selectedLocation && validationResult?.valid ? (
+          <KingdomConfirmationPanel
+            onChangeLocation={handleChangeLocation}
+            playerDisplayName={playerDisplayName}
+            selectedLocation={selectedLocation}
+            validationResult={validationResult}
+          />
+        ) : null}
 
         <section className="rounded-md border border-neutral-200 bg-white p-5">
           <h2 className="text-lg font-medium text-neutral-950">Starting Rules</h2>

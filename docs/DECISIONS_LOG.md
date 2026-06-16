@@ -65,3 +65,10 @@
 - Decision: The temporary proximity check uses a simple TypeScript distance helper with a 250 meter minimum distance against existing `Kingdom.centerLat` and `Kingdom.centerLng`.
 - Decision: The temporary preview polygon approximates 50,000 m2 visually while preserving gameplay land credit as exactly 50,000 m2.
 - Decision: Sprint 4 replaces temporary proximity and preview behavior with dynamic buffer/PostGIS validation and real visible-border handling.
+
+## 2026-06-17 - Sprint 1 Kingdom Confirmation UI
+
+- Decision: Sprint 1 Task 13 adds only the post-validation confirmation UI; it does not create a kingdom or write starter state to the database.
+- Decision: Locked starter-state values are centralized in `packages/game/src/constants.ts` for reuse by the confirmation UI and the future creation API.
+- Decision: Kingdom name validation is client-side in S1-013 for immediate feedback, while the S1-014 server creation endpoint must validate the submitted name again.
+- Decision: The Create kingdom button remains a placeholder until `POST /api/kingdom/create` is implemented in S1-014.
