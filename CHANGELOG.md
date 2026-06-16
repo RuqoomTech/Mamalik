@@ -13,29 +13,38 @@ All notable Mamalik project changes are recorded here.
 - Added an editable `/create-kingdom` confirmation panel after successful location validation.
 - Added shared starter-state constants for resources, population, districts, buildings, units, and beginner protection.
 - Added kingdom name validation helpers and focused tests.
+- Added `POST /api/kingdom/create` with authenticated, server-side kingdom creation.
+- Added a database transaction that creates the kingdom, five districts, resource stockpile, starter buildings, starter units, land package cooldown rows, and beginner protection timestamp.
+- Added kingdom creation helpers and tests for slug generation, protection duration, starter district totals, starter units, and land package constants.
 
 ### Changed
 
 - Wired the `/create-kingdom` validate button to call the temporary validation endpoint and show loading, success, invalid reason, and suggestions.
 - Updated `/create-kingdom` to show selected coordinates, validation status, land values, preview polygon summary, locked starter state, editable kingdom name, and a placeholder Create kingdom action after validation succeeds.
+- Wired the `/create-kingdom` confirmation panel to call `POST /api/kingdom/create`, show loading/errors, and redirect to `/dashboard` on success.
+- Expanded starter constants so the UI and creation route share server-usable enum values, labels, building footprints, and land purchase package data.
 - Confirmed S1-011 was already completed by the S1-010 map slice and left it marked complete in the active task trackers.
 - Marked Sprint 1 Task S1-012 complete in the active task files.
 - Marked Sprint 1 Task S1-013 complete in the active task files.
+- Marked Sprint 1 Tasks S1-014 and S1-015 complete in the active task files.
 - Documented the temporary validation behavior and Sprint 4 replacement path.
 
 ### Fixed
 
 - Replaced the local validate-location placeholder message with an actual temporary API call.
+- Replaced the confirmation panel's placeholder Create kingdom action with the real Sprint 1 creation request.
+- Fixed kingdom name validation so control characters are rejected before whitespace normalization.
 
 ### Deferred
 
-- Real water validation, restricted-zone validation, dynamic buffer/PostGIS validation, real visible border generation, and kingdom creation remain deferred to their assigned tasks.
-- The actual kingdom creation API, transaction, and database starter-state seeding remain deferred to S1-014 and S1-015.
+- Real water validation, restricted-zone validation, dynamic buffer/PostGIS validation, and real visible border generation remain deferred to their assigned Sprint 4 tasks.
+- Basic kingdom dashboard remains Sprint 1 Task S1-016.
 
 ### Known issues
 
 - Live validate-location route smoke testing requires a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
 - Live confirmation-flow smoke testing also requires a signed-in no-kingdom account and reachable database.
+- Live kingdom creation route and database record smoke testing require a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
 
 ## 2026-06-16
 

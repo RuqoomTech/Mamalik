@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  createBeginnerProtectionEndsAt,
+  createKingdomSlug,
+  createUniqueKingdomSlug,
+  getStarterDistrictLandTotalM2,
+  getStarterUsedLandM2,
+} from "./creation";
+import {
   formatKingdomNameError,
   suggestKingdomName,
   validateKingdomName,
@@ -26,6 +33,10 @@ test("rejects invalid kingdom names", () => {
     ok: false,
     reason: "too-long",
   });
+  assert.deepEqual(validateKingdomName("North\nRealm"), {
+    ok: false,
+    reason: "unsafe-characters",
+  });
 });
 
 test("formats kingdom name validation errors", () => {
@@ -33,6 +44,26 @@ test("formats kingdom name validation errors", () => {
   assert.equal(
     formatKingdomNameError(validateKingdomName("A")),
     "Kingdom name must be at least 2 characters.",
+  );
+  assert.equal(
+    formatKingdomNameError(validateKingdomName("North\tRealm")),
+    "Kingdom name contains unsupported characters.",
+  );
+});
+
+test("generates stable kingdom slugs", () => {
+  assert.equal(createKingdomSlug("Kingdom of Omar"), "kingdom-of-omar");
+  assert.equal(createKingdomSlug("!!!"), "kingdom");
+  assert.equal(
+    createUniqueKingdomSlug("Kingdom of Omar", ["kingdom-of-omar", "kingdom-of-omar-2"]),
+    "kingdom-of-omar-3",
+  );
+});
+
+test("calculates beginner protection end time", () => {
+  assert.equal(
+    createBeginnerProtectionEndsAt(new Date("2026-06-17T00:00:00.000Z")).toISOString(),
+    "2026-06-20T00:00:00.000Z",
   );
 });
 
@@ -54,11 +85,25 @@ test("starter-state constants stay aligned with locked v0.1 values", async () =>
     knowledge: 0,
   });
   assert.equal(constants.BEGINNER_PROTECTION_DAYS, 3);
+  assert.equal(getStarterDistrictLandTotalM2(), 50_000);
+  assert.equal(getStarterUsedLandM2(), 7_000);
   assert.deepEqual(
-    constants.STARTER_UNITS.map((unit) => [unit.type, unit.quantity]),
+    constants.LAND_PURCHASE_PACKAGES.map((landPackage) => [
+      landPackage.sizeM2,
+      landPackage.cooldownHours,
+    ]),
     [
-      ["Infantry", 100],
-      ["Archers", 25],
+      [500, 0],
+      [1_000, 6],
+      [5_000, 24],
+      [10_000, 48],
+    ],
+  );
+  assert.deepEqual(
+    constants.STARTER_UNITS.map((unit) => [unit.type, unit.label, unit.quantity]),
+    [
+      ["INFANTRY", "Infantry", 100],
+      ["ARCHERS", "Archers", 25],
     ],
   );
 });

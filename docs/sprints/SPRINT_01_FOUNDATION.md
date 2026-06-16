@@ -7,7 +7,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 ## Scope
 
 - Repository foundation and persistent memory files.
-- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, and editable kingdom name confirmation are complete; the kingdom creation API remains next.
+- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, editable kingdom name confirmation, kingdom creation API, and starter state seeding are complete; basic dashboard remains next.
 - Email/password auth and Google login.
 - Database foundation.
 - Basic MapLibre map screen.
@@ -48,8 +48,9 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 - S1-011 was already completed by the S1-010 map slice.
 - `POST /api/kingdom/validate-location` performs temporary Sprint 1 validation with coordinate bounds, one-kingdom-per-user rejection, simple proximity rejection, nearby suggestions, and a temporary preview polygon.
 - After successful validation, `/create-kingdom` shows an editable confirmation panel with selected coordinates, validation status, usable land, visible area, preview polygon summary, starter resources, starting districts, starter buildings, starter army, and beginner protection.
-- The confirmation panel validates kingdom names on the client and keeps the Create kingdom action as a placeholder until S1-014.
-- Real land validation, final visible border generation, and kingdom creation API remain deferred to their assigned Sprint 1 and Sprint 4 tasks.
+- The confirmation panel validates kingdom names on the client, calls `POST /api/kingdom/create`, shows loading/errors, and redirects to `/dashboard` after success.
+- `POST /api/kingdom/create` re-runs temporary validation server-side and creates the kingdom plus locked starter state in one transaction.
+- Real land validation and final visible border generation remain deferred to their assigned Sprint 4 tasks.
 
 ## Documentation Status
 
@@ -67,6 +68,8 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 - Knowledge: 0.
 - Army: 100 Infantry, 25 Archers.
 - Beginner protection: 3 days.
+- Starter building footprints: 1,000 m2 per starter building as a simple Sprint 1 implementation constant.
+- Initial land purchase package cooldown rows are created for 500, 1,000, 5,000, and 10,000 m2 packages with `availableAt = now`.
 
 ## Required Districts
 
@@ -110,7 +113,7 @@ Real valid land, water rejection, restricted zones, OSM parcel style, and dynami
 - [x] A user can click a map location.
 - [x] The system validates the clicked location with the temporary validation flow.
 - [x] A user can review a validated location and edit a proposed kingdom name before creation.
-- [ ] The user can create a kingdom.
-- [ ] The kingdom starts with correct land, districts, resources, population, buildings, and units.
+- [x] The user can create a kingdom through the Sprint 1 API.
+- [x] The kingdom starts with correct land, districts, resources, population, buildings, units, cooldown rows, and beginner protection.
 - [ ] The user can see the kingdom dashboard.
 - [ ] Admin can view created users and kingdoms.

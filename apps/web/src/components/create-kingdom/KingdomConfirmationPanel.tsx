@@ -14,6 +14,7 @@ import {
   suggestKingdomName,
   validateKingdomName,
 } from "@/lib/kingdom/kingdom-name";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 type SelectedLocation = {
@@ -27,6 +28,24 @@ type KingdomConfirmationPanelProps = {
   playerDisplayName: string;
   onChangeLocation: () => void;
 };
+
+type CreateKingdomResponse =
+  | {
+      ok: true;
+      kingdom: {
+        id: string;
+        name: string;
+        slug: string;
+        usableLandM2: number;
+      };
+      redirectTo: string;
+    }
+  | {
+      error: {
+        code: string;
+        message: string;
+      };
+    };
 
 function formatCoordinate(value: number): string {
   return value.toFixed(6);
@@ -46,18 +65,53 @@ export function KingdomConfirmationPanel({
   playerDisplayName,
   onChangeLocation,
 }: KingdomConfirmationPanelProps) {
+  const router = useRouter();
   const [kingdomName, setKingdomName] = useState(() => suggestKingdomName(playerDisplayName));
   const [createMessage, setCreateMessage] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
   const nameValidation = useMemo(() => validateKingdomName(kingdomName), [kingdomName]);
   const nameError = formatKingdomNameError(nameValidation);
-  const canCreateKingdom = validationResult.valid && nameValidation.ok;
+  const canCreateKingdom = validationResult.valid && nameValidation.ok && !isCreating;
 
-  function handleCreateKingdom() {
-    if (!canCreateKingdom) {
+  async function handleCreateKingdom() {
+    if (!canCreateKingdom || !nameValidation.ok) {
       return;
     }
 
-    setCreateMessage("Kingdom creation API will be connected in the next task.");
+    setIsCreating(true);
+    setCreateMessage(null);
+    setCreateError(null);
+
+    try {
+      const response = await fetch("/api/kingdom/create", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          name: nameValidation.name,
+          lat: selectedLocation.latitude,
+          lng: selectedLocation.longitude,
+        }),
+      });
+      const result = (await response.json()) as CreateKingdomResponse;
+
+      if (response.ok && "ok" in result && result.ok) {
+        setCreateMessage("Kingdom created. Redirecting...");
+        router.push(result.redirectTo);
+        router.refresh();
+        return;
+      }
+
+      setCreateError(
+        "error" in result ? result.error.message : "Kingdom creation failed. Try again.",
+      );
+    } catch {
+      setCreateError("Kingdom creation could not be reached.");
+    } finally {
+      setIsCreating(false);
+    }
   }
 
   return (
@@ -81,6 +135,7 @@ export function KingdomConfirmationPanel({
             onChange={(event) => {
               setKingdomName(event.target.value);
               setCreateMessage(null);
+              setCreateError(null);
             }}
             required
             type="text"
@@ -176,7 +231,7 @@ export function KingdomConfirmationPanel({
           <ul className="mt-2 space-y-1 text-sm text-neutral-600">
             {STARTING_DISTRICTS.map((district) => (
               <li className="flex justify-between gap-3" key={district.type}>
-                <span>{district.type}</span>
+                <span>{district.label}</span>
                 <span className="font-medium text-neutral-950">
                   {formatNumber(district.allocatedLandM2)} m2
                 </span>
@@ -189,7 +244,7 @@ export function KingdomConfirmationPanel({
           <p className="text-sm font-medium text-neutral-950">Starter buildings</p>
           <ul className="mt-2 grid grid-cols-2 gap-1 text-sm text-neutral-600">
             {STARTER_BUILDINGS.map((building) => (
-              <li key={building}>{building}</li>
+              <li key={building.type}>{building.label}</li>
             ))}
           </ul>
         </section>
@@ -199,7 +254,7 @@ export function KingdomConfirmationPanel({
           <ul className="mt-2 space-y-1 text-sm text-neutral-600">
             {STARTER_UNITS.map((unit) => (
               <li className="flex justify-between gap-3" key={unit.type}>
-                <span>{unit.type}</span>
+                <span>{unit.label}</span>
                 <span className="font-medium text-neutral-950">
                   {formatNumber(unit.quantity)}
                 </span>
@@ -215,12 +270,13 @@ export function KingdomConfirmationPanel({
             onClick={handleCreateKingdom}
             type="button"
           >
-            Create kingdom
+            {isCreating ? "Creating..." : "Create kingdom"}
           </button>
           <button
             className="w-full rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-100"
             onClick={() => {
               setCreateMessage(null);
+              setCreateError(null);
               onChangeLocation();
             }}
             type="button"
@@ -230,8 +286,14 @@ export function KingdomConfirmationPanel({
         </div>
 
         {createMessage ? (
-          <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
             {createMessage}
+          </p>
+        ) : null}
+
+        {createError ? (
+          <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {createError}
           </p>
         ) : null}
       </div>

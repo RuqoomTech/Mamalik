@@ -67,6 +67,8 @@ Notes:
 - `visibleBorderGeojson` stores the visible map polygon separately from gameplay land credit.
 - `centerLat` and `centerLng` are indexed for Sprint 1 temporary proximity checks.
 - Sprint 1 Task 12 reads `centerLat` and `centerLng` for a temporary TypeScript distance check. Sprint 4 replaces this with dynamic buffer/PostGIS validation.
+- Sprint 1 Task 14 creates the kingdom inside a transaction and stores the temporary preview polygon as `visibleBorderGeojson`.
+- `usedLandM2` starts as the sum of starter building footprints.
 - `AreaType.STANDARD` is the only initial area type. More area categories may be added when land pricing needs them; area-type bonuses remain post-v0.1.
 
 ### District
@@ -85,6 +87,7 @@ Notes:
 
 - District type is unique per kingdom.
 - Starting district allocations remain locked in `docs/01_LOCKED_DECISIONS.md`.
+- Sprint 1 Task 14 seeds all five districts and sets each district `usedLandM2` from the starter buildings assigned to that district.
 
 ### ResourceStockpile
 
@@ -122,6 +125,7 @@ Defaults:
 Notes:
 
 - Buildings consume land through districts, not manual map placement.
+- Starter building footprints are simple 1,000 m2 constants per starter building in S1-014.
 - Construction and upgrade queue tables are deferred until Sprint 2.
 
 ### UnitStack
@@ -154,6 +158,7 @@ Notes:
 Notes:
 
 - Package size is unique per kingdom.
+- Sprint 1 Task 14 creates initial cooldown records for 500, 1,000, 5,000, and 10,000 m2 packages with `availableAt = now`.
 - Purchase history and price records are deferred until Sprint 3.
 
 ### Report
@@ -291,5 +296,5 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Prisma tooling lives in `packages/db`.
 - The generated Prisma client output path is `packages/db/generated/prisma` and is ignored.
 - PostGIS geometry fields may require raw SQL migration support.
-- Shared starter-state constants now live in `packages/game/src/constants.ts`, including starting usable land, population, resources, district allocations, starter buildings, starter units, beginner protection, and temporary validation constants.
-- Future kingdom creation server logic should reuse the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.
+- Shared starter-state constants now live in `packages/game/src/constants.ts`, including starting usable land, population, resources, district allocations, starter buildings and land footprints, starter units, land purchase packages, beginner protection, and temporary validation constants.
+- Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

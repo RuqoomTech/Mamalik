@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 1 - Foundation + Kingdom Creation
-- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, and editable kingdom name confirmation are complete; kingdom creation API is next
+- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, editable kingdom name confirmation, kingdom creation API, and starter state seeding are complete; basic kingdom dashboard is next
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -192,8 +192,10 @@ v0.1 must include:
 - The `/create-kingdom` map-selection UI uses MapLibre GL JS in a Client Component and requires `NEXT_PUBLIC_MAP_STYLE_URL`; missing map style configuration shows an explicit page error instead of silently changing providers.
 - `POST /api/kingdom/validate-location` is a temporary Sprint 1 validation stub that checks authentication, one-kingdom-per-user, coordinate bounds, and simple distance from existing kingdoms before returning a temporary preview polygon.
 - Sprint 1 temporary proximity uses a simple TypeScript distance helper and `Kingdom.centerLat` / `Kingdom.centerLng`; Sprint 4 replaces this with dynamic buffer/PostGIS validation.
-- Starter kingdom constants for land, resources, population, districts, buildings, units, and beginner protection live in `packages/game/src/constants.ts` so UI and future server creation logic use the same locked values.
-- The `/create-kingdom` confirmation UI is client-side only in S1-013: it validates the editable kingdom name and shows the locked starter state, but the create button remains a placeholder until the S1-014 creation API.
+- Starter kingdom constants for land, resources, population, districts, starter building footprints, starter units, land purchase packages, and beginner protection live in `packages/game/src/constants.ts` so UI and server creation logic use the same locked values.
+- `POST /api/kingdom/create` creates the user's first kingdom in a database transaction and re-runs temporary server-side location validation; it does not trust client-submitted starter state.
+- Sprint 1 starter building footprints are simple 1,000 m2 constants per starter building until later balancing changes them deliberately.
+- Initial land purchase cooldown records are created with `availableAt = now`; package cooldown durations apply after future purchases.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.
 - Canonical v0.1 documentation sources are listed in `AGENTS.md`; duplicate historical docs and task artifacts live under `docs/archive/` and `tasks/archive/` as read-only references.

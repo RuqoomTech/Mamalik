@@ -17,8 +17,8 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S1-011: Add click marker and coordinate selection.
 - [x] S1-012: Create temporary validate-location API.
 - [x] S1-013: Create editable kingdom name confirmation UI.
-- [ ] S1-014: Create kingdom creation API.
-- [ ] S1-015: Seed starter districts, resources, buildings, and units.
+- [x] S1-014: Create kingdom creation API.
+- [x] S1-015: Seed starter districts, resources, buildings, and units.
 - [ ] S1-016: Create basic kingdom dashboard.
 - [ ] S1-017: Create basic admin views.
 

@@ -72,3 +72,12 @@
 - Decision: Locked starter-state values are centralized in `packages/game/src/constants.ts` for reuse by the confirmation UI and the future creation API.
 - Decision: Kingdom name validation is client-side in S1-013 for immediate feedback, while the S1-014 server creation endpoint must validate the submitted name again.
 - Decision: The Create kingdom button remains a placeholder until `POST /api/kingdom/create` is implemented in S1-014.
+
+## 2026-06-17 - Sprint 1 Kingdom Creation Transaction
+
+- Decision: Sprint 1 Task 14 implements `POST /api/kingdom/create` as a first-party Next.js route handler using the existing signed session system.
+- Decision: The creation endpoint re-runs temporary location validation server-side and rejects users who already own a kingdom.
+- Decision: The endpoint creates the kingdom, five districts, resource stockpile, starter buildings, starter units, land package cooldown rows, and beginner protection timestamp in one transaction, completing S1-014 and S1-015 together.
+- Decision: Starter building footprints are simple 1,000 m2 constants per starter building until a later balancing task intentionally changes them.
+- Decision: Initial land purchase cooldown rows use `availableAt = now`; cooldown durations apply after purchases are implemented in Sprint 3.
+- Decision: Real water validation, restricted-zone validation, PostGIS dynamic buffers, and final visible border generation remain Sprint 4 work.

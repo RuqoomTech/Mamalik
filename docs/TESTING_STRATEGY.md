@@ -29,7 +29,8 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Auth route smoke checks after auth when a PostgreSQL/PostGIS database is reachable.
 - Temporary kingdom location validation helper tests after S1-012.
 - Kingdom name validation and starter-state constant tests after S1-013.
-- Kingdom creation API validation and starter state checks.
+- Kingdom creation helper tests for slug generation, protection duration, starter district total, resources, units, and package constants after S1-014/S1-015.
+- Kingdom creation API integration tests require a reachable PostgreSQL/PostGIS database.
 - Dashboard/admin manual smoke checks.
 
 ## Documentation Requirement

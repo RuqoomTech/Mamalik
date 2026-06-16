@@ -3,13 +3,17 @@ export const KINGDOM_NAME_MAX_LENGTH = 32;
 
 export type KingdomNameValidationResult =
   | { ok: true; name: string }
-  | { ok: false; reason: "required" | "too-short" | "too-long" };
+  | { ok: false; reason: "required" | "too-short" | "too-long" | "unsafe-characters" };
 
 export function normalizeKingdomName(value: string): string {
   return value.trim().replace(/\s+/g, " ");
 }
 
 export function validateKingdomName(value: string): KingdomNameValidationResult {
+  if (/[\u0000-\u001F\u007F]/.test(value)) {
+    return { ok: false, reason: "unsafe-characters" };
+  }
+
   const name = normalizeKingdomName(value);
 
   if (!name) {
@@ -39,6 +43,8 @@ export function formatKingdomNameError(result: KingdomNameValidationResult): str
       return "Kingdom name must be at least 2 characters.";
     case "too-long":
       return "Kingdom name must be 32 characters or fewer.";
+    case "unsafe-characters":
+      return "Kingdom name contains unsupported characters.";
   }
 }
 
