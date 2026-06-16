@@ -17,7 +17,7 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 | `SESSION_SECRET` | Server/auth | Secret used for signed email/password auth session cookies. Must be at least 32 characters. |
 | `GOOGLE_CLIENT_ID` | Server/auth | Google OAuth client id for Google login. |
 | `GOOGLE_CLIENT_SECRET` | Server/auth | Google OAuth client secret for Google login. |
-| `NEXT_PUBLIC_MAP_STYLE_URL` | Public map | MapLibre style URL used by future map screens. |
+| `NEXT_PUBLIC_MAP_STYLE_URL` | Public map | MapLibre style URL used by the `/create-kingdom` map-selection page. |
 | `ADMIN_EMAILS` | Server/admin | Optional comma-separated email allowlist for v0.1 `/admin` access. `User.role === "ADMIN"` is checked first. |
 | `TICK_WORKER_SECRET` | Server/worker | Shared secret for protected tick worker or admin-triggered tick calls. |
 
@@ -33,8 +33,15 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 - `DATABASE_URL` is active for Prisma validation and generation in `packages/db`.
 - `SESSION_SECRET` is active for email/password auth.
 - Google OAuth variables are active for `GET /api/auth/google` and `GET /api/auth/google/callback`.
-- `NEXT_PUBLIC_MAP_STYLE_URL` becomes active during the MapLibre task.
+- `NEXT_PUBLIC_MAP_STYLE_URL` is active for the `/create-kingdom` MapLibre page.
 - `TICK_WORKER_SECRET` is reserved for the tick worker/admin test tick flow.
+
+## Map Setup
+
+- `/create-kingdom` requires `NEXT_PUBLIC_MAP_STYLE_URL` to load a MapLibre style.
+- The example value uses the public MapLibre demo style for local development.
+- If the variable is missing, the page shows a configuration error instead of using an implicit fallback provider.
+- Production deployments should replace the demo style with the chosen production map style.
 
 ## Google OAuth Setup
 

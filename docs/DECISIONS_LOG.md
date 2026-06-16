@@ -48,3 +48,20 @@
 - Decision: `/create-kingdom` requires a signed-in user without a kingdom; signed-in users with a kingdom are redirected to `/dashboard`.
 - Decision: `/admin` checks `User.role === "ADMIN"` first and supports `ADMIN_EMAILS` as a server-side v0.1 allowlist.
 - Decision: Map UI, kingdom creation, and admin read-only views remain deferred to their assigned Sprint 1 tasks.
+
+## 2026-06-16 - Sprint 1 MapLibre Kingdom Location Page
+
+- Decision: Sprint 1 Task 10 uses MapLibre GL JS for the first `/create-kingdom` map-selection page.
+- Decision: Map interaction lives in `apps/web/src/components/map/KingdomLocationMap.tsx` as a Client Component while the page keeps the existing server-side no-kingdom route guard.
+- Decision: The map requires `NEXT_PUBLIC_MAP_STYLE_URL`; missing configuration is shown as a clear page error instead of silently switching to another map style.
+- Decision: Riyadh is the initial map center for the first v0.1 selection slice.
+- Decision: Real location validation, visible border preview, and kingdom creation remain deferred to their assigned Sprint 1 and Sprint 4 tasks.
+
+## 2026-06-17 - Sprint 1 Temporary Location Validation
+
+- Decision: Sprint 1 Task 12 implements `POST /api/kingdom/validate-location` as a temporary validation stub, not final land validation.
+- Decision: The temporary endpoint requires an authenticated user and rejects users who already own a kingdom.
+- Decision: The temporary endpoint validates coordinate presence, numeric values, and world bounds before checking proximity.
+- Decision: The temporary proximity check uses a simple TypeScript distance helper with a 250 meter minimum distance against existing `Kingdom.centerLat` and `Kingdom.centerLng`.
+- Decision: The temporary preview polygon approximates 50,000 m2 visually while preserving gameplay land credit as exactly 50,000 m2.
+- Decision: Sprint 4 replaces temporary proximity and preview behavior with dynamic buffer/PostGIS validation and real visible-border handling.

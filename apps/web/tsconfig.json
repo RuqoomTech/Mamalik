@@ -22,7 +22,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@mamalik/db": ["../../packages/db/src/client.ts"],
-      "@mamalik/db/client": ["../../packages/db/generated/prisma/client.ts"]
+      "@mamalik/db/client": ["../../packages/db/generated/prisma/client.ts"],
+      "@mamalik/game/constants": ["../../packages/game/src/constants.ts"]
     }
   },
   "include": [

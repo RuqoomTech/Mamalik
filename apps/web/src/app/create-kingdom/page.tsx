@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { requireUserWithoutKingdom } from "@/lib/auth/guards";
+import { KingdomLocationMap } from "@/components/map/KingdomLocationMap";
 
 export const dynamic = "force-dynamic";
 
 export default async function CreateKingdomPage() {
   const user = await requireUserWithoutKingdom();
+  const mapStyleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "";
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-6 py-10">
+    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8">
       <div className="space-y-6">
         <header className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-200 pb-5">
           <div>
@@ -15,8 +17,12 @@ export default async function CreateKingdomPage() {
               Mamalik
             </p>
             <h1 className="text-3xl font-semibold text-neutral-950">
-              Create Kingdom
+              Choose Your Kingdom Location
             </h1>
+            <p className="mt-2 max-w-2xl text-sm text-neutral-600">
+              Start by selecting a point on the world map. New kingdoms begin with
+              50,000 m2 usable land, and the final location must be valid land.
+            </p>
           </div>
           <form action="/api/auth/logout" method="post">
             <button
@@ -28,22 +34,11 @@ export default async function CreateKingdomPage() {
           </form>
         </header>
 
-        <section className="rounded-md border border-neutral-200 p-5">
-          <p className="text-sm text-neutral-500">Signed in</p>
-          <p className="mt-1 text-lg font-medium text-neutral-950">
-            {user.displayName}
-          </p>
-          <p className="text-sm text-neutral-600">{user.email}</p>
-        </section>
-
-        <section className="rounded-md border border-neutral-200 p-5">
-          <p className="text-lg font-medium text-neutral-950">
-            Kingdom creation starts here.
-          </p>
-          <p className="mt-2 text-sm text-neutral-600">
-            Sprint 1 map selection and temporary location validation begin in S1-010.
-          </p>
-        </section>
+        <KingdomLocationMap
+          mapStyleUrl={mapStyleUrl}
+          playerDisplayName={user.displayName}
+          playerEmail={user.email}
+        />
 
         <div>
           <Link

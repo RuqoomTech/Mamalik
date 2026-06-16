@@ -2,6 +2,61 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-17
+
+### Added
+
+- Added `POST /api/kingdom/validate-location` as a temporary Sprint 1 validation endpoint.
+- Added reusable temporary location validation helpers for coordinate validation, distance checks, suggestions, and preview polygon generation.
+- Added shared game constants for starting usable land, temporary visible area, and temporary minimum kingdom distance.
+- Added unit tests for temporary kingdom location validation helpers.
+
+### Changed
+
+- Wired the `/create-kingdom` validate button to call the temporary validation endpoint and show loading, success, invalid reason, and suggestions.
+- Confirmed S1-011 was already completed by the S1-010 map slice and left it marked complete in the active task trackers.
+- Marked Sprint 1 Task S1-012 complete in the active task files.
+- Documented the temporary validation behavior and Sprint 4 replacement path.
+
+### Fixed
+
+- Replaced the local validate-location placeholder message with an actual temporary API call.
+
+### Deferred
+
+- Real water validation, restricted-zone validation, dynamic buffer/PostGIS validation, real visible border generation, and kingdom creation remain deferred to their assigned tasks.
+
+### Known issues
+
+- Live validate-location route smoke testing requires a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
+
+## 2026-06-16
+
+### Added
+
+- Added MapLibre GL JS to the web app.
+- Added the first protected `/create-kingdom` map-selection page.
+- Added a client-side `KingdomLocationMap` component with pan, zoom, click selection, selected marker, coordinate display, search placeholder, and local validate-location placeholder message.
+
+### Changed
+
+- Marked Sprint 1 Tasks S1-010 and S1-011 complete in the active task files because the S1-010 instructions included the S1-011 map interaction requirements.
+- Documented active MapLibre environment configuration and the no-fallback map-style behavior.
+
+### Fixed
+
+- Replaced the S1-009 `/create-kingdom` placeholder with the first usable map-selection surface.
+
+### Deferred
+
+- Server-side temporary location validation remains Sprint 1 Task S1-012.
+- Editable kingdom name confirmation, kingdom creation transaction, starter state seeding, real land validation, visible border generation, and gameplay systems remain deferred to their assigned tasks.
+
+### Known issues
+
+- Live map smoke testing requires a signed-in no-kingdom user and reachable PostgreSQL/PostGIS database.
+- `npm --prefix apps/web install maplibre-gl` reported 3 npm audit findings: 2 moderate and 1 high.
+
 ## 2026-06-08
 
 ### Added

@@ -2,35 +2,34 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-08 23:43:43 +03:00
+- Current date/time: 2026-06-17 00:37:42 +03:00
 - Current sprint: Sprint 1 - Foundation + Kingdom Creation
 - Current sprint file: `docs/sprints/SPRINT_01_FOUNDATION.md`
-- Current task: S1-009 - Protected route behavior and no-kingdom redirects
+- Current task: S1-012 - Temporary validate-location API
 
 ## Last Completed Task
 
-- Sprint 1 Task S1-009 - Protected route behavior and no-kingdom redirects implemented.
-- Added server-side guards for `/dashboard`, `/create-kingdom`, `/admin`, `/login`, and `/register`.
-- Added Sprint 1 placeholder pages for `/dashboard`, `/create-kingdom`, and `/admin`.
-- Reused `getCurrentUser` and the existing signed `mamalik_session` cookie system.
-- Added admin restriction using `User.role === "ADMIN"` first, with optional server-side `ADMIN_EMAILS` allowlist support.
-- Did not implement MapLibre, kingdom creation, gameplay, or full admin read-only views.
+- Sprint 1 Task S1-012 - Temporary validate-location API implemented.
+- Confirmed S1-011 was already completed by the previous MapLibre task; map click, marker, selected coordinates, pan/zoom, and search placeholder were already present and marked complete.
+- Added `POST /api/kingdom/validate-location`.
+- Added temporary coordinate validation, simple distance checks, nearby suggestions, and temporary preview polygon generation.
+- Added shared v0.1 game constants for starting usable land, temporary visible area, and temporary minimum kingdom spacing.
+- Wired the `/create-kingdom` Validate location button to the new endpoint with loading, success, invalid reason, and suggestions.
+- Did not implement real water validation, restricted-zone validation, PostGIS dynamic buffer validation, kingdom creation API, land buying, combat, scouting, alliances, or tick logic.
 
 ## Files Changed Recently
 
-Changed for S1-009:
+Changed for S1-012:
 
-- `apps/web/src/lib/auth/current-user.ts`
-- `apps/web/src/lib/auth/route-destinations.ts`
-- `apps/web/src/lib/auth/guards.ts`
-- `apps/web/src/app/dashboard/page.tsx`
-- `apps/web/src/app/create-kingdom/page.tsx`
-- `apps/web/src/app/admin/page.tsx`
-- `apps/web/src/app/login/page.tsx`
-- `apps/web/src/app/register/page.tsx`
-- `apps/web/src/lib/auth/auth.test.ts`
-- `docs/AUTHENTICATION.md`
-- `docs/ENVIRONMENT.md`
+- `packages/game/src/constants.ts`
+- `apps/web/tsconfig.json`
+- `apps/web/package.json`
+- `apps/web/src/app/api/kingdom/validate-location/route.ts`
+- `apps/web/src/components/map/KingdomLocationMap.tsx`
+- `apps/web/src/lib/kingdom/location-validation.ts`
+- `apps/web/src/lib/kingdom/location-validation.test.ts`
+- `docs/04_DATA_MODEL.md`
+- `docs/TESTING_STRATEGY.md`
 - `docs/sprints/SPRINT_01_FOUNDATION.md`
 - `tasks/sprint_01.md`
 - `tasks/backlog.md`
@@ -41,9 +40,7 @@ Changed for S1-009:
 
 Still pending from previous uncommitted tasks:
 
-- Documentation archive moves under `docs/archive/` and `tasks/archive/`.
-- S1-008 Google OAuth route/helper files.
-- S1-008 documentation/task tracker updates.
+- S1-010 MapLibre dependency and map page files.
 
 ## Commands Run
 
@@ -53,21 +50,25 @@ Still pending from previous uncommitted tasks:
 - `Get-Content session_state.md`
 - `Get-Content docs/01_LOCKED_DECISIONS.md`
 - `Get-Content docs/02_V0_1_SCOPE.md`
-- `Get-Content docs/AUTHENTICATION.md`
-- `Get-Content docs/ENVIRONMENT.md`
 - `Get-Content docs/sprints/SPRINT_01_FOUNDATION.md`
+- `Get-Content docs/04_DATA_MODEL.md`
 - `Get-Content tasks/sprint_01.md`
-- `rg --files apps/web/src/app apps/web/src/lib/auth apps/web/src/lib/db packages/db/prisma`
+- `Get-Content tasks/backlog.md`
+- `Get-Content apps/web/src/components/map/KingdomLocationMap.tsx`
+- `Get-Content apps/web/src/app/create-kingdom/page.tsx`
 - `Get-Content apps/web/src/lib/auth/current-user.ts`
-- `Get-Content apps/web/src/app/page.tsx`
-- `Get-Content apps/web/src/app/layout.tsx`
-- `Get-Content apps/web/src/app/api/auth/logout/route.ts`
-- `Get-Content apps/web/src/app/api/auth/google/callback/route.ts`
-- `Get-Content apps/web/src/app/login/page.tsx`
-- `Get-Content apps/web/src/app/register/page.tsx`
 - `Get-Content apps/web/src/lib/auth/session.ts`
-- `Get-Content apps/web/src/lib/auth/responses.ts`
-- `New-Item -ItemType Directory -Force apps/web/src/app/dashboard, apps/web/src/app/create-kingdom, apps/web/src/app/admin`
+- `Get-Content packages/db/prisma/schema.prisma`
+- `rg --files packages/game apps/web/src/lib apps/web/src/app/api apps/web/src/components`
+- `Get-Content apps/web/src/lib/auth/auth.test.ts`
+- `git status --short`
+- `Get-ChildItem -Force packages/game`
+- `Get-Content apps/web/tsconfig.json`
+- `Get-Content apps/web/package.json`
+- `Get-Content docs/TESTING_STRATEGY.md`
+- `Get-Content docs/DECISIONS_LOG.md`
+- `Get-Content CHANGELOG.md`
+- `New-Item -ItemType Directory -Force apps/web/src/app/api/kingdom/validate-location`
 - `npm run test`
 - `npm run typecheck`
 - `npm run lint`
@@ -75,37 +76,37 @@ Still pending from previous uncommitted tasks:
 - `npm run db:typecheck`
 - `git diff --check`
 - `npm run build`
-- `git status --short`
 - `Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`
 
 ## Test Status
 
-- Auth unit tests: passed with `npm run test`; 21 tests passed.
+- Auth and kingdom helper unit tests: passed with `npm run test`; 28 tests passed.
 - App typecheck: passed with `npm run typecheck`.
 - App lint: passed with `npm run lint`.
 - App production build: passed with `npm run build`.
 - Prisma schema validation: passed with temporary local `DATABASE_URL` and `npm run db:validate`.
 - DB package TypeScript check: passed with `npm run db:typecheck`.
 - Whitespace/conflict-marker check: passed with `git diff --check`.
-- Git status reviewed with `git status --short`.
-- Build route table includes `/dashboard`, `/create-kingdom`, and `/admin` as dynamic server-rendered routes.
-- Build warning: Node emitted `[DEP0205] DeprecationWarning: module.register() is deprecated`; build still completed successfully.
+- Build route table includes `/api/kingdom/validate-location`.
+- Build warning: Node emitted `[DEP0205] DeprecationWarning: module.register()`; build still completed successfully.
 - `git diff --check` emitted Windows line-ending warnings but returned exit code 0 with no whitespace errors.
 
-## What Could Not Be Tested
+## Manual Smoke Status
 
-- Live protected route browser smoke tests were not run because a reachable PostgreSQL/PostGIS database is not available in this environment.
-- Live admin allowlist behavior was not smoke-tested against a real signed-in browser session for the same database reason.
+- Full browser smoke testing for `/create-kingdom` validation was not completed because a signed-in no-kingdom account requires a reachable PostgreSQL/PostGIS database.
+- Live authenticated and unauthenticated route smoke tests for `POST /api/kingdom/validate-location` were not completed for the same database/session limitation.
 
 ## Known Issues
 
-- `/dashboard`, `/create-kingdom`, and `/admin` are placeholders until their owning Sprint 1 tasks add full functionality.
-- MapLibre kingdom creation remains S1-010 and was not started.
+- `POST /api/kingdom/validate-location` is a temporary Sprint 1 stub.
+- Real water validation, restricted-zone validation, dynamic buffer/PostGIS validation, and final visible border generation remain Sprint 4 work.
+- Editable kingdom name confirmation remains S1-013 and was not implemented.
+- Kingdom creation transaction and starter-state seeding remain S1-014 and S1-015.
+- Live map/API smoke testing requires a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
+- `npm --prefix apps/web install maplibre-gl` previously reported 3 npm audit findings: 2 moderate and 1 high.
 - v0.2 docs and Sprint 7-12 task artifacts remain future-only references and must not drive v0.1 work.
 - Export/reference backlog files remain in place and are not active task trackers.
 - Local `psql` and Docker are not installed, so migrations and live auth route smoke tests were not run locally.
-- DB package install previously reported three moderate npm audit findings.
-- Web app install previously reported two moderate npm audit findings after adding `tsx`.
 - `npm run build` passes but emits a Node v26.1.0 deprecation warning for `module.register()`.
 
 ## Open Questions
@@ -114,4 +115,4 @@ Still pending from previous uncommitted tasks:
 
 ## Next Recommended Task
 
-Sprint 1 Task S1-010: create the `/create-kingdom` MapLibre page without implementing validation or kingdom creation transactions yet.
+Sprint 1 Task S1-013: create editable kingdom name confirmation UI.

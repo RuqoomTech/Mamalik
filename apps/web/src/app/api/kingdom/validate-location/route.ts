@@ -1,0 +1,61 @@
+import { NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth/current-user";
+import { getPrismaClient } from "@/lib/db/client";
+import {
+  createInvalidLocationResponse,
+  parseLocationCoordinates,
+  validateTemporaryKingdomLocation,
+  type LocationValidationReason,
+} from "@/lib/kingdom/location-validation";
+
+export const runtime = "nodejs";
+
+function invalidResponse(reason: LocationValidationReason, status: number): NextResponse {
+  return NextResponse.json(createInvalidLocationResponse(reason), { status });
+}
+
+export async function POST(request: Request) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return invalidResponse("unauthenticated", 401);
+  }
+
+  if (user.kingdom) {
+    return invalidResponse("user-already-has-kingdom", 409);
+  }
+
+  let body: unknown;
+
+  try {
+    body = await request.json();
+  } catch {
+    return invalidResponse("invalid-coordinates", 400);
+  }
+
+  if (!body || typeof body !== "object") {
+    return invalidResponse("missing-coordinates", 400);
+  }
+
+  const parsedCoordinates = parseLocationCoordinates(
+    body as { lat?: unknown; lng?: unknown },
+  );
+
+  if (!parsedCoordinates.ok) {
+    return invalidResponse(parsedCoordinates.reason, 400);
+  }
+
+  const existingKingdoms = await getPrismaClient().kingdom.findMany({
+    select: {
+      centerLat: true,
+      centerLng: true,
+    },
+  });
+
+  const validation = validateTemporaryKingdomLocation(
+    parsedCoordinates.coordinates,
+    existingKingdoms,
+  );
+
+  return NextResponse.json(validation);
+}

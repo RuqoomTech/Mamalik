@@ -27,6 +27,7 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Migration application after database foundation requires local PostgreSQL/PostGIS access.
 - Auth helper unit tests after auth.
 - Auth route smoke checks after auth when a PostgreSQL/PostGIS database is reachable.
+- Temporary kingdom location validation helper tests after S1-012.
 - Kingdom creation API validation and starter state checks.
 - Dashboard/admin manual smoke checks.
 

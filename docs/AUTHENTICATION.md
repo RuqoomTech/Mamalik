@@ -78,7 +78,8 @@ Mamalik v0.1 uses first-party Next.js route handlers for email/password auth and
 
 ## Current Limits
 
-- `/dashboard`, `/create-kingdom`, and `/admin` are Sprint 1 placeholders until their owning tasks add full functionality.
+- `/dashboard` and `/admin` are Sprint 1 placeholders until their owning tasks add full functionality.
+- `/create-kingdom` has the first protected MapLibre location-selection page, but server validation and kingdom creation are not implemented yet.
 - There is no session table yet. Signed cookies are the v0.1 Sprint 1 implementation.
 - Live route smoke tests require a reachable PostgreSQL/PostGIS database.
 - Live Google OAuth smoke tests require configured Google OAuth credentials and a matching Google Console redirect URI.

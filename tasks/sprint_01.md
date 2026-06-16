@@ -15,9 +15,9 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [x] S1-007: Implement register/login/logout.
 - [x] S1-008: Implement Google login.
 - [x] S1-009: Add protected dashboard route behavior.
-- [ ] S1-010: Create `/create-kingdom` MapLibre page.
-- [ ] S1-011: Add search placeholder, pan/zoom, click marker, and selected coordinates.
-- [ ] S1-012: Create `POST /api/kingdom/validate-location` with temporary validation.
+- [x] S1-010: Create `/create-kingdom` MapLibre page.
+- [x] S1-011: Add search placeholder, pan/zoom, click marker, and selected coordinates.
+- [x] S1-012: Create `POST /api/kingdom/validate-location` with temporary validation.
 - [ ] S1-013: Create editable kingdom name confirmation UI.
 - [ ] S1-014: Create `POST /api/kingdom/create` transaction.
 - [ ] S1-015: Seed starter districts, resources, buildings, units, cooldown records, and beginner protection.
@@ -35,8 +35,8 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [ ] Google login works.
 - [x] A user without a kingdom is routed to `/create-kingdom`.
 - [x] A user with a kingdom is routed to `/dashboard`.
-- [ ] A user can click a map location.
-- [ ] Temporary validation returns valid/invalid with a polygon preview.
+- [x] A user can click a map location.
+- [x] Temporary validation returns valid/invalid with a polygon preview.
 - [ ] A user can create a kingdom.
 - [ ] Starter state exactly matches locked v0.1 values.
 - [ ] Dashboard shows land, resources, population, districts, buildings, army, and protection.
@@ -48,3 +48,6 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - Do not implement tick economy in Sprint 1.
 - S1-008 implementation is complete with automated tests; live Google OAuth smoke testing requires configured credentials and a reachable database.
 - S1-009 protected route behavior is complete with server-side guards and automated destination/admin tests; live route smoke testing requires a reachable database.
+- S1-010 includes the first MapLibre page plus the S1-011 interaction requirements because the task instructions required pan/zoom, click marker, selected coordinates, and search placeholder in the same vertical slice.
+- S1-010 does not implement server validation, visible border preview, or kingdom creation API.
+- S1-012 adds only temporary validation. Real water checks, restricted-zone checks, dynamic buffer/PostGIS validation, and final border generation remain deferred to Sprint 4.

@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 1 - Foundation + Kingdom Creation
-- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, email/password auth, Google login, and protected route behavior are complete; the MapLibre create-kingdom page is next
+- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, and temporary location validation are complete; editable kingdom name confirmation is next
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -189,6 +189,9 @@ v0.1 must include:
 - Google login links an existing email account when the Google email matches and `googleSubject` is empty; otherwise it signs in by `googleSubject` or creates a new `GOOGLE` user.
 - Protected app routes use server-side page guards backed by `getCurrentUser`; `/dashboard`, `/create-kingdom`, and `/admin` do not use client-only protection.
 - Admin access checks `User.role === "ADMIN"` first and also supports the server-side `ADMIN_EMAILS` allowlist.
+- The `/create-kingdom` map-selection UI uses MapLibre GL JS in a Client Component and requires `NEXT_PUBLIC_MAP_STYLE_URL`; missing map style configuration shows an explicit page error instead of silently changing providers.
+- `POST /api/kingdom/validate-location` is a temporary Sprint 1 validation stub that checks authentication, one-kingdom-per-user, coordinate bounds, and simple distance from existing kingdoms before returning a temporary preview polygon.
+- Sprint 1 temporary proximity uses a simple TypeScript distance helper and `Kingdom.centerLat` / `Kingdom.centerLng`; Sprint 4 replaces this with dynamic buffer/PostGIS validation.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.
 - Canonical v0.1 documentation sources are listed in `AGENTS.md`; duplicate historical docs and task artifacts live under `docs/archive/` and `tasks/archive/` as read-only references.

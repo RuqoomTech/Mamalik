@@ -66,6 +66,7 @@ Notes:
 - `population` defaults to the locked 1,000 starting population.
 - `visibleBorderGeojson` stores the visible map polygon separately from gameplay land credit.
 - `centerLat` and `centerLng` are indexed for Sprint 1 temporary proximity checks.
+- Sprint 1 Task 12 reads `centerLat` and `centerLng` for a temporary TypeScript distance check. Sprint 4 replaces this with dynamic buffer/PostGIS validation.
 - `AreaType.STANDARD` is the only initial area type. More area categories may be added when land pricing needs them; area-type bonuses remain post-v0.1.
 
 ### District
