@@ -22,7 +22,7 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [x] S1-014: Create `POST /api/kingdom/create` transaction.
 - [x] S1-015: Seed starter districts, resources, buildings, units, cooldown records, and beginner protection.
 - [x] S1-016: Create `/dashboard` kingdom overview.
-- [ ] S1-017: Create `/admin` basic read-only views.
+- [x] S1-017: Create `/admin` basic read-only views.
 
 ## Maintenance
 
@@ -40,7 +40,7 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [x] A user can create a kingdom.
 - [x] Starter state exactly matches locked v0.1 values.
 - [x] Dashboard shows land, resources, population, districts, buildings, army, and protection.
-- [ ] Admin can view users and kingdoms.
+- [x] Admin can view users and kingdoms.
 
 ## Notes
 
@@ -54,3 +54,4 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - S1-013 adds the editable post-validation confirmation UI and shared starter-state constants. It does not create a kingdom or write starter state to the database.
 - S1-014/S1-015 create the kingdom and full starter state in one transaction. Live route smoke testing still requires a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
 - S1-016 creates a read-only server-rendered dashboard. Live dashboard smoke testing still requires a reachable PostgreSQL/PostGIS database and signed-in kingdom owner.
+- S1-017 creates a read-only server-rendered admin panel for users, kingdoms, resources, districts, buildings, units, and reports. Live admin smoke testing still requires a reachable PostgreSQL/PostGIS database and admin account.

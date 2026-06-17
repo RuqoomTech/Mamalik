@@ -7,7 +7,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 ## Scope
 
 - Repository foundation and persistent memory files.
-- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, editable kingdom name confirmation, kingdom creation API, starter state seeding, and basic dashboard are complete; basic admin view remains next.
+- Minimum project setup. The monorepo directory skeleton, web app tooling, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, editable kingdom name confirmation, kingdom creation API, starter state seeding, basic dashboard, and basic read-only admin view are complete.
 - Email/password auth and Google login.
 - Database foundation.
 - Basic MapLibre map screen.
@@ -33,7 +33,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 - Protected dashboard/create-kingdom route behavior is implemented with server-side guards.
 - `/admin` is restricted to admin users by `User.role === "ADMIN"` first, with optional `ADMIN_EMAILS` allowlist support.
 - `/dashboard` now shows a read-only kingdom overview loaded from the database.
-- `/admin` remains a Sprint 1 placeholder until S1-017 adds basic read-only views.
+- `/admin` shows basic read-only Sprint 1 inspection views for users, kingdoms, resources, districts, buildings, units, and reports.
 
 ## Brand Asset Status
 
@@ -52,6 +52,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 - The confirmation panel validates kingdom names on the client, calls `POST /api/kingdom/create`, shows loading/errors, and redirects to `/dashboard` after success.
 - `POST /api/kingdom/create` re-runs temporary validation server-side and creates the kingdom plus locked starter state in one transaction.
 - `/dashboard` loads the logged-in player's kingdom plus resources, districts, buildings, and unit stacks server-side.
+- `/admin` loads limited read-only foundation data server-side and remains protected by the Sprint 1 admin guard.
 - Real land validation and final visible border generation remain deferred to their assigned Sprint 4 tasks.
 
 ## Documentation Status
@@ -118,4 +119,4 @@ Real valid land, water rejection, restricted zones, OSM parcel style, and dynami
 - [x] The user can create a kingdom through the Sprint 1 API.
 - [x] The kingdom starts with correct land, districts, resources, population, buildings, units, cooldown rows, and beginner protection.
 - [x] The user can see the kingdom dashboard.
-- [ ] Admin can view created users and kingdoms.
+- [x] Admin can view created users and kingdoms.

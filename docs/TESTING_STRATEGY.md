@@ -32,6 +32,7 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Kingdom creation helper tests for slug generation, protection duration, starter district total, resources, units, and package constants after S1-014/S1-015.
 - Kingdom creation API integration tests require a reachable PostgreSQL/PostGIS database.
 - Dashboard helper tests for free land, protection remaining time, and dashboard data shaping after S1-016.
+- Admin helper tests for enum labels, district free land, report read state, and read-model shaping after S1-017.
 - Dashboard/admin manual smoke checks.
 
 ## Documentation Requirement

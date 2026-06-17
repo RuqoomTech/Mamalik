@@ -55,6 +55,7 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 - `/admin` is restricted to authenticated users with `User.role === "ADMIN"` or an email listed in `ADMIN_EMAILS`.
 - `ADMIN_EMAILS` is server-only and must not be exposed to the browser.
 - Keep `ADMIN_EMAILS` empty unless an operator account needs temporary v0.1 access before role management exists.
+- The Sprint 1 admin panel is read-only. `ADMIN_EMAILS` grants inspection access only; it does not enable write, reset, delete, or tick controls.
 
 ## Database Package
 

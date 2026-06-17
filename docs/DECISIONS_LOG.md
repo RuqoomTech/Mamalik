@@ -87,3 +87,10 @@
 - Decision: Sprint 1 Task 16 keeps `/dashboard` as a server component protected by the existing `requireUserWithKingdom` guard.
 - Decision: The dashboard is read-only and loads kingdom state directly from the database; it does not implement tick logic, building actions, land buying, combat, scouting, alliances, reports center, or rankings.
 - Decision: Dashboard-derived display values such as free land, district free land, enum labels, and beginner-protection remaining time live in `apps/web/src/lib/kingdom/dashboard-data.ts`.
+
+## 2026-06-17 - Sprint 1 Admin Read-Only Views
+
+- Decision: Sprint 1 Task 17 keeps `/admin` as a server component protected by the existing `requireAdmin` guard.
+- Decision: The admin panel is read-only and uses limited explicit database selects for users, kingdoms, resources, districts, buildings, units, and latest reports.
+- Decision: No admin write, reset, delete, edit, or tick controls are introduced in Sprint 1 Task 17.
+- Decision: Admin-derived display values such as enum labels, district free land, and report read/unread state live in `apps/web/src/lib/admin/admin-data.ts`.

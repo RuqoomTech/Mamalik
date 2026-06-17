@@ -20,7 +20,7 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S1-014: Create kingdom creation API.
 - [x] S1-015: Seed starter districts, resources, buildings, and units.
 - [x] S1-016: Create basic kingdom dashboard.
-- [ ] S1-017: Create basic admin views.
+- [x] S1-017: Create basic admin views.
 
 ## Sprint 1 Maintenance
 

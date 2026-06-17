@@ -18,6 +18,9 @@ All notable Mamalik project changes are recorded here.
 - Added kingdom creation helpers and tests for slug generation, protection duration, starter district totals, starter units, and land package constants.
 - Added a read-only `/dashboard` kingdom overview loaded server-side from the database.
 - Added dashboard data helpers and tests for free land, district free land, beginner-protection remaining time, and dashboard data shaping.
+- Added a read-only `/admin` panel for Sprint 1 foundation inspection.
+- Added admin overview counts plus users, kingdoms, resources, districts, buildings, units, and reports preview tables.
+- Added admin data helpers and tests for enum labels, district free land, report read state, and read-model shaping.
 
 ### Changed
 
@@ -30,6 +33,7 @@ All notable Mamalik project changes are recorded here.
 - Marked Sprint 1 Task S1-013 complete in the active task files.
 - Marked Sprint 1 Tasks S1-014 and S1-015 complete in the active task files.
 - Marked Sprint 1 Task S1-016 complete in the active task files.
+- Marked Sprint 1 Task S1-017 complete in the active task files.
 - Documented the temporary validation behavior and Sprint 4 replacement path.
 
 ### Fixed
@@ -41,7 +45,7 @@ All notable Mamalik project changes are recorded here.
 ### Deferred
 
 - Real water validation, restricted-zone validation, dynamic buffer/PostGIS validation, and real visible border generation remain deferred to their assigned Sprint 4 tasks.
-- Admin read-only views remain Sprint 1 Task S1-017.
+- Sprint 1 admin write controls, reset/delete/edit actions, and admin-triggered ticks remain deferred to later owning tasks.
 
 ### Known issues
 
@@ -49,6 +53,7 @@ All notable Mamalik project changes are recorded here.
 - Live confirmation-flow smoke testing also requires a signed-in no-kingdom account and reachable database.
 - Live kingdom creation route and database record smoke testing require a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
 - Live dashboard smoke testing requires a reachable PostgreSQL/PostGIS database and signed-in account that owns a kingdom.
+- Live admin panel smoke testing requires a reachable PostgreSQL/PostGIS database and admin account.
 
 ## 2026-06-16
 

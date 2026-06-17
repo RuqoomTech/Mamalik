@@ -191,6 +191,22 @@ The dashboard reads:
 
 The read model derives display-only values such as free land, district free land, enum labels, and beginner-protection remaining time. It does not mutate game state.
 
+## Admin Read Model
+
+Sprint 1 Task 17 adds a server-side admin read model in `apps/web/src/lib/admin/admin-data.ts`.
+
+The admin panel reads limited rows from:
+
+- `User`
+- `Kingdom`
+- `ResourceStockpile`
+- `District`
+- `BuildingInstance`
+- `UnitStack`
+- `Report`
+
+The admin read model uses explicit `select` fields and row limits for Sprint 1 inspection. It derives display-only values such as free land, enum labels, and report read/unread state. It does not mutate game state and does not expose admin write actions.
+
 ## Deferred Queue Models
 
 These remain planned but are not part of Sprint 1 Task 6:
