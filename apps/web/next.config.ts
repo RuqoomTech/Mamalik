@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   experimental: {
     externalDir: true,
   },
+  outputFileTracingRoot: repositoryRoot,
   turbopack: {
     root: repositoryRoot,
   },

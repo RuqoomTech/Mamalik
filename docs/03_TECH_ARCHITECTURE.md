@@ -125,6 +125,7 @@ Examples of PostGIS-heavy actions:
 ## Build Strategy
 
 - `apps/web` uses Turbopack with the repository root configured so it can import repo-local package source from `packages/db`.
+- `apps/web` also sets Next.js `outputFileTracingRoot` to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 
 ## Realtime strategy
 

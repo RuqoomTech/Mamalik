@@ -110,8 +110,10 @@ Real valid land, water rejection, restricted zones, OSM parcel style, and dynami
 ## Acceptance Criteria
 
 - [x] Required memory and documentation files exist.
-- [ ] A user can register/login.
-- [ ] Google login works. Automated auth tests pass; live OAuth smoke test still requires credentials.
+- [x] Register/login is implemented and covered by auth helper tests.
+- [ ] Live email/password register/login smoke test is completed.
+- [x] Google login is implemented and covered by OAuth helper tests.
+- [ ] Live Google OAuth smoke test is completed.
 - [x] A user without a kingdom is sent to create one.
 - [x] A user can click a map location.
 - [x] The system validates the clicked location with the temporary validation flow.
@@ -120,3 +122,10 @@ Real valid land, water rejection, restricted zones, OSM parcel style, and dynami
 - [x] The kingdom starts with correct land, districts, resources, population, buildings, units, cooldown rows, and beginner protection.
 - [x] The user can see the kingdom dashboard.
 - [x] Admin can view created users and kingdoms.
+
+## Sprint 1 Closure Status
+
+- Automated checks passed during Sprint 1 QA closure.
+- Production build passed after configuring Next.js `outputFileTracingRoot` to the repository root.
+- Live browser smoke testing remains blocked in this environment by missing reachable PostgreSQL/PostGIS, Google OAuth credentials, and prepared player/admin accounts.
+- Sprint 1 is ready for Sprint 2 implementation from a code and documentation standpoint, with live smoke validation still required before any production-like release claim.

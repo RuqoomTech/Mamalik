@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 1 - Foundation + Kingdom Creation
-- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, editable kingdom name confirmation, kingdom creation API, starter state seeding, basic kingdom dashboard, and basic read-only admin views are complete; Sprint 1 verification/acceptance is next
+- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, editable kingdom name confirmation, kingdom creation API, starter state seeding, basic kingdom dashboard, basic read-only admin views, and Sprint 1 QA closure are complete; Sprint 2 planning/implementation is next when explicitly started
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -200,6 +200,7 @@ v0.1 must include:
 - Dashboard calculations such as free land and beginner-protection remaining time live in `apps/web/src/lib/kingdom/dashboard-data.ts`, not in client-side UI.
 - `/admin` is a read-only server-rendered Sprint 1 inspection panel protected by the existing server-side admin guard; it uses explicit limited database selects and does not expose edit/reset/delete/tick controls.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
+- Next.js `outputFileTracingRoot` is configured to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.
 - Canonical v0.1 documentation sources are listed in `AGENTS.md`; duplicate historical docs and task artifacts live under `docs/archive/` and `tasks/archive/` as read-only references.
 - Active Sprint 1-6 task tracking uses `tasks/backlog.md` and `tasks/sprint_01.md` through `tasks/sprint_06.md`; JSON/CSV exports are reference artifacts only.

@@ -94,3 +94,10 @@
 - Decision: The admin panel is read-only and uses limited explicit database selects for users, kingdoms, resources, districts, buildings, units, and latest reports.
 - Decision: No admin write, reset, delete, edit, or tick controls are introduced in Sprint 1 Task 17.
 - Decision: Admin-derived display values such as enum labels, district free land, and report read/unread state live in `apps/web/src/lib/admin/admin-data.ts`.
+
+## 2026-06-17 - Sprint 1 QA Closure
+
+- Decision: Sprint 1 is considered ready for Sprint 2 implementation from a code, automated-check, and documentation standpoint.
+- Decision: Live Sprint 1 smoke validation remains a separate operational requirement because this environment lacks reachable PostgreSQL/PostGIS, Google OAuth credentials, and prepared player/admin accounts.
+- Decision: `apps/web` sets Next.js `outputFileTracingRoot` to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
+- Decision: Sprint 2 implementation must not start until explicitly requested after this Sprint 1 closure task.

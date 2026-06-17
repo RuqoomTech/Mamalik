@@ -2,109 +2,106 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-17 21:09:46 +03:00
+- Current date/time: 2026-06-17 21:22:47 +03:00
 - Current sprint: Sprint 1 - Foundation + Kingdom Creation
 - Current sprint file: `docs/sprints/SPRINT_01_FOUNDATION.md`
-- Current task: S1-017 - Create `/admin` basic read-only views
+- Current task: Sprint 1 QA, stabilization, and closure
 
 ## Last Completed Task
 
-- Sprint 1 Task S1-017 - Create `/admin` basic read-only views.
-- Replaced the Sprint 1 admin placeholder with a read-only server-rendered admin panel.
-- Kept `/admin` protected by the existing server-side `requireAdmin` guard.
-- Loaded admin data server-side from the database after authorization.
-- Added overview counts for total users, kingdoms, and reports.
-- Added read-only tables for users, kingdoms, resources, districts, buildings, units, and latest reports.
-- Used explicit limited database selects for the admin read model.
-- Added focused admin helper tests for enum labels, district free land, report read state, and read-model shaping.
-- Did not implement dangerous admin actions, reset/delete/edit actions, tick controls, land buying, combat, scouting, alliances, rankings, or Sprint 2 work.
+- Sprint 1 QA, stabilization, and closure.
+- Reviewed Sprint 1 scope, task trackers, changelog, and session state.
+- Confirmed S1-001 through S1-017 are complete in the active task trackers.
+- Created `docs/sprints/SPRINT_01_REVIEW.md`.
+- Clarified Sprint 1 acceptance status by separating implemented/automated coverage from live smoke checks that still require real infrastructure.
+- Stabilized production builds by setting Next.js `outputFileTracingRoot` to the repository root so runtime files from repo-local packages such as `packages/db` are traced.
+- Did not implement Sprint 2 tick engine work or any new gameplay features.
 
 ## Files Changed Recently
 
-Changed for S1-017:
+Changed for Sprint 1 QA closure:
 
-- `apps/web/src/app/admin/page.tsx`
-- `apps/web/src/lib/admin/admin-data.ts`
-- `apps/web/src/lib/admin/admin-data.test.ts`
-- `apps/web/package.json`
-- `docs/04_DATA_MODEL.md`
-- `docs/AUTHENTICATION.md`
-- `docs/ENVIRONMENT.md`
-- `docs/TESTING_STRATEGY.md`
+- `apps/web/next.config.ts`
+- `docs/sprints/SPRINT_01_REVIEW.md`
 - `docs/sprints/SPRINT_01_FOUNDATION.md`
+- `docs/03_TECH_ARCHITECTURE.md`
+- `docs/DECISIONS_LOG.md`
 - `tasks/sprint_01.md`
 - `tasks/backlog.md`
 - `context.md`
-- `docs/DECISIONS_LOG.md`
 - `CHANGELOG.md`
 - `session_state.md`
 
 ## Commands Run
 
+- `Select-String -Path C:\Users\user\.codex\memories\MEMORY.md -Pattern "Mamalik" -Context 0,4`
 - `Get-Content AGENTS.md`
-- `Get-Content context.md -TotalCount 220`
-- `Get-Content session_state.md -TotalCount 220`
-- `Get-Content docs/01_LOCKED_DECISIONS.md -TotalCount 220`
-- `Get-Content docs/02_V0_1_SCOPE.md -TotalCount 220`
-- `Get-Content docs/04_DATA_MODEL.md -TotalCount 260`
-- `Get-Content docs/AUTHENTICATION.md -TotalCount 240`
-- `Get-Content docs/ENVIRONMENT.md -TotalCount 240`
-- `Get-Content docs/sprints/SPRINT_01_FOUNDATION.md -TotalCount 260`
+- `Get-Content context.md -TotalCount 260`
+- `Get-Content session_state.md -TotalCount 260`
+- `Get-Content docs/01_LOCKED_DECISIONS.md -TotalCount 240`
+- `Get-Content docs/02_V0_1_SCOPE.md -TotalCount 260`
+- `Get-Content docs/sprints/SPRINT_01_FOUNDATION.md -TotalCount 320`
 - `Get-Content tasks/sprint_01.md -TotalCount 260`
 - `Get-Content tasks/backlog.md -TotalCount 260`
-- `Get-Content apps/web/src/app/admin/page.tsx`
-- `Get-Content apps/web/src/lib/auth/guards.ts`
-- `Get-Content apps/web/src/lib/auth/route-destinations.ts`
-- `Get-Content apps/web/src/lib/kingdom/dashboard-data.ts`
-- `Get-Content packages/db/prisma/schema.prisma`
-- `Get-Content apps/web/package.json`
-- `Get-Content apps/web/src/lib/auth/auth.test.ts`
-- `Get-Content docs/TESTING_STRATEGY.md -TotalCount 240`
-- `Get-Content docs/DECISIONS_LOG.md -Tail 120`
-- `Get-Content CHANGELOG.md -TotalCount 180`
-- `Get-Content apps/web/tsconfig.json`
-- `Get-Content apps/web/src/lib/db/client.ts`
-- `rg "bodyJson|Report" apps/web/src packages -n`
-- `rg "model Report|ReportType|readAt" packages/db/generated/prisma -n`
-- `rg "Admin" docs/sprints/SPRINT_06_ALLIANCES_REPORTS_RANKINGS.md docs/05_SPRINT_PLAN.md -n`
-- `git diff -- apps/web/src/app/admin/page.tsx apps/web/src/lib/admin/admin-data.ts apps/web/src/lib/admin/admin-data.test.ts apps/web/package.json`
-- `git status --short`
+- `Get-Content CHANGELOG.md -TotalCount 260`
 - `npm run test`
 - `npm run typecheck`
 - `npm run lint`
 - `npm run build`
 - `$env:DATABASE_URL='postgresql://mamalik:mamalik@localhost:5432/mamalik?schema=public'; npm run db:validate`
 - `npm run db:typecheck`
-- `git diff --check`
+- `rg "@prisma/client" packages/db/generated/prisma packages/db/src apps/web/src -n`
+- `Get-Content packages/db/package.json`
+- `Get-Content packages/db/src/client.ts`
+- `Get-ChildItem apps/web/.next/server/chunks -ErrorAction SilentlyContinue | Select-Object -First 8 Name,Length`
+- `Get-ChildItem packages/db/node_modules/@prisma -Recurse -Depth 2 -ErrorAction SilentlyContinue | Select-Object -First 20 FullName`
+- `Get-ChildItem node_modules/@prisma -ErrorAction SilentlyContinue | Select-Object Name`
+- `Get-ChildItem apps/web/node_modules/@prisma -ErrorAction SilentlyContinue | Select-Object Name`
+- `Get-ChildItem apps/web -Filter package-lock.json | Select-Object FullName,Length`
+- `Get-ChildItem packages/db -Filter package-lock.json | Select-Object FullName,Length`
+- `Get-Content apps/web/next.config.ts`
+- `rg "@prisma/client-e9346b793ceb91df|runtime/client" apps/web/.next -n`
+- `rg '"@prisma/client"|"@prisma/adapter-pg"|"pg"' apps/web/package-lock.json packages/db/package-lock.json -n`
+- `Get-Content apps/web/.env.example`
+- `Get-Content packages/db/tsconfig.json`
+- `Get-Content packages/db/prisma.config.ts`
+- `rg "outputFileTracingRoot|serverExternalPackages|externalDir" apps/web/node_modules/next/dist -n`
+- `rg "outputFileTracingRoot|serverExternalPackages|externalDir" apps/web/node_modules/next -g "*.d.ts" -n`
+- `Get-ChildItem apps/web/.next/server -Force -ErrorAction SilentlyContinue | Select-Object Name,Mode,Length`
+- `Get-Process | Where-Object { $_.ProcessName -eq 'node' } | Select-Object Id,ProcessName,StartTime`
+- `Get-Content docs/03_TECH_ARCHITECTURE.md -TotalCount 260`
+- `git status --short`
 - `Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`
 
 ## Test Status
 
-- Auth, kingdom, and admin helper unit tests: passed with `npm run test`; 44 tests passed.
-- App typecheck: passed with `npm run typecheck`.
-- App lint: passed with `npm run lint`.
-- App production build: passed with `npm run build`.
-- Prisma schema validation: passed with temporary local `DATABASE_URL` and `npm run db:validate`.
-- DB package TypeScript check: passed with `npm run db:typecheck`.
-- Whitespace/conflict-marker check: passed with `git diff --check`.
-- Build route table includes `/admin`.
-- Build warning: Node emitted `[DEP0205] DeprecationWarning: module.register()`; build still completed successfully.
-- `git diff --check` emitted Windows line-ending warnings but returned no whitespace errors.
+- `npm run test`: passed; 44 tests passed.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed.
+- First `npm run build`: failed during page-data collection because Next could not load a traced Prisma runtime module from the repo-local DB package.
+- Build stabilization: added `outputFileTracingRoot` to `apps/web/next.config.ts`.
+- Final `npm run build`: passed and includes `/admin`, `/api/auth/*`, `/api/kingdom/*`, `/create-kingdom`, `/dashboard`, `/login`, and `/register`.
+- `npm run db:validate`: passed with temporary local `DATABASE_URL`.
+- `npm run db:typecheck`: passed.
+- Build warning remains: Node emitted `[DEP0205] DeprecationWarning: module.register()`; build still completed successfully.
 
 ## Manual Smoke Status
 
-- Full browser smoke testing for `/admin` was not completed because it requires a reachable PostgreSQL/PostGIS database, a signed-in admin account, and seed data in this environment.
-- Live unauthenticated `/admin` redirect testing was not completed for the same database/session limitation.
-- Live non-admin `/admin` denial testing was not completed for the same database/session limitation.
-- Database-value comparison for admin table rows was not completed because no reachable local PostgreSQL/PostGIS database is available in this environment.
+- Manual browser smoke testing was not completed in this environment.
+- Email/password register, login, and logout live smoke tests require a reachable PostgreSQL/PostGIS database.
+- Live Google OAuth smoke testing requires Google OAuth credentials, a matching redirect URI, and reachable database.
+- Protected route redirect smoke tests require signed-in and signed-out browser sessions backed by a reachable database.
+- `/create-kingdom` map click, validation, confirmation, and creation smoke tests require a signed-in no-kingdom account and reachable database.
+- Dashboard data verification requires a signed-in kingdom owner and reachable database.
+- Admin non-admin denial and admin data inspection require prepared non-admin/admin accounts and reachable database.
 
 ## Known Issues
 
+- Live Sprint 1 smoke testing remains blocked by missing reachable PostgreSQL/PostGIS, Google OAuth credentials, and prepared player/admin accounts in this environment.
 - `POST /api/kingdom/validate-location` and `POST /api/kingdom/create` still use temporary Sprint 1 location validation.
 - Real water validation, restricted-zone validation, dynamic buffer/PostGIS validation, and final visible border generation remain Sprint 4 work.
 - Starter building footprints are simple 1,000 m2 constants per starter building and may need later balancing.
 - Initial land purchase cooldown rows use `availableAt = now`; actual purchase cooldown behavior remains Sprint 3.
-- Live map/API/UI/admin smoke testing requires a reachable PostgreSQL/PostGIS database and appropriate signed-in accounts.
 - `npm --prefix apps/web install maplibre-gl` previously reported 3 npm audit findings: 2 moderate and 1 high.
 - v0.2 docs and Sprint 7-12 task artifacts remain future-only references and must not drive v0.1 work.
 - Export/reference backlog files remain in place and are not active task trackers.
@@ -117,4 +114,4 @@ Changed for S1-017:
 
 ## Next Recommended Task
 
-Sprint 1 verification and acceptance review before starting Sprint 2.
+Start Sprint 2 planning or Sprint 2 Task S2-001 only after explicit user approval.

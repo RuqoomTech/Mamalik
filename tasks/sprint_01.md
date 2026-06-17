@@ -27,12 +27,15 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 ## Maintenance
 
 - [x] 2026-06-08: Archive duplicate legacy docs/tasks and lock canonical documentation sources.
+- [x] 2026-06-17: Complete Sprint 1 QA, stabilization, and closure review.
 
 ## Acceptance Criteria
 
 - [x] Required memory and documentation files exist.
-- [ ] A user can register/login.
-- [ ] Google login works.
+- [x] Register/login is implemented and covered by auth helper tests.
+- [ ] Live email/password register/login smoke test is completed.
+- [x] Google login is implemented and covered by OAuth helper tests.
+- [ ] Live Google OAuth smoke test is completed.
 - [x] A user without a kingdom is routed to `/create-kingdom`.
 - [x] A user with a kingdom is routed to `/dashboard`.
 - [x] A user can click a map location.
@@ -55,3 +58,5 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - S1-014/S1-015 create the kingdom and full starter state in one transaction. Live route smoke testing still requires a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
 - S1-016 creates a read-only server-rendered dashboard. Live dashboard smoke testing still requires a reachable PostgreSQL/PostGIS database and signed-in kingdom owner.
 - S1-017 creates a read-only server-rendered admin panel for users, kingdoms, resources, districts, buildings, units, and reports. Live admin smoke testing still requires a reachable PostgreSQL/PostGIS database and admin account.
+- Sprint 1 QA closure passed automated checks and production build after configuring Next.js output file tracing for repo-local package runtime files.
+- Live Sprint 1 browser smoke testing still requires a reachable PostgreSQL/PostGIS database, Google OAuth credentials, and test player/admin accounts.

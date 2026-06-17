@@ -25,6 +25,7 @@ Canonical Markdown backlog for active v0.1 work.
 ## Sprint 1 Maintenance
 
 - [x] 2026-06-08: Archive duplicate legacy docs/tasks and lock canonical documentation sources.
+- [x] 2026-06-17: Complete Sprint 1 QA, stabilization, and closure review.
 
 ## Sprint 2 - Tick Engine + Economy
 
