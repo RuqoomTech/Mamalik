@@ -2,11 +2,152 @@
 
 :root {
   color-scheme: light;
+  --mamalik-ink: #10140f;
+  --mamalik-muted: #5f665d;
+  --mamalik-border: #dfe5dc;
+  --mamalik-surface: #ffffff;
+  --mamalik-surface-soft: #f7f8f4;
+  --mamalik-map-green: #183f35;
+  --mamalik-gold: #b88a2c;
+  --mamalik-sky: #e8f0f4;
 }
 
 body {
   margin: 0;
-  background: #fafafa;
-  color: #0a0a0a;
+  background:
+    linear-gradient(180deg, rgba(232, 240, 244, 0.58), transparent 340px),
+    #f7f8f4;
+  color: var(--mamalik-ink);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+a,
+input {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(184, 138, 44, 0.35);
+  outline-offset: 3px;
+}
+
+input:-webkit-autofill {
+  -webkit-text-fill-color: var(--mamalik-ink);
+  box-shadow: 0 0 0 1000px #f4f7ef inset;
+}
+
+.mamalik-page {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(232, 240, 244, 0.72), transparent 360px),
+    #f7f8f4;
+}
+
+.mamalik-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 80rem;
+  padding: 2rem 1.5rem;
+}
+
+.mamalik-card {
+  border: 1px solid var(--mamalik-border);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 1px 2px rgba(16, 20, 15, 0.04);
+}
+
+.mamalik-eyebrow {
+  color: var(--mamalik-map-green);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mamalik-action-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background: var(--mamalik-map-green);
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mamalik-action-primary:hover {
+  background: #0f3028;
+}
+
+.mamalik-action-primary:disabled {
+  cursor: not-allowed;
+  background: #c7cfc4;
+  color: #6d746a;
+}
+
+.mamalik-action-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--mamalik-border);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--mamalik-ink);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mamalik-action-secondary:hover {
+  border-color: #c5cfc1;
+  background: #f0f4ee;
+}
+
+.mamalik-input {
+  width: 100%;
+  border: 1px solid #cfd8cc;
+  border-radius: 0.5rem;
+  background: #fbfcf8;
+  color: var(--mamalik-ink);
+}
+
+.mamalik-input:focus {
+  border-color: var(--mamalik-map-green);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(24, 63, 53, 0.14);
+}
+
+.mamalik-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.mamalik-table th {
+  background: #f3f6f0;
+  color: var(--mamalik-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.mamalik-table td,
+.mamalik-table th {
+  border-bottom: 1px solid #edf0ea;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.mamalik-table tbody tr:hover {
+  background: #fafbf7;
 }

@@ -22,6 +22,7 @@ All notable Mamalik project changes are recorded here.
 - Added admin overview counts plus users, kingdoms, resources, districts, buildings, units, and reports preview tables.
 - Added admin data helpers and tests for enum labels, district free land, report read state, and read-model shaping.
 - Added `docs/sprints/SPRINT_01_REVIEW.md` for Sprint 1 QA closure.
+- Added shared Mamalik UI primitives for page shells, cards, inputs, action buttons, and data tables.
 
 ### Changed
 
@@ -36,6 +37,8 @@ All notable Mamalik project changes are recorded here.
 - Marked Sprint 1 Task S1-016 complete in the active task files.
 - Marked Sprint 1 Task S1-017 complete in the active task files.
 - Marked Sprint 1 QA, stabilization, and closure complete in the active task files.
+- Completed a post-closure UI stabilization pass for the existing home, login, register, dashboard, admin, and create-kingdom surfaces.
+- Updated the signed-in home page to show the existing player destination and admin navigation when applicable.
 - Documented the temporary validation behavior and Sprint 4 replacement path.
 - Configured Next.js `outputFileTracingRoot` to the repository root so production builds can trace repo-local package runtime files.
 
@@ -45,6 +48,7 @@ All notable Mamalik project changes are recorded here.
 - Replaced the confirmation panel's placeholder Create kingdom action with the real Sprint 1 creation request.
 - Fixed kingdom name validation so control characters are rejected before whitespace normalization.
 - Fixed the Sprint 1 production build failure caused by missing traced Prisma runtime files from `packages/db`.
+- Fixed inconsistent Sprint 1 surface styling by applying the shared UI primitives across existing app pages.
 
 ### Deferred
 
@@ -56,9 +60,9 @@ All notable Mamalik project changes are recorded here.
 - Live validate-location route smoke testing requires a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
 - Live confirmation-flow smoke testing also requires a signed-in no-kingdom account and reachable database.
 - Live kingdom creation route and database record smoke testing require a reachable PostgreSQL/PostGIS database and signed-in no-kingdom account.
-- Live dashboard smoke testing requires a reachable PostgreSQL/PostGIS database and signed-in account that owns a kingdom.
-- Live admin panel smoke testing requires a reachable PostgreSQL/PostGIS database and admin account.
-- Live Sprint 1 closure smoke testing remains blocked by missing reachable PostgreSQL/PostGIS, Google OAuth credentials, and prepared player/admin accounts in this environment.
+- Live Google OAuth smoke testing still requires configured Google OAuth credentials.
+- Live no-kingdom create-kingdom map/validation/creation smoke testing still requires a prepared signed-in no-kingdom account.
+- Live second kingdom rejection and non-admin admin-denial smoke tests still require prepared account states.
 
 ## 2026-06-16
 

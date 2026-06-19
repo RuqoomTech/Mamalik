@@ -101,3 +101,9 @@
 - Decision: Live Sprint 1 smoke validation remains a separate operational requirement because this environment lacks reachable PostgreSQL/PostGIS, Google OAuth credentials, and prepared player/admin accounts.
 - Decision: `apps/web` sets Next.js `outputFileTracingRoot` to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 - Decision: Sprint 2 implementation must not start until explicitly requested after this Sprint 1 closure task.
+
+## 2026-06-17 - Sprint 1 UI Stabilization
+
+- Decision: The post-closure UI pass improves existing Sprint 1 pages only; it does not introduce new gameplay, Sprint 2 tick logic, or new admin actions.
+- Decision: Shared Mamalik UI primitives in `apps/web/src/app/globals.css` are the current lightweight UI-system convention for page shells, cards, inputs, actions, and tables.
+- Decision: Home, auth, dashboard, admin, and create-kingdom surfaces should reuse those primitives for consistency until a later dedicated design-system task intentionally replaces them.

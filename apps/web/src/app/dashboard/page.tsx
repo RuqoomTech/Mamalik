@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireUserWithKingdom } from "@/lib/auth/guards";
+import { isAdminUser } from "@/lib/auth/route-destinations";
 import {
   DASHBOARD_STATUS_NOTE,
   getKingdomDashboardData,
   type KingdomDashboardData,
 } from "@/lib/kingdom/dashboard-data";
+import type { ReactNode } from "react";
 
 export const dynamic = "force-dynamic";
 
@@ -46,10 +48,10 @@ function SummaryCard({
   detail?: string;
 }) {
   return (
-    <div className="rounded-md border border-neutral-200 bg-white p-4">
-      <p className="text-sm text-neutral-500">{label}</p>
-      <p className="mt-1 text-xl font-semibold text-neutral-950">{value}</p>
-      {detail ? <p className="mt-1 text-sm text-neutral-600">{detail}</p> : null}
+    <div className="mamalik-card p-4">
+      <p className="text-sm text-[#5f665d]">{label}</p>
+      <p className="mt-1 text-xl font-semibold text-[#10140f]">{value}</p>
+      {detail ? <p className="mt-1 text-sm text-[#5f665d]">{detail}</p> : null}
     </div>
   );
 }
@@ -59,11 +61,11 @@ function Section({
   children,
 }: {
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <section className="rounded-md border border-neutral-200 bg-white p-5">
-      <h2 className="text-lg font-semibold text-neutral-950">{title}</h2>
+    <section className="mamalik-card p-5">
+      <h2 className="text-lg font-semibold text-[#10140f]">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
   );
@@ -86,24 +88,24 @@ function DistrictPanel({ districts }: { districts: KingdomDashboardData["distric
   return (
     <Section title="Districts">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[560px] text-left text-sm">
-          <thead className="border-b border-neutral-200 text-neutral-500">
+        <table className="mamalik-table min-w-[560px] text-sm">
+          <thead>
             <tr>
-              <th className="py-2 pr-4 font-medium">District</th>
-              <th className="px-4 py-2 font-medium">Allocated</th>
-              <th className="px-4 py-2 font-medium">Used</th>
-              <th className="py-2 pl-4 font-medium">Free</th>
+              <th>District</th>
+              <th>Allocated</th>
+              <th>Used</th>
+              <th>Free</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-100">
+          <tbody>
             {districts.map((district) => (
               <tr key={district.id}>
-                <td className="py-3 pr-4 font-medium text-neutral-950">{district.label}</td>
-                <td className="px-4 py-3 text-neutral-700">
+                <td className="font-medium text-[#10140f]">{district.label}</td>
+                <td className="text-[#5f665d]">
                   {formatLand(district.allocatedLandM2)}
                 </td>
-                <td className="px-4 py-3 text-neutral-700">{formatLand(district.usedLandM2)}</td>
-                <td className="py-3 pl-4 text-neutral-700">{formatLand(district.freeLandM2)}</td>
+                <td className="text-[#5f665d]">{formatLand(district.usedLandM2)}</td>
+                <td className="text-[#5f665d]">{formatLand(district.freeLandM2)}</td>
               </tr>
             ))}
           </tbody>
@@ -118,33 +120,31 @@ function BuildingPanel({ buildings }: { buildings: KingdomDashboardData["buildin
     <Section title="Buildings">
       {buildings.length > 0 ? (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[680px] text-left text-sm">
-            <thead className="border-b border-neutral-200 text-neutral-500">
+          <table className="mamalik-table min-w-[680px] text-sm">
+            <thead>
               <tr>
-                <th className="py-2 pr-4 font-medium">Building</th>
-                <th className="px-4 py-2 font-medium">Level</th>
-                <th className="px-4 py-2 font-medium">Status</th>
-                <th className="px-4 py-2 font-medium">Land</th>
-                <th className="py-2 pl-4 font-medium">District</th>
+                <th>Building</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Land</th>
+                <th>District</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100">
+            <tbody>
               {buildings.map((building) => (
                 <tr key={building.id}>
-                  <td className="py-3 pr-4 font-medium text-neutral-950">{building.label}</td>
-                  <td className="px-4 py-3 text-neutral-700">{building.level}</td>
-                  <td className="px-4 py-3 text-neutral-700">{building.statusLabel}</td>
-                  <td className="px-4 py-3 text-neutral-700">
-                    {formatLand(building.landUsedM2)}
-                  </td>
-                  <td className="py-3 pl-4 text-neutral-700">{building.districtLabel}</td>
+                  <td className="font-medium text-[#10140f]">{building.label}</td>
+                  <td className="text-[#5f665d]">{building.level}</td>
+                  <td className="text-[#5f665d]">{building.statusLabel}</td>
+                  <td className="text-[#5f665d]">{formatLand(building.landUsedM2)}</td>
+                  <td className="text-[#5f665d]">{building.districtLabel}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       ) : (
-        <p className="text-sm text-neutral-600">No buildings exist yet.</p>
+        <p className="text-sm text-[#5f665d]">No buildings exist yet.</p>
       )}
     </Section>
   );
@@ -165,7 +165,7 @@ function ArmyPanel({ army }: { army: KingdomDashboardData["army"] }) {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-neutral-600">No garrisoned units exist yet.</p>
+        <p className="text-sm text-[#5f665d]">No garrisoned units exist yet.</p>
       )}
     </Section>
   );
@@ -174,35 +174,51 @@ function ArmyPanel({ army }: { army: KingdomDashboardData["army"] }) {
 export default async function DashboardPage() {
   const user = await requireUserWithKingdom();
   const dashboardData = await getKingdomDashboardData(user.kingdom.id);
+  const userIsAdmin = isAdminUser(user);
 
   if (!dashboardData) {
     redirect("/create-kingdom");
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8">
-      <div className="space-y-6">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-200 pb-5">
+    <main className="mamalik-page">
+      <div className="mamalik-container space-y-6">
+        <header className="mamalik-card flex flex-wrap items-center justify-between gap-4 p-5">
           <div>
-            <p className="text-sm font-medium uppercase tracking-wide text-neutral-500">
-              Mamalik
-            </p>
-            <h1 className="text-3xl font-semibold text-neutral-950">
+            <p className="mamalik-eyebrow">Kingdom command</p>
+            <h1 className="mt-1 text-3xl font-semibold text-[#10140f]">
               {dashboardData.kingdom.name}
             </h1>
-            <p className="mt-2 text-sm text-neutral-600">
+            <p className="mt-2 text-sm text-[#5f665d]">
               @{dashboardData.kingdom.slug}
             </p>
           </div>
-          <form action="/api/auth/logout" method="post">
-            <button
-              className="rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-100"
-              type="submit"
-            >
-              Log out
-            </button>
-          </form>
+          <div className="flex flex-wrap gap-3">
+            {userIsAdmin ? (
+              <Link
+                className="mamalik-action-secondary px-4 py-2"
+                href="/admin"
+              >
+                Admin panel
+              </Link>
+            ) : null}
+            <Link className="mamalik-action-secondary px-4 py-2" href="/">
+              Home
+            </Link>
+            <form action="/api/auth/logout" method="post">
+              <button
+                className="mamalik-action-secondary px-4 py-2"
+                type="submit"
+              >
+                Log out
+              </button>
+            </form>
+          </div>
         </header>
+
+        <section className="rounded-md border border-[#cbd8cd] bg-[#eff6ed] px-4 py-3 text-sm text-[#183f35]">
+          {DASHBOARD_STATUS_NOTE}
+        </section>
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <SummaryCard
@@ -242,14 +258,9 @@ export default async function DashboardPage() {
         <BuildingPanel buildings={dashboardData.buildings} />
         <ArmyPanel army={dashboardData.army} />
 
-        <section className="rounded-md border border-neutral-200 bg-neutral-50 p-5">
-          <h2 className="text-lg font-semibold text-neutral-950">Sprint 1 Status</h2>
-          <p className="mt-2 text-sm text-neutral-700">{DASHBOARD_STATUS_NOTE}</p>
-        </section>
-
         <div>
           <Link
-            className="text-sm font-medium text-neutral-950 underline"
+            className="font-semibold text-[#183f35] underline"
             href="/"
           >
             Back to home

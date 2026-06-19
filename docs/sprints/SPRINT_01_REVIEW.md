@@ -56,30 +56,37 @@ Sprint 1 delivered the v0.1 foundation for Mamalik:
 ## Stabilization
 
 - Added `outputFileTracingRoot` to `apps/web/next.config.ts` so the Next.js production build traces runtime files from repo-local packages such as `packages/db`.
+- Added a post-closure UI stabilization pass for existing Sprint 1 web surfaces: home, login, register, dashboard, admin, and create-kingdom shell/components.
+- Introduced shared UI primitives for Mamalik page backgrounds, cards, inputs, actions, and data tables.
 
 ## Manual Smoke Result
 
 Manual browser smoke testing was not completed in this environment.
 
+Post-closure Chrome smoke update on 2026-06-17:
+
+- Verified the local app was reachable at `http://localhost:3000`.
+- Verified email/password login with the prepared test account.
+- Verified the signed-in home page shows the player account, owned kingdom, dashboard navigation, admin navigation, and logout.
+- Verified `/dashboard` renders the existing kingdom state with the updated UI.
+- Verified `/admin` renders the read-only inspection overview and users table for the admin test account.
+- Verified an existing kingdom owner sent to `/create-kingdom` is redirected back to `/dashboard`.
+
 Blocked items:
 
 - Register with email/password.
-- Log in with email/password.
-- Log out.
 - Trigger live Google OAuth.
-- Protected route redirects.
+- Full protected route redirect matrix.
 - Create-kingdom map click and validation flow.
 - Kingdom creation and database record verification.
-- Dashboard database-value verification.
 - Second kingdom creation rejection.
 - Non-admin `/admin` denial.
-- Admin `/admin` data inspection.
 
 Blockers:
 
-- No reachable local PostgreSQL/PostGIS database is available.
 - No configured Google OAuth credentials are available.
-- No prepared signed-in player/admin accounts are available.
+- No prepared signed-in no-kingdom account is available for the create-kingdom map/validation/creation flow.
+- No prepared non-admin account is available for non-admin `/admin` denial smoke testing.
 - Local `psql` and Docker are not installed in this environment.
 
 ## Known Issues

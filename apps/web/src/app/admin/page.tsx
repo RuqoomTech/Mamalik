@@ -48,10 +48,10 @@ function AdminSection({
   children: ReactNode;
 }) {
   return (
-    <section className="space-y-3 border-t border-neutral-200 pt-6">
+    <section className="mamalik-card space-y-3 p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-lg font-semibold text-neutral-950">{title}</h2>
-        {limitLabel ? <p className="text-xs text-neutral-500">{limitLabel}</p> : null}
+        <h2 className="text-lg font-semibold text-[#10140f]">{title}</h2>
+        {limitLabel ? <p className="text-xs text-[#5f665d]">{limitLabel}</p> : null}
       </div>
       {children}
     </section>
@@ -70,13 +70,13 @@ function AdminTable({
   const hasRows = Children.count(children) > 0;
 
   return (
-    <div className="overflow-x-auto rounded-md border border-neutral-200">
-      <table className="min-w-full divide-y divide-neutral-200 text-sm">
-        <thead className="bg-neutral-50">
+    <div className="overflow-x-auto rounded-md border border-[#dfe5dc]">
+      <table className="mamalik-table min-w-full text-sm">
+        <thead>
           <tr>
             {headers.map((header) => (
               <th
-                className="whitespace-nowrap px-3 py-2 text-left text-xs font-semibold uppercase text-neutral-600"
+                className="whitespace-nowrap"
                 key={header}
                 scope="col"
               >
@@ -90,7 +90,7 @@ function AdminTable({
             children
           ) : (
             <tr>
-              <td className="px-3 py-4 text-neutral-500" colSpan={headers.length}>
+              <td className="px-3 py-4 text-[#5f665d]" colSpan={headers.length}>
                 {emptyMessage}
               </td>
             </tr>
@@ -103,9 +103,9 @@ function AdminTable({
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md border border-neutral-200 bg-white p-4">
-      <p className="text-xs font-medium uppercase text-neutral-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-neutral-950">
+    <div className="rounded-md border border-[#dfe5dc] bg-[#f7f8f4] p-4">
+      <p className="mamalik-eyebrow">{label}</p>
+      <p className="mt-2 text-2xl font-semibold text-[#10140f]">
         {formatNumber(value)}
       </p>
     </div>
@@ -117,36 +117,34 @@ export default async function AdminPage() {
   const data = await getAdminOverviewData();
 
   return (
-    <main className="min-h-screen bg-neutral-50 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-200 pb-5">
+    <main className="mamalik-page">
+      <div className="mamalik-container flex flex-col gap-6">
+        <header className="mamalik-card flex flex-wrap items-center justify-between gap-4 p-5">
           <div>
-            <p className="text-sm font-medium uppercase text-neutral-500">
-              Mamalik
-            </p>
-            <h1 className="text-3xl font-semibold text-neutral-950">
+            <p className="mamalik-eyebrow">Mamalik</p>
+            <h1 className="mt-1 text-3xl font-semibold text-[#10140f]">
               Admin Panel
             </h1>
-            <p className="mt-1 text-sm text-neutral-600">
+            <p className="mt-2 text-sm text-[#5f665d]">
               Signed in as {user.displayName} ({user.email})
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link
-              className="rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-100"
+              className="mamalik-action-secondary px-4 py-2"
               href="/dashboard"
             >
               Dashboard
             </Link>
             <Link
-              className="rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-100"
+              className="mamalik-action-secondary px-4 py-2"
               href="/"
             >
               Home
             </Link>
             <form action="/api/auth/logout" method="post">
               <button
-                className="rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-100"
+                className="mamalik-action-secondary px-4 py-2"
                 type="submit"
               >
                 Log out

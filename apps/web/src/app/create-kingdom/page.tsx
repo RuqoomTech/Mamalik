@@ -9,24 +9,22 @@ export default async function CreateKingdomPage() {
   const mapStyleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "";
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-8">
-      <div className="space-y-6">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-200 pb-5">
+    <main className="mamalik-page">
+      <div className="mamalik-container space-y-6">
+        <header className="mamalik-card flex flex-wrap items-center justify-between gap-4 p-5">
           <div>
-            <p className="text-sm font-medium uppercase tracking-wide text-neutral-500">
-              Mamalik
-            </p>
-            <h1 className="text-3xl font-semibold text-neutral-950">
+            <p className="mamalik-eyebrow">Mamalik</p>
+            <h1 className="mt-1 text-3xl font-semibold text-[#10140f]">
               Choose Your Kingdom Location
             </h1>
-            <p className="mt-2 max-w-2xl text-sm text-neutral-600">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#5f665d]">
               Start by selecting a point on the world map. New kingdoms begin with
               50,000 m2 usable land, and the final location must be valid land.
             </p>
           </div>
           <form action="/api/auth/logout" method="post">
             <button
-              className="rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-100"
+              className="mamalik-action-secondary px-4 py-2"
               type="submit"
             >
               Log out
@@ -42,7 +40,7 @@ export default async function CreateKingdomPage() {
 
         <div>
           <Link
-            className="text-sm font-medium text-neutral-950 underline"
+            className="font-semibold text-[#183f35] underline"
             href="/"
           >
             Back to home

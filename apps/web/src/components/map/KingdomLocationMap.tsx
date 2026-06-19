@@ -76,7 +76,7 @@ export function KingdomLocationMap({
     }
 
     if (!markerRef.current) {
-      markerRef.current = new maplibregl.Marker({ color: "#0a0a0a" })
+      markerRef.current = new maplibregl.Marker({ color: "#183f35" })
         .setLngLat([nextLocation.longitude, nextLocation.latitude])
         .addTo(map);
     } else {
@@ -170,7 +170,7 @@ export function KingdomLocationMap({
 
   return (
     <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="min-h-[520px] overflow-hidden rounded-md border border-neutral-200 bg-neutral-100">
+      <div className="mamalik-card min-h-[520px] overflow-hidden bg-[#eef3ec]">
         <div ref={mapContainerRef} className="h-[520px] w-full" />
         {mapError ? (
           <div className="border-t border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -180,19 +180,19 @@ export function KingdomLocationMap({
       </div>
 
       <aside className="space-y-4">
-        <section className="rounded-md border border-neutral-200 bg-white p-5">
-          <p className="text-sm text-neutral-500">Signed in</p>
-          <p className="mt-1 text-lg font-medium text-neutral-950">
+        <section className="mamalik-card p-5">
+          <p className="text-sm text-[#5f665d]">Signed in</p>
+          <p className="mt-1 text-lg font-semibold text-[#10140f]">
             {playerDisplayName}
           </p>
-          <p className="text-sm text-neutral-600">{playerEmail}</p>
+          <p className="text-sm text-[#5f665d]">{playerEmail}</p>
         </section>
 
-        <section className="rounded-md border border-neutral-200 bg-white p-5">
+        <section className="mamalik-card p-5">
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-neutral-800">Search</span>
+            <span className="text-sm font-medium text-[#10140f]">Search</span>
             <input
-              className="w-full rounded-md border border-neutral-300 bg-neutral-50 px-3 py-2 text-sm text-neutral-500"
+              className="mamalik-input px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-70"
               disabled
               placeholder="Search locations"
               type="search"
@@ -200,31 +200,31 @@ export function KingdomLocationMap({
           </label>
         </section>
 
-        <section className="rounded-md border border-neutral-200 bg-white p-5">
-          <h2 className="text-lg font-medium text-neutral-950">Selected Location</h2>
+        <section className="mamalik-card p-5">
+          <h2 className="text-lg font-semibold text-[#10140f]">Selected Location</h2>
           {selectedLocation ? (
             <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
               <div>
-                <dt className="text-neutral-500">Latitude</dt>
-                <dd className="font-medium text-neutral-950">
+                <dt className="text-[#5f665d]">Latitude</dt>
+                <dd className="font-semibold text-[#10140f]">
                   {formatCoordinate(selectedLocation.latitude)}
                 </dd>
               </div>
               <div>
-                <dt className="text-neutral-500">Longitude</dt>
-                <dd className="font-medium text-neutral-950">
+                <dt className="text-[#5f665d]">Longitude</dt>
+                <dd className="font-semibold text-[#10140f]">
                   {formatCoordinate(selectedLocation.longitude)}
                 </dd>
               </div>
             </dl>
           ) : (
-            <p className="mt-3 text-sm text-neutral-600">
+            <p className="mt-3 text-sm text-[#5f665d]">
               Click the map to choose a starting point.
             </p>
           )}
 
           <button
-            className="mt-5 w-full rounded-md bg-neutral-950 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
+            className="mamalik-action-primary mt-5 w-full px-4 py-2.5"
             disabled={!selectedLocation || isValidating}
             onClick={handleValidateLocation}
             type="button"
@@ -283,12 +283,12 @@ export function KingdomLocationMap({
           />
         ) : null}
 
-        <section className="rounded-md border border-neutral-200 bg-white p-5">
-          <h2 className="text-lg font-medium text-neutral-950">Starting Rules</h2>
-          <ul className="mt-3 space-y-2 text-sm text-neutral-600">
+        <section className="mamalik-card p-5">
+          <h2 className="text-lg font-semibold text-[#10140f]">Starting Rules</h2>
+          <ul className="mt-3 space-y-2 text-sm text-[#5f665d]">
             <li>Kingdoms start with 50,000 m2 usable land.</li>
             <li>The selected location must be valid land.</li>
-            <li>Visible borders and validation connect in the next Sprint 1 tasks.</li>
+            <li>Final visible borders and real land validation arrive in Sprint 4.</li>
           </ul>
         </section>
       </aside>

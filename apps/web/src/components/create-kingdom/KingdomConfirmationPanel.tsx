@@ -115,21 +115,21 @@ export function KingdomConfirmationPanel({
   }
 
   return (
-    <section className="rounded-md border border-neutral-200 bg-white p-5">
+    <section className="mamalik-card p-5">
       <div className="space-y-5">
         <div>
-          <p className="text-sm font-medium uppercase tracking-wide text-emerald-700">
+          <p className="mamalik-eyebrow">
             Validation passed
           </p>
-          <h2 className="mt-1 text-xl font-semibold text-neutral-950">
+          <h2 className="mt-1 text-xl font-semibold text-[#10140f]">
             Confirm Kingdom
           </h2>
         </div>
 
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-neutral-800">Kingdom name</span>
+          <span className="text-sm font-medium text-[#10140f]">Kingdom name</span>
           <input
-            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-neutral-950 outline-none focus:border-neutral-950"
+            className="mamalik-input px-3 py-2"
             maxLength={32}
             minLength={2}
             onChange={(event) => {
@@ -146,26 +146,26 @@ export function KingdomConfirmationPanel({
 
         <dl className="grid grid-cols-2 gap-3 text-sm">
           <div>
-            <dt className="text-neutral-500">Latitude</dt>
-            <dd className="font-medium text-neutral-950">
+            <dt className="text-[#5f665d]">Latitude</dt>
+            <dd className="font-semibold text-[#10140f]">
               {formatCoordinate(selectedLocation.latitude)}
             </dd>
           </div>
           <div>
-            <dt className="text-neutral-500">Longitude</dt>
-            <dd className="font-medium text-neutral-950">
+            <dt className="text-[#5f665d]">Longitude</dt>
+            <dd className="font-semibold text-[#10140f]">
               {formatCoordinate(selectedLocation.longitude)}
             </dd>
           </div>
           <div>
-            <dt className="text-neutral-500">Usable land</dt>
-            <dd className="font-medium text-neutral-950">
+            <dt className="text-[#5f665d]">Usable land</dt>
+            <dd className="font-semibold text-[#10140f]">
               {formatNumber(validationResult.usableLandM2)} m2
             </dd>
           </div>
           <div>
-            <dt className="text-neutral-500">Visible area</dt>
-            <dd className="font-medium text-neutral-950">
+            <dt className="text-[#5f665d]">Visible area</dt>
+            <dd className="font-semibold text-[#10140f]">
               {validationResult.visibleAreaM2
                 ? `${formatNumber(validationResult.visibleAreaM2)} m2`
                 : "Pending"}
@@ -173,9 +173,9 @@ export function KingdomConfirmationPanel({
           </div>
         </dl>
 
-        <section className="rounded-md border border-neutral-200 bg-neutral-50 p-3">
-          <p className="text-sm font-medium text-neutral-950">Preview polygon</p>
-          <p className="mt-1 text-sm text-neutral-600">
+        <section className="rounded-md border border-[#dfe5dc] bg-[#f7f8f4] p-3">
+          <p className="text-sm font-semibold text-[#10140f]">Preview polygon</p>
+          <p className="mt-1 text-sm text-[#5f665d]">
             {validationResult.previewPolygon
               ? `${validationResult.previewPolygon.type} with ${getPolygonPointCount(
                   validationResult,
@@ -185,41 +185,41 @@ export function KingdomConfirmationPanel({
         </section>
 
         <section>
-          <p className="text-sm font-medium text-neutral-950">Starter resources</p>
+          <p className="text-sm font-semibold text-[#10140f]">Starter resources</p>
           <dl className="mt-2 grid grid-cols-2 gap-2 text-sm">
             <div>
-              <dt className="text-neutral-500">Money</dt>
-              <dd className="font-medium text-neutral-950">
+              <dt className="text-[#5f665d]">Money</dt>
+              <dd className="font-semibold text-[#10140f]">
                 {formatNumber(STARTING_RESOURCES.money)}
               </dd>
             </div>
             <div>
-              <dt className="text-neutral-500">Food</dt>
-              <dd className="font-medium text-neutral-950">
+              <dt className="text-[#5f665d]">Food</dt>
+              <dd className="font-semibold text-[#10140f]">
                 {formatNumber(STARTING_RESOURCES.food)}
               </dd>
             </div>
             <div>
-              <dt className="text-neutral-500">Manpower</dt>
-              <dd className="font-medium text-neutral-950">
+              <dt className="text-[#5f665d]">Manpower</dt>
+              <dd className="font-semibold text-[#10140f]">
                 {formatNumber(STARTING_RESOURCES.manpower)}
               </dd>
             </div>
             <div>
-              <dt className="text-neutral-500">Knowledge</dt>
-              <dd className="font-medium text-neutral-950">
+              <dt className="text-[#5f665d]">Knowledge</dt>
+              <dd className="font-semibold text-[#10140f]">
                 {formatNumber(STARTING_RESOURCES.knowledge)}
               </dd>
             </div>
             <div>
-              <dt className="text-neutral-500">Population</dt>
-              <dd className="font-medium text-neutral-950">
+              <dt className="text-[#5f665d]">Population</dt>
+              <dd className="font-semibold text-[#10140f]">
                 {formatNumber(STARTING_POPULATION)}
               </dd>
             </div>
             <div>
-              <dt className="text-neutral-500">Protection</dt>
-              <dd className="font-medium text-neutral-950">
+              <dt className="text-[#5f665d]">Protection</dt>
+              <dd className="font-semibold text-[#10140f]">
                 {BEGINNER_PROTECTION_DAYS} days
               </dd>
             </div>
@@ -227,12 +227,12 @@ export function KingdomConfirmationPanel({
         </section>
 
         <section>
-          <p className="text-sm font-medium text-neutral-950">Starting districts</p>
-          <ul className="mt-2 space-y-1 text-sm text-neutral-600">
+          <p className="text-sm font-semibold text-[#10140f]">Starting districts</p>
+          <ul className="mt-2 space-y-1 text-sm text-[#5f665d]">
             {STARTING_DISTRICTS.map((district) => (
               <li className="flex justify-between gap-3" key={district.type}>
                 <span>{district.label}</span>
-                <span className="font-medium text-neutral-950">
+                <span className="font-semibold text-[#10140f]">
                   {formatNumber(district.allocatedLandM2)} m2
                 </span>
               </li>
@@ -241,8 +241,8 @@ export function KingdomConfirmationPanel({
         </section>
 
         <section>
-          <p className="text-sm font-medium text-neutral-950">Starter buildings</p>
-          <ul className="mt-2 grid grid-cols-2 gap-1 text-sm text-neutral-600">
+          <p className="text-sm font-semibold text-[#10140f]">Starter buildings</p>
+          <ul className="mt-2 grid grid-cols-2 gap-1 text-sm text-[#5f665d]">
             {STARTER_BUILDINGS.map((building) => (
               <li key={building.type}>{building.label}</li>
             ))}
@@ -250,12 +250,12 @@ export function KingdomConfirmationPanel({
         </section>
 
         <section>
-          <p className="text-sm font-medium text-neutral-950">Starter army</p>
-          <ul className="mt-2 space-y-1 text-sm text-neutral-600">
+          <p className="text-sm font-semibold text-[#10140f]">Starter army</p>
+          <ul className="mt-2 space-y-1 text-sm text-[#5f665d]">
             {STARTER_UNITS.map((unit) => (
               <li className="flex justify-between gap-3" key={unit.type}>
                 <span>{unit.label}</span>
-                <span className="font-medium text-neutral-950">
+                <span className="font-semibold text-[#10140f]">
                   {formatNumber(unit.quantity)}
                 </span>
               </li>
@@ -265,7 +265,7 @@ export function KingdomConfirmationPanel({
 
         <div className="space-y-3">
           <button
-            className="w-full rounded-md bg-neutral-950 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500"
+            className="mamalik-action-primary w-full px-4 py-2.5"
             disabled={!canCreateKingdom}
             onClick={handleCreateKingdom}
             type="button"
@@ -273,7 +273,7 @@ export function KingdomConfirmationPanel({
             {isCreating ? "Creating..." : "Create kingdom"}
           </button>
           <button
-            className="w-full rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-950 hover:bg-neutral-100"
+            className="mamalik-action-secondary w-full px-4 py-2.5"
             onClick={() => {
               setCreateMessage(null);
               setCreateError(null);

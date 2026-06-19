@@ -202,6 +202,7 @@ v0.1 must include:
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - Next.js `outputFileTracingRoot` is configured to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.
+- Existing Sprint 1 web surfaces use shared Mamalik UI primitives in `apps/web/src/app/globals.css` for page backgrounds, cards, form inputs, action buttons, and data tables; keep future Sprint 1/Sprint 2 UI work aligned with those primitives unless a dedicated design-system task replaces them.
 - Canonical v0.1 documentation sources are listed in `AGENTS.md`; duplicate historical docs and task artifacts live under `docs/archive/` and `tasks/archive/` as read-only references.
 - Active Sprint 1-6 task tracking uses `tasks/backlog.md` and `tasks/sprint_01.md` through `tasks/sprint_06.md`; JSON/CSV exports are reference artifacts only.
 

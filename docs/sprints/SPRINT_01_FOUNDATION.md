@@ -60,6 +60,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 - Canonical active documentation sources are listed in `AGENTS.md`.
 - Duplicate historical v0.1 docs and task artifacts were moved into `docs/archive/` and `tasks/archive/`.
 - Archived files are read-only references and must not drive active v0.1 implementation.
+- A post-closure UI stabilization pass aligned the existing Sprint 1 home, auth, dashboard, admin, and create-kingdom surfaces to shared Mamalik UI primitives without adding new gameplay systems.
 
 ## Required Starter State
 
@@ -127,5 +128,6 @@ Real valid land, water rejection, restricted zones, OSM parcel style, and dynami
 
 - Automated checks passed during Sprint 1 QA closure.
 - Production build passed after configuring Next.js `outputFileTracingRoot` to the repository root.
-- Live browser smoke testing remains blocked in this environment by missing reachable PostgreSQL/PostGIS, Google OAuth credentials, and prepared player/admin accounts.
+- Post-closure Chrome smoke testing verified local email/password login with the prepared test account, signed-in home navigation, dashboard rendering, admin read-only rendering, and existing-kingdom `/create-kingdom` redirect behavior.
+- Live Google OAuth, no-kingdom create-kingdom map/creation flow, second kingdom rejection, and non-admin admin-denial smoke tests still require prepared accounts/credentials.
 - Sprint 1 is ready for Sprint 2 implementation from a code and documentation standpoint, with live smoke validation still required before any production-like release claim.

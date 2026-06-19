@@ -28,6 +28,7 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 
 - [x] 2026-06-08: Archive duplicate legacy docs/tasks and lock canonical documentation sources.
 - [x] 2026-06-17: Complete Sprint 1 QA, stabilization, and closure review.
+- [x] 2026-06-17: Complete post-closure UI stabilization for existing Sprint 1 web surfaces.
 
 ## Acceptance Criteria
 
@@ -59,4 +60,5 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - S1-016 creates a read-only server-rendered dashboard. Live dashboard smoke testing still requires a reachable PostgreSQL/PostGIS database and signed-in kingdom owner.
 - S1-017 creates a read-only server-rendered admin panel for users, kingdoms, resources, districts, buildings, units, and reports. Live admin smoke testing still requires a reachable PostgreSQL/PostGIS database and admin account.
 - Sprint 1 QA closure passed automated checks and production build after configuring Next.js output file tracing for repo-local package runtime files.
-- Live Sprint 1 browser smoke testing still requires a reachable PostgreSQL/PostGIS database, Google OAuth credentials, and test player/admin accounts.
+- Post-closure Chrome smoke testing verified local email/password login with the prepared test account, signed-in home navigation, dashboard rendering, admin read-only rendering, and existing-kingdom `/create-kingdom` redirect behavior.
+- Remaining live Sprint 1 smoke gaps require Google OAuth credentials, a signed-in no-kingdom account, and a non-admin account.
