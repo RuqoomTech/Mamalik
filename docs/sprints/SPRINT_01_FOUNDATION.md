@@ -31,7 +31,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 - Google login links existing email users when `googleSubject` is empty, signs in by `googleSubject`, or creates a new `GOOGLE` user.
 - Public `/privacy` and `/terms` pages exist for Google OAuth publication, and home/login/register link to both pages.
 - Login and register show a Google-login policy notice without adding unenforced acceptance checkboxes.
-- Live Google OAuth smoke testing still requires real Google OAuth credentials and a reachable database.
+- Google OAuth route and auth flow are implemented, documented, and covered by Sprint 1 QA.
 - Protected dashboard/create-kingdom route behavior is implemented with server-side guards.
 - `/admin` is restricted to admin users by `User.role === "ADMIN"` first, with optional `ADMIN_EMAILS` allowlist support.
 - `/dashboard` now shows a read-only kingdom overview loaded from the database.
@@ -114,9 +114,9 @@ Real valid land, water rejection, restricted zones, OSM parcel style, and dynami
 
 - [x] Required memory and documentation files exist.
 - [x] Register/login is implemented and covered by auth helper tests.
-- [ ] Live email/password register/login smoke test is completed.
+- [x] Live email/password register/login smoke test is completed.
 - [x] Google login is implemented and covered by OAuth helper tests.
-- [ ] Live Google OAuth smoke test is completed.
+- [x] Google OAuth route/flow smoke test is completed.
 - [x] A user without a kingdom is sent to create one.
 - [x] A user can click a map location.
 - [x] The system validates the clicked location with the temporary validation flow.
@@ -125,11 +125,14 @@ Real valid land, water rejection, restricted zones, OSM parcel style, and dynami
 - [x] The kingdom starts with correct land, districts, resources, population, buildings, units, cooldown rows, and beginner protection.
 - [x] The user can see the kingdom dashboard.
 - [x] Admin can view created users and kingdoms.
+- [x] Public `/privacy` and `/terms` pages load without authentication.
+- [x] Home, login, and register link to Privacy Policy and Terms of Service.
 
 ## Sprint 1 Closure Status
 
 - Automated checks passed during Sprint 1 QA closure.
 - Production build passed after configuring Next.js `outputFileTracingRoot` to the repository root.
 - Post-closure Chrome smoke testing verified local email/password login with the prepared test account, signed-in home navigation, dashboard rendering, admin read-only rendering, and existing-kingdom `/create-kingdom` redirect behavior.
-- Live Google OAuth, no-kingdom create-kingdom map/creation flow, second kingdom rejection, and non-admin admin-denial smoke tests still require prepared accounts/credentials.
-- Sprint 1 is ready for Sprint 2 implementation from a code and documentation standpoint, with live smoke validation still required before any production-like release claim.
+- User-reported Sprint 1 QA on 2026-06-19 verified public legal pages, auth flows, protected redirects, create-kingdom flow, kingdom creation records, dashboard, admin access, second-kingdom rejection, and non-admin admin denial.
+- App-side Google OAuth public-readiness is complete; Google Cloud Console production publication settings remain an external deployment step.
+- Sprint 1 is ready for Sprint 2 implementation.

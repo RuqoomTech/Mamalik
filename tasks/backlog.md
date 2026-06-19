@@ -28,10 +28,11 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] 2026-06-17: Complete Sprint 1 QA, stabilization, and closure review.
 - [x] 2026-06-17: Complete post-closure UI stabilization for existing Sprint 1 web surfaces.
 - [x] 2026-06-19: Add public Privacy Policy and Terms pages for Google OAuth publication.
+- [x] 2026-06-19: Complete Sprint 1 QA, auth compliance verification, and closure.
 
 ## Sprint 2 - Tick Engine + Economy
 
-- [ ] See `tasks/sprint_02.md`.
+- [ ] Ready to start when explicitly requested. See `tasks/sprint_02.md`.
 
 ## Sprint 3 - Land Buying + District Management
 

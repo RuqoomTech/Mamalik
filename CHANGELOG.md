@@ -15,10 +15,13 @@ All notable Mamalik project changes are recorded here.
 - Linked Privacy Policy and Terms of Service from the home, login, and register pages.
 - Added a Google-login policy notice near the Google login entry points on `/login` and `/register`.
 - Documented Google OAuth publication URLs and remaining Google Cloud Console setup steps.
+- Completed Sprint 1 QA/auth compliance closure and marked Sprint 1 ready for Sprint 2.
+- Updated Sprint 1 acceptance docs to reflect user-tested auth, routing, kingdom creation, dashboard, admin, and public legal page flows.
 
 ### Fixed
 
 - Filled the missing public policy URL surface required before safely publishing Google OAuth login.
+- Removed stale Sprint 1 live-smoke blocker language from active Sprint 1 closure docs.
 
 ### Deferred
 
@@ -26,7 +29,7 @@ All notable Mamalik project changes are recorded here.
 
 ### Known issues
 
-- Production Google OAuth publication still requires a public production app URL, verified authorized domain, OAuth consent configuration, and production redirect URI.
+- None blocking Sprint 2. Production Google OAuth publication still requires external Google Cloud Console configuration before public production publishing.
 
 ## 2026-06-17
 

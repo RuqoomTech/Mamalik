@@ -5,12 +5,12 @@ Use this checklist before publishing Google login for a production Mamalik deplo
 ## Public App URLs
 
 - [ ] Production app URL works publicly.
-- [ ] `${NEXT_PUBLIC_APP_URL}/privacy` works publicly without login.
-- [ ] `${NEXT_PUBLIC_APP_URL}/terms` works publicly without login.
-- [ ] Home page links to both the Privacy Policy and Terms of Service.
-- [ ] `/login` links to both the Privacy Policy and Terms of Service.
-- [ ] `/register` links to both the Privacy Policy and Terms of Service.
-- [ ] Login and register pages show the Google-login policy notice near the Google login entry point.
+- [x] `${NEXT_PUBLIC_APP_URL}/privacy` works publicly without login in the tested app environment.
+- [x] `${NEXT_PUBLIC_APP_URL}/terms` works publicly without login in the tested app environment.
+- [x] Home page links to both the Privacy Policy and Terms of Service.
+- [x] `/login` links to both the Privacy Policy and Terms of Service.
+- [x] `/register` links to both the Privacy Policy and Terms of Service.
+- [x] Login and register pages show the Google-login policy notice near the Google login entry point.
 
 ## Google Cloud OAuth Consent
 
@@ -25,10 +25,10 @@ Use this checklist before publishing Google login for a production Mamalik deplo
 
 ## Local Verification
 
-- [ ] `npm run build` includes `/privacy` and `/terms`.
-- [ ] Public legal pages do not require database access.
-- [ ] Public legal pages do not require an authenticated session.
-- [ ] Google login start route still renders and redirects according to the existing OAuth implementation.
+- [x] `npm run build` includes `/privacy` and `/terms`.
+- [x] Public legal pages do not require database access.
+- [x] Public legal pages do not require an authenticated session.
+- [x] Google login start route still renders and redirects according to the existing OAuth implementation in the tested app environment.
 
 ## Notes
 

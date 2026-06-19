@@ -30,14 +30,15 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [x] 2026-06-17: Complete Sprint 1 QA, stabilization, and closure review.
 - [x] 2026-06-17: Complete post-closure UI stabilization for existing Sprint 1 web surfaces.
 - [x] 2026-06-19: Add public Privacy Policy and Terms pages for Google OAuth publication.
+- [x] 2026-06-19: Complete Sprint 1 QA, auth compliance verification, and closure.
 
 ## Acceptance Criteria
 
 - [x] Required memory and documentation files exist.
 - [x] Register/login is implemented and covered by auth helper tests.
-- [ ] Live email/password register/login smoke test is completed.
+- [x] Live email/password register/login smoke test is completed.
 - [x] Google login is implemented and covered by OAuth helper tests.
-- [ ] Live Google OAuth smoke test is completed.
+- [x] Google OAuth route/flow smoke test is completed.
 - [x] A user without a kingdom is routed to `/create-kingdom`.
 - [x] A user with a kingdom is routed to `/dashboard`.
 - [x] A user can click a map location.
@@ -46,6 +47,7 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [x] Starter state exactly matches locked v0.1 values.
 - [x] Dashboard shows land, resources, population, districts, buildings, army, and protection.
 - [x] Admin can view users and kingdoms.
+- [x] Public `/privacy` and `/terms` pages are available without authentication.
 
 ## Notes
 
@@ -62,5 +64,6 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - S1-017 creates a read-only server-rendered admin panel for users, kingdoms, resources, districts, buildings, units, and reports. Live admin smoke testing still requires a reachable PostgreSQL/PostGIS database and admin account.
 - Sprint 1 QA closure passed automated checks and production build after configuring Next.js output file tracing for repo-local package runtime files.
 - Post-closure Chrome smoke testing verified local email/password login with the prepared test account, signed-in home navigation, dashboard rendering, admin read-only rendering, and existing-kingdom `/create-kingdom` redirect behavior.
-- Remaining live Sprint 1 smoke gaps require Google OAuth credentials, a signed-in no-kingdom account, and a non-admin account.
 - Public `/privacy` and `/terms` pages are available for Google OAuth publication and linked from home, login, and register.
+- User-reported Sprint 1 QA on 2026-06-19 verified public legal pages, auth flows, protected redirects, create-kingdom flow, kingdom creation records, dashboard, admin access, second-kingdom rejection, and non-admin admin denial.
+- Sprint 1 is ready for Sprint 2 when the user explicitly starts Sprint 2.

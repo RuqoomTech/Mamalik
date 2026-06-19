@@ -88,12 +88,11 @@ Mamalik v0.1 uses first-party Next.js route handlers for email/password auth and
 - Duplicate registration returns an email-taken error.
 - Google login failures redirect to `/login?error=google-login-failed`.
 
-## Current Limits
+## Operational Notes
 
 - `/dashboard` is a protected read-only kingdom overview.
 - `/admin` is a Sprint 1 read-only inspection panel for users, kingdoms, resources, districts, buildings, units, and reports.
 - `/create-kingdom` has the protected MapLibre location-selection page, temporary server validation, editable confirmation UI, and kingdom creation API.
-- Live kingdom creation smoke tests require a reachable PostgreSQL/PostGIS database.
 - There is no session table yet. Signed cookies are the v0.1 Sprint 1 implementation.
-- Live route smoke tests require a reachable PostgreSQL/PostGIS database.
-- Live Google OAuth smoke tests require configured Google OAuth credentials, a matching Google Console redirect URI, published OAuth consent settings, and public policy URLs.
+- Sprint 1 manual QA has verified the auth, protected-route, create-kingdom, dashboard, admin, public policy page, and Google OAuth route flows in the tested app environment.
+- Production Google OAuth publication must use the public deployed domain, verified Google authorized domain, production callback URI, and public policy URLs.

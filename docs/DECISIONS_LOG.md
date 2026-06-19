@@ -114,3 +114,9 @@
 - Decision: The public policy pages describe current v0.1 data practices honestly and do not add unsupported legal, payment, or ownership claims.
 - Decision: Google OAuth publication should use `${NEXT_PUBLIC_APP_URL}/privacy` and `${NEXT_PUBLIC_APP_URL}/terms` in Google Cloud OAuth consent/app branding settings.
 - Decision: Login and register show a policy notice near the Google login entry point without adding unenforced acceptance checkboxes.
+
+## 2026-06-19 - Sprint 1 Auth Compliance Closure
+
+- Decision: Sprint 1 app-side foundation and auth compliance are complete after user-reported manual QA verified public legal pages, auth flows, route guards, kingdom creation, dashboard, admin access, and second-kingdom rejection.
+- Decision: Sprint 1 is ready for Sprint 2 implementation when the user explicitly starts Sprint 2.
+- Decision: Production Google Cloud OAuth consent/app branding configuration remains an external deployment task and is not a Sprint 1 code blocker.
