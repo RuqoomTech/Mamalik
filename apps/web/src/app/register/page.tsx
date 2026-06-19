@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { GoogleLegalNotice, LegalLinks } from "@/components/legal/LegalLinks";
 import { redirectAuthenticatedUserFromAuthPage } from "@/lib/auth/guards";
 
 type RegisterPageProps = {
@@ -56,6 +57,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
             >
               Continue with Google
             </Link>
+            <GoogleLegalNotice />
 
             <form action="/api/auth/register" method="post" className="space-y-4">
               <label className="block space-y-2">
@@ -111,6 +113,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
                 Log in
               </Link>
             </p>
+            <LegalLinks />
           </div>
         </div>
       </div>

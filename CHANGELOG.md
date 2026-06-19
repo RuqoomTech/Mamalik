@@ -2,6 +2,32 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-19
+
+### Added
+
+- Added public `/privacy` and `/terms` pages for Google OAuth publication.
+- Added reusable legal page layout and legal link components.
+- Added a Google OAuth publication checklist at `docs/GOOGLE_OAUTH_PUBLICATION_CHECKLIST.md`.
+
+### Changed
+
+- Linked Privacy Policy and Terms of Service from the home, login, and register pages.
+- Added a Google-login policy notice near the Google login entry points on `/login` and `/register`.
+- Documented Google OAuth publication URLs and remaining Google Cloud Console setup steps.
+
+### Fixed
+
+- Filled the missing public policy URL surface required before safely publishing Google OAuth login.
+
+### Deferred
+
+- Google Cloud Console OAuth consent configuration remains an external deployment/setup step.
+
+### Known issues
+
+- Production Google OAuth publication still requires a public production app URL, verified authorized domain, OAuth consent configuration, and production redirect URI.
+
 ## 2026-06-17
 
 ### Added

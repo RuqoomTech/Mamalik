@@ -43,6 +43,7 @@ Use these files as the active source of truth for v0.1 work:
 - `docs/DATABASE.md`
 - `docs/ENVIRONMENT.md`
 - `docs/BRAND_ASSETS.md`
+- `docs/GOOGLE_OAUTH_PUBLICATION_CHECKLIST.md`
 - `docs/sprints/SPRINT_01_FOUNDATION.md`
 - `docs/sprints/SPRINT_02_TICK_ENGINE.md`
 - `docs/sprints/SPRINT_03_LAND_DISTRICTS.md`

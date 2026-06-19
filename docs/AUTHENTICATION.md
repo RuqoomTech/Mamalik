@@ -23,11 +23,22 @@ Mamalik v0.1 uses first-party Next.js route handlers for email/password auth and
 
 - Required environment variables: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXT_PUBLIC_APP_URL`, and `SESSION_SECRET`.
 - Redirect URI: `${NEXT_PUBLIC_APP_URL}/api/auth/google/callback`.
+- Privacy Policy URL for Google OAuth publication: `${NEXT_PUBLIC_APP_URL}/privacy`.
+- Terms of Service URL for Google OAuth publication: `${NEXT_PUBLIC_APP_URL}/terms`.
 - OAuth state is generated server-side and stored in `mamalik_google_oauth_state`.
 - State cookie flags: `HttpOnly`, `SameSite=Lax`, path `/api/auth/google`, short-lived 10 minute max age, and `Secure` in production.
 - Callback requests must provide a matching `state` value and authorization `code`.
 - The callback exchanges the authorization code at Google's token endpoint and reads identity from Google's userinfo endpoint.
 - Google identities must include a subject, an email, and a verified email flag.
+
+## Public OAuth Compliance Pages
+
+- Public Privacy Policy page: `/privacy`.
+- Public Terms of Service page: `/terms`.
+- The home, login, and register pages link to both policy pages.
+- The login and register pages show: "By continuing, you agree to the Terms and acknowledge the Privacy Policy." near the Google login entry point.
+- The public policy pages do not require authentication or database access.
+- Google Cloud OAuth consent and app branding settings must use the deployed production versions of these URLs, not localhost URLs.
 
 ## Google Account Linking
 
@@ -85,4 +96,4 @@ Mamalik v0.1 uses first-party Next.js route handlers for email/password auth and
 - Live kingdom creation smoke tests require a reachable PostgreSQL/PostGIS database.
 - There is no session table yet. Signed cookies are the v0.1 Sprint 1 implementation.
 - Live route smoke tests require a reachable PostgreSQL/PostGIS database.
-- Live Google OAuth smoke tests require configured Google OAuth credentials and a matching Google Console redirect URI.
+- Live Google OAuth smoke tests require configured Google OAuth credentials, a matching Google Console redirect URI, published OAuth consent settings, and public policy URLs.

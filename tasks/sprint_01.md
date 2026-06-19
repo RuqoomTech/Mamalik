@@ -29,6 +29,7 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - [x] 2026-06-08: Archive duplicate legacy docs/tasks and lock canonical documentation sources.
 - [x] 2026-06-17: Complete Sprint 1 QA, stabilization, and closure review.
 - [x] 2026-06-17: Complete post-closure UI stabilization for existing Sprint 1 web surfaces.
+- [x] 2026-06-19: Add public Privacy Policy and Terms pages for Google OAuth publication.
 
 ## Acceptance Criteria
 
@@ -62,3 +63,4 @@ A logged-in player can create a valid starting kingdom and see a basic dashboard
 - Sprint 1 QA closure passed automated checks and production build after configuring Next.js output file tracing for repo-local package runtime files.
 - Post-closure Chrome smoke testing verified local email/password login with the prepared test account, signed-in home navigation, dashboard rendering, admin read-only rendering, and existing-kingdom `/create-kingdom` redirect behavior.
 - Remaining live Sprint 1 smoke gaps require Google OAuth credentials, a signed-in no-kingdom account, and a non-admin account.
+- Public `/privacy` and `/terms` pages are available for Google OAuth publication and linked from home, login, and register.

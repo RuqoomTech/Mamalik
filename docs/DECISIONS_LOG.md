@@ -107,3 +107,10 @@
 - Decision: The post-closure UI pass improves existing Sprint 1 pages only; it does not introduce new gameplay, Sprint 2 tick logic, or new admin actions.
 - Decision: Shared Mamalik UI primitives in `apps/web/src/app/globals.css` are the current lightweight UI-system convention for page shells, cards, inputs, actions, and tables.
 - Decision: Home, auth, dashboard, admin, and create-kingdom surfaces should reuse those primitives for consistency until a later dedicated design-system task intentionally replaces them.
+
+## 2026-06-19 - Google OAuth Public Policy Pages
+
+- Decision: Mamalik exposes `/privacy` and `/terms` as public static pages for Google OAuth publication and user transparency.
+- Decision: The public policy pages describe current v0.1 data practices honestly and do not add unsupported legal, payment, or ownership claims.
+- Decision: Google OAuth publication should use `${NEXT_PUBLIC_APP_URL}/privacy` and `${NEXT_PUBLIC_APP_URL}/terms` in Google Cloud OAuth consent/app branding settings.
+- Decision: Login and register show a policy notice near the Google login entry point without adding unenforced acceptance checkboxes.

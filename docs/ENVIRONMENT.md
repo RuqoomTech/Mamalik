@@ -46,8 +46,12 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 ## Google OAuth Setup
 
 - Configure Google OAuth with the redirect URI `${NEXT_PUBLIC_APP_URL}/api/auth/google/callback`.
+- Configure the Google OAuth consent Privacy Policy URL as `${NEXT_PUBLIC_APP_URL}/privacy`.
+- Configure the Google OAuth consent Terms of Service URL as `${NEXT_PUBLIC_APP_URL}/terms` if the field is available.
 - For local development with the example app URL, use `http://localhost:3000/api/auth/google/callback`.
 - `NEXT_PUBLIC_APP_URL` must be an absolute app origin with no path.
+- For production Google OAuth publication, `NEXT_PUBLIC_APP_URL` must use the public production app origin, and the authorized domain must match or align with the app homepage and verified authorized domain in Google Cloud.
+- The app name, logo, and support email in Google Cloud OAuth consent settings must match the production Mamalik app configuration.
 - Do not commit real Google OAuth client ids or secrets.
 
 ## Admin Access

@@ -29,6 +29,8 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 - Google login is implemented with first-party route handlers and reuses the signed `mamalik_session` cookie.
 - Google OAuth state is stored in a short-lived HttpOnly cookie and verified on callback.
 - Google login links existing email users when `googleSubject` is empty, signs in by `googleSubject`, or creates a new `GOOGLE` user.
+- Public `/privacy` and `/terms` pages exist for Google OAuth publication, and home/login/register link to both pages.
+- Login and register show a Google-login policy notice without adding unenforced acceptance checkboxes.
 - Live Google OAuth smoke testing still requires real Google OAuth credentials and a reachable database.
 - Protected dashboard/create-kingdom route behavior is implemented with server-side guards.
 - `/admin` is restricted to admin users by `User.role === "ADMIN"` first, with optional `ADMIN_EMAILS` allowlist support.

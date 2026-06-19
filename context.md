@@ -187,6 +187,7 @@ v0.1 must include:
 - Email/password auth uses first-party Next.js route handlers, Node `crypto.scrypt` password hashes, and signed `mamalik_session` cookies.
 - Google login uses first-party Next.js route handlers, a short-lived HttpOnly OAuth state cookie, Google OAuth token/userinfo endpoints, and the same signed `mamalik_session` cookie as email/password auth.
 - Google login links an existing email account when the Google email matches and `googleSubject` is empty; otherwise it signs in by `googleSubject` or creates a new `GOOGLE` user.
+- Public Google OAuth compliance pages live at `/privacy` and `/terms`; Google Cloud OAuth consent/app branding should use `${NEXT_PUBLIC_APP_URL}/privacy` and `${NEXT_PUBLIC_APP_URL}/terms` for production publication.
 - Protected app routes use server-side page guards backed by `getCurrentUser`; `/dashboard`, `/create-kingdom`, and `/admin` do not use client-only protection.
 - Admin access checks `User.role === "ADMIN"` first and also supports the server-side `ADMIN_EMAILS` allowlist.
 - The `/create-kingdom` map-selection UI uses MapLibre GL JS in a Client Component and requires `NEXT_PUBLIC_MAP_STYLE_URL`; missing map style configuration shows an explicit page error instead of silently changing providers.

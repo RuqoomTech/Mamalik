@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { LegalLinks } from "@/components/legal/LegalLinks";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getPostLoginDestination, isAdminUser } from "@/lib/auth/route-destinations";
 
@@ -119,6 +120,7 @@ async function HomeContent() {
             </section>
           )}
         </div>
+        <LegalLinks className="mt-8 justify-center lg:justify-start" />
       </div>
     </main>
   );
