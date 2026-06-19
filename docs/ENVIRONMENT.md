@@ -36,6 +36,13 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 - `NEXT_PUBLIC_MAP_STYLE_URL` is active for the `/create-kingdom` MapLibre page.
 - `TICK_WORKER_SECRET` is reserved for the tick worker/admin test tick flow.
 
+## Tick Worker Environment
+
+- `npm run tick:once` runs outside the Next.js app and needs `DATABASE_URL` available to the worker process.
+- For local development, the worker loads ignored env files if a value is not already set in the shell: `apps/web/.env.local`, `apps/web/.env`, `packages/db/.env`, then `.env`.
+- Explicit shell or deployment environment values take precedence over local env files.
+- Before running `npm run tick:once` against a database, apply migrations with `npm run db:migrate:deploy`.
+
 ## Map Setup
 
 - `/create-kingdom` requires `NEXT_PUBLIC_MAP_STYLE_URL` to load a MapLibre style.

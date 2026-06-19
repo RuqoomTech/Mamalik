@@ -120,3 +120,11 @@
 - Decision: Sprint 1 app-side foundation and auth compliance are complete after user-reported manual QA verified public legal pages, auth flows, route guards, kingdom creation, dashboard, admin access, and second-kingdom rejection.
 - Decision: Sprint 1 is ready for Sprint 2 implementation when the user explicitly starts Sprint 2.
 - Decision: Production Google Cloud OAuth consent/app branding configuration remains an external deployment task and is not a Sprint 1 code blocker.
+
+## 2026-06-19 - Sprint 2 Tick Worker Foundation
+
+- Decision: Sprint 2 starts with a separate `workers/tick-worker` package instead of putting tick processing inside the Next.js app.
+- Decision: The first supported worker command is manual `npm run tick:once`; a long-running scheduler remains deferred until the manual tick is stable.
+- Decision: Tick keys are stable UTC ISO timestamps rounded down to locked 10-minute slots.
+- Decision: `TickLog.tickKey` is unique and is the duplicate-processing guard for v0.1 tick execution.
+- Decision: The first tick worker implementation records tick status and counts kingdoms only; resource generation, Food consumption, population effects, construction progress, and training progress remain later Sprint 2 tasks.

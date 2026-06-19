@@ -2,7 +2,7 @@
 
 ## Baseline
 
-The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local checks in `apps/web`.
+The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local checks in `apps/web`, DB checks in `packages/db`, and worker checks in `workers/tick-worker` through app-local TypeScript tooling.
 
 ## Expected Checks By Work Type
 
@@ -16,7 +16,7 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 | Game formulas | unit tests for deterministic outputs and edge cases |
 | API routes | unit/integration tests where practical plus manual API smoke notes |
 | Map/spatial logic | unit tests for helpers, PostGIS validation, manual map smoke notes |
-| Worker/tick logic | unit tests for tick formulas, manual one-tick run, tick log verification |
+| Worker/tick logic | `npm run tick:test`, `npm run tick:typecheck`, manual `npm run tick:once` when a migrated PostgreSQL/PostGIS database is reachable |
 | UI flows | manual smoke notes until E2E tests are introduced |
 
 ## Sprint 1 Testing Priorities
@@ -34,6 +34,14 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Dashboard helper tests for free land, protection remaining time, and dashboard data shaping after S1-016.
 - Admin helper tests for enum labels, district free land, report read state, and read-model shaping after S1-017.
 - Dashboard/admin manual smoke checks.
+
+## Sprint 2 Testing Priorities
+
+- Tick key calculation and tick-log helper unit tests after S2-001/S2-002.
+- `npm run test` now includes the web tests followed by `npm run tick:test`.
+- `npm run tick:typecheck` validates the separate worker TypeScript package.
+- `npm run tick:once` is the manual smoke command for the worker, but it requires `DATABASE_URL` and the TickLog migration applied to a reachable database.
+- Economy mutation, food consumption, construction, and training tests should be added with the owning Sprint 2 tasks.
 
 ## Documentation Requirement
 

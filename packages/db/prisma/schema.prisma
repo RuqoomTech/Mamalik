@@ -69,6 +69,13 @@ enum ReportType {
   TRAINING
 }
 
+enum TickLogStatus {
+  STARTED
+  COMPLETED
+  FAILED
+  SKIPPED
+}
+
 model User {
   id            String       @id @default(cuid())
   email         String       @unique
@@ -189,4 +196,19 @@ model Report {
   createdAt DateTime   @default(now())
 
   @@index([kingdomId, createdAt])
+}
+
+model TickLog {
+  id                    String        @id @default(cuid())
+  tickKey               String        @unique
+  status                TickLogStatus
+  startedAt             DateTime      @default(now())
+  finishedAt            DateTime?
+  processedKingdomCount Int           @default(0)
+  errorMessage          String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  @@index([status])
+  @@index([startedAt])
 }

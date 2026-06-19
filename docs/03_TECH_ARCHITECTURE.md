@@ -31,7 +31,7 @@ mamalik/
   tasks/
 ```
 
-Status: the minimal directory skeleton exists. `apps/web` now contains the Next.js, TypeScript, Tailwind, and ESLint foundation. Other package/worker directories remain placeholders until their Sprint 1 tasks.
+Status: `apps/web`, `packages/db`, `packages/game`, and `workers/tick-worker` now contain implementation code. `workers/tick-worker` starts as a manual one-tick command foundation in Sprint 2 before scheduler behavior is added.
 
 ## Package manager
 
@@ -39,6 +39,8 @@ Status: the minimal directory skeleton exists. `apps/web` now contains the Next.
 - Root scripts delegate to `apps/web`.
 - Web dependencies are app-local under `apps/web`.
 - Shared package manifests can be added when `packages/db`, `packages/game`, `packages/config`, or `workers/tick-worker` receive implementation code.
+- Root scripts now include `tick:once`, `tick:dev`, `tick:test`, and `tick:typecheck`.
+- `tick:once` is the first supported tick command and should be stabilized before relying on a long-running scheduler.
 
 ## Environment files
 
@@ -83,14 +85,12 @@ Status: Prisma config, PostgreSQL datasource, package-local dependencies, genera
 
 ### `workers/tick-worker`
 
-- Runs every 10 minutes
-- Processes resource generation
-- Processes food consumption
-- Advances construction queues
-- Advances training queues
-- Advances movement orders
-- Resolves battles later
-- Creates notifications and reports
+- Lives outside the web app as a separate worker package/process.
+- Computes stable 10-minute tick keys.
+- Writes persistent `TickLog` rows with duplicate tick protection.
+- `tick:once` currently counts active kingdoms and records tick completion.
+- Resource generation, food consumption, construction queues, and training queues remain later Sprint 2 tasks.
+- Movement, combat, scouting, notifications, and report-center behavior remain later sprint work.
 
 ## Spatial strategy
 
@@ -108,10 +108,11 @@ Examples of PostGIS-heavy actions:
 ## Prisma strategy
 
 - Prisma tooling lives in `packages/db`.
-- The Prisma schema contains the first v0.1 model set for users, kingdoms, districts, stockpiles, buildings, units, land cooldowns, and reports.
+- The Prisma schema contains the v0.1 model set for users, kingdoms, districts, stockpiles, buildings, units, land cooldowns, reports, and tick logs.
 - The generated Prisma client output path is `packages/db/generated/prisma` and is ignored.
 - The first migration enables PostGIS with `CREATE EXTENSION IF NOT EXISTS postgis;`.
 - The second migration creates the initial v0.1 relational model foundation.
+- The third migration creates `TickLogStatus` and `TickLog`.
 - Applying migrations requires a reachable PostgreSQL database with permission to create PostGIS extensions.
 
 ## Auth Strategy

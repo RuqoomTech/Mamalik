@@ -9,6 +9,11 @@ All notable Mamalik project changes are recorded here.
 - Added public `/privacy` and `/terms` pages for Google OAuth publication.
 - Added reusable legal page layout and legal link components.
 - Added a Google OAuth publication checklist at `docs/GOOGLE_OAUTH_PUBLICATION_CHECKLIST.md`.
+- Added `workers/tick-worker` as the Sprint 2 tick worker package.
+- Added stable 10-minute tick key helpers and tick log formatting helpers.
+- Added `TickLogStatus` and `TickLog` to Prisma with migration `000003_tick_logs`.
+- Added root tick scripts: `tick:once`, `tick:dev`, `tick:test`, and `tick:typecheck`.
+- Added worker unit tests for tick key calculation and tick-log helpers.
 
 ### Changed
 
@@ -17,19 +22,25 @@ All notable Mamalik project changes are recorded here.
 - Documented Google OAuth publication URLs and remaining Google Cloud Console setup steps.
 - Completed Sprint 1 QA/auth compliance closure and marked Sprint 1 ready for Sprint 2.
 - Updated Sprint 1 acceptance docs to reflect user-tested auth, routing, kingdom creation, dashboard, admin, and public legal page flows.
+- Started Sprint 2 and marked S2-001/S2-002 complete in the active task trackers.
+- Updated root `npm run test` to include worker tests after web tests.
+- Documented the tick worker command convention, TickLog model, and duplicate tick-key protection.
+- Applied migration `000003_tick_logs` to the configured database and verified `npm run tick:once` completes.
 
 ### Fixed
 
 - Filled the missing public policy URL surface required before safely publishing Google OAuth login.
 - Removed stale Sprint 1 live-smoke blocker language from active Sprint 1 closure docs.
+- Improved `tick:once` failure output when the TickLog schema is missing.
 
 ### Deferred
 
 - Google Cloud Console OAuth consent configuration remains an external deployment/setup step.
+- Tick resource generation, Food consumption, population effects, construction progress, training progress, scheduler behavior, and admin tick controls remain deferred to later Sprint 2 tasks.
 
 ### Known issues
 
-- None blocking Sprint 2. Production Google OAuth publication still requires external Google Cloud Console configuration before public production publishing.
+- None blocking the next Sprint 2 implementation task. Production Google OAuth publication still requires external Google Cloud Console configuration before public production publishing.
 
 ## 2026-06-17
 

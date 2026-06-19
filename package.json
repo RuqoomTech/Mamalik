@@ -6,13 +6,17 @@
     "dev": "npm --prefix apps/web run dev",
     "build": "npm --prefix apps/web run build",
     "lint": "npm --prefix apps/web run lint",
-    "test": "npm --prefix apps/web run test",
+    "test": "npm --prefix apps/web run test && npm run tick:test",
     "typecheck": "npm --prefix apps/web run typecheck",
     "db:validate": "npm --prefix packages/db run db:validate",
     "db:generate": "npm --prefix packages/db run db:generate",
     "db:migrate:dev": "npm --prefix packages/db run db:migrate:dev",
     "db:migrate:deploy": "npm --prefix packages/db run db:migrate:deploy",
     "db:studio": "npm --prefix packages/db run db:studio",
-    "db:typecheck": "npm --prefix packages/db run typecheck"
+    "db:typecheck": "npm --prefix packages/db run typecheck",
+    "tick:once": "npm --prefix apps/web exec -- tsx workers/tick-worker/src/index.ts once",
+    "tick:dev": "npm --prefix apps/web exec -- tsx workers/tick-worker/src/index.ts once",
+    "tick:test": "npm --prefix apps/web exec -- tsx --test workers/tick-worker/src/*.test.ts",
+    "tick:typecheck": "npm --prefix apps/web exec -- tsc -p workers/tick-worker/tsconfig.json --noEmit"
   }
 }

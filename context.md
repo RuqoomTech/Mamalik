@@ -11,8 +11,8 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 ## Active Release
 
 - Active milestone: v0.1
-- Active sprint: Sprint 1 - Foundation + Kingdom Creation
-- Active task sequence: repository foundation, monorepo skeleton, web tooling setup, environment examples, database foundation, initial Prisma models, email/password auth, Google login, protected route behavior, the first MapLibre create-kingdom page, temporary location validation, editable kingdom name confirmation, kingdom creation API, starter state seeding, basic kingdom dashboard, basic read-only admin views, public OAuth policy pages, and Sprint 1 QA/auth-compliance closure are complete; Sprint 2 planning/implementation is next when explicitly started
+- Active sprint: Sprint 2 - Tick Engine + Economy
+- Active task sequence: Sprint 1 foundation is complete; Sprint 2 has started with the tick worker package, stable 10-minute tick key calculation, TickLog persistence, duplicate tick protection, and a manual `tick:once` command foundation
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -180,7 +180,7 @@ v0.1 must include:
 - Database dependencies and lockfile live in `packages/db`.
 - Commit environment templates only. Real secrets belong in ignored local files such as `apps/web/.env.local`.
 - Public browser-safe web environment variables must use `NEXT_PUBLIC_`; server secrets must stay server-side.
-- Prisma foundation now includes initial v0.1 models for users, kingdoms, districts, resource stockpiles, buildings, unit stacks, land purchase cooldowns, and reports.
+- Prisma foundation now includes v0.1 models for users, kingdoms, districts, resource stockpiles, buildings, unit stacks, land purchase cooldowns, reports, and tick logs.
 - PostGIS is enabled by the first database migration.
 - The initial `User` model stores email/password and Google auth fields directly; a separate auth account-linking model is deferred unless v0.1 needs it.
 - The initial `AreaType` enum starts with `STANDARD` only; additional area categories can be added when v0.1 land pricing requires them, while area-type bonuses remain post-v0.1.
@@ -194,6 +194,7 @@ v0.1 must include:
 - `POST /api/kingdom/validate-location` is a temporary Sprint 1 validation stub that checks authentication, one-kingdom-per-user, coordinate bounds, and simple distance from existing kingdoms before returning a temporary preview polygon.
 - Sprint 1 temporary proximity uses a simple TypeScript distance helper and `Kingdom.centerLat` / `Kingdom.centerLng`; Sprint 4 replaces this with dynamic buffer/PostGIS validation.
 - Starter kingdom constants for land, resources, population, districts, starter building footprints, starter units, land purchase packages, and beginner protection live in `packages/game/src/constants.ts` so UI and server creation logic use the same locked values.
+- The locked 10-minute tick duration also lives in `packages/game/src/constants.ts` for reuse by worker logic.
 - `POST /api/kingdom/create` creates the user's first kingdom in a database transaction and re-runs temporary server-side location validation; it does not trust client-submitted starter state.
 - Sprint 1 starter building footprints are simple 1,000 m2 constants per starter building until later balancing changes them deliberately.
 - Initial land purchase cooldown records are created with `availableAt = now`; package cooldown durations apply after future purchases.
@@ -206,6 +207,7 @@ v0.1 must include:
 - Existing Sprint 1 web surfaces use shared Mamalik UI primitives in `apps/web/src/app/globals.css` for page backgrounds, cards, form inputs, action buttons, and data tables; keep future Sprint 1/Sprint 2 UI work aligned with those primitives unless a dedicated design-system task replaces them.
 - Canonical v0.1 documentation sources are listed in `AGENTS.md`; duplicate historical docs and task artifacts live under `docs/archive/` and `tasks/archive/` as read-only references.
 - Active Sprint 1-6 task tracking uses `tasks/backlog.md` and `tasks/sprint_01.md` through `tasks/sprint_06.md`; JSON/CSV exports are reference artifacts only.
+- The Sprint 2 tick worker lives in `workers/tick-worker`; root scripts `tick:once`, `tick:dev`, `tick:test`, and `tick:typecheck` invoke it through existing app-local TypeScript tooling.
 
 ## Glossary
 

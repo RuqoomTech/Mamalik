@@ -1,0 +1,12 @@
+{
+  "name": "@mamalik/tick-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "tick:once": "npm run --prefix ../.. tick:once",
+    "tick:dev": "npm run --prefix ../.. tick:dev",
+    "test": "npm run --prefix ../.. tick:test",
+    "typecheck": "npm run --prefix ../.. tick:typecheck"
+  }
+}

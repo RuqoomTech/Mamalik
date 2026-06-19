@@ -13,6 +13,7 @@ This is the canonical v0.1 data-model plan. Sprint 1 Task 6 added the first Pris
 - `UnitType`: `INFANTRY`, `ARCHERS`, `CAVALRY`, `SCOUTS`, `SIEGE`
 - `UnitLocationType`: `GARRISON`, `MOVING`
 - `ReportType`: `BATTLE`, `SCOUT`, `LAND_PURCHASE`, `CONSTRUCTION`, `TRAINING`
+- `TickLogStatus`: `STARTED`, `COMPLETED`, `FAILED`, `SKIPPED`
 
 ## Implemented Prisma Models
 
@@ -177,6 +178,25 @@ Notes:
 - Sprint 1 only needs the storage foundation.
 - Report center behavior is deferred until Sprint 6.
 
+### TickLog
+
+- `id`
+- `tickKey`
+- `status`
+- `startedAt`
+- `finishedAt`
+- `processedKingdomCount`
+- `errorMessage`
+- `createdAt`
+- `updatedAt`
+
+Notes:
+
+- Added in Sprint 2 Task S2-001/S2-002 as the tick execution foundation.
+- `tickKey` is unique and represents a stable 10-minute slot, preventing the same tick from being processed twice.
+- The first worker implementation records `STARTED`, `COMPLETED`, and `FAILED` rows; duplicate attempts return a `SKIPPED` worker result without creating a second row for the same key.
+- `processedKingdomCount` is currently the active kingdom count only. Resource, Food, population, construction, and training mutations are later Sprint 2 tasks.
+
 ## Dashboard Read Model
 
 Sprint 1 Task 16 adds a server-side dashboard read model in `apps/web/src/lib/kingdom/dashboard-data.ts`.
@@ -284,7 +304,7 @@ These remain planned but are not part of Sprint 1 Task 6:
 
 Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 
-## Deferred Alliances, Rankings, And Tick Logs
+## Deferred Alliances And Rankings
 
 ### Alliance
 
@@ -312,19 +332,11 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - `state`: `NEUTRAL | ALLY | WAR`
 - `createdAt`
 
-### TickLog
-
-- `id`
-- `tickStartedAt`
-- `tickFinishedAt`
-- `status`
-- `processedKingdomCount`
-- `errorMessage`
-
 ## Implementation Notes
 
 - Prisma tooling lives in `packages/db`.
 - The generated Prisma client output path is `packages/db/generated/prisma` and is ignored.
 - PostGIS geometry fields may require raw SQL migration support.
 - Shared starter-state constants now live in `packages/game/src/constants.ts`, including starting usable land, population, resources, district allocations, starter buildings and land footprints, starter units, land purchase packages, beginner protection, and temporary validation constants.
+- Tick duration constants also live in `packages/game/src/constants.ts`; `workers/tick-worker` uses those constants to compute stable 10-minute tick keys.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.
