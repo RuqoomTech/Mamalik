@@ -36,7 +36,7 @@ The world updates every 10-minute tick.
 ## Acceptance Criteria
 
 - [x] A tick can be run manually in development.
-- [ ] A kingdom produces Money, Food, Manpower, and Knowledge every tick.
+- [x] A kingdom produces Money, Food, Manpower, and Knowledge every tick.
 - [ ] Population and army consume Food every tick.
 - [x] The same tick cannot be processed twice.
 - [ ] A player can start one construction/upgrade.
@@ -50,12 +50,18 @@ The world updates every 10-minute tick.
 
 - [x] S2-001: Tick worker package and manual one-tick command foundation.
 - [x] S2-002: TickLog model, migration, and duplicate tick-key protection.
-- [ ] S2-003: Resource generation formulas.
+- [x] S2-003: Resource generation formulas.
 
 ## Implementation Notes
 
 - `workers/tick-worker` is a separate TypeScript worker package.
-- `npm run tick:once` computes the current 10-minute tick key, writes a `STARTED` TickLog row, counts kingdoms, and marks the row `COMPLETED`.
+- `npm run tick:once` computes the current 10-minute tick key, writes a `STARTED` TickLog row, generates resources for each processed kingdom, and marks the row `COMPLETED`.
 - Duplicate tick keys are protected by the `TickLog.tickKey` unique index and return a `SKIPPED` worker result.
-- Resource generation, Food consumption, population effects, construction progress, and training progress are intentionally not implemented yet.
+- S2-003 resource formulas per tick:
+  - Money: `floor(population * 0.05) + MARKET level * 40 + TAX_OFFICE level * 60 + PALACE level * 25`
+  - Food: `FARM level * 120`
+  - Manpower: `floor(population * 0.01) + HOUSES level * 15`
+  - Knowledge: `SCHOLAR_HALL level * 20`
+- Only `ACTIVE` buildings generate resources; `CONSTRUCTING` and `UPGRADING` buildings do not.
+- Food consumption, construction progress, and training progress are intentionally not implemented yet.
 - Live `tick:once` smoke testing passed after applying migration `000003_tick_logs`; the first run completed and the second run in the same 10-minute slot returned `SKIPPED`.

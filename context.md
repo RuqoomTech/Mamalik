@@ -195,6 +195,7 @@ v0.1 must include:
 - Sprint 1 temporary proximity uses a simple TypeScript distance helper and `Kingdom.centerLat` / `Kingdom.centerLng`; Sprint 4 replaces this with dynamic buffer/PostGIS validation.
 - Starter kingdom constants for land, resources, population, districts, starter building footprints, starter units, land purchase packages, and beginner protection live in `packages/game/src/constants.ts` so UI and server creation logic use the same locked values.
 - The locked 10-minute tick duration also lives in `packages/game/src/constants.ts` for reuse by worker logic.
+- Initial Sprint 2 resource generation formulas live in `packages/game/src/economy/resource-generation.ts`; active buildings generate resources, constructing/upgrading buildings do not, and Food consumption remains a separate Sprint 2 task.
 - `POST /api/kingdom/create` creates the user's first kingdom in a database transaction and re-runs temporary server-side location validation; it does not trust client-submitted starter state.
 - Sprint 1 starter building footprints are simple 1,000 m2 constants per starter building until later balancing changes them deliberately.
 - Initial land purchase cooldown records are created with `availableAt = now`; package cooldown durations apply after future purchases.
@@ -208,6 +209,7 @@ v0.1 must include:
 - Canonical v0.1 documentation sources are listed in `AGENTS.md`; duplicate historical docs and task artifacts live under `docs/archive/` and `tasks/archive/` as read-only references.
 - Active Sprint 1-6 task tracking uses `tasks/backlog.md` and `tasks/sprint_01.md` through `tasks/sprint_06.md`; JSON/CSV exports are reference artifacts only.
 - The Sprint 2 tick worker lives in `workers/tick-worker`; root scripts `tick:once`, `tick:dev`, `tick:test`, and `tick:typecheck` invoke it through existing app-local TypeScript tooling.
+- Shared game logic can be checked with root scripts `game:test` and `game:typecheck`; root `test` and `typecheck` include these checks.
 
 ## Glossary
 

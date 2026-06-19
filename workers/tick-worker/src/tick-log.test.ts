@@ -14,6 +14,12 @@ describe("tick log helpers", () => {
       tickKey: "2026-06-19T12:30:00.000Z",
       status: "COMPLETED",
       processedKingdomCount: 2,
+      resourceGeneration: {
+        money: 115,
+        food: 120,
+        manpower: 25,
+        knowledge: 20,
+      },
       startedAt: new Date("2026-06-19T12:31:00.000Z"),
       finishedAt: new Date("2026-06-19T12:31:01.000Z"),
     });
@@ -21,6 +27,10 @@ describe("tick log helpers", () => {
     assert.match(summary, /Tick key: 2026-06-19T12:30:00.000Z/);
     assert.match(summary, /Status: COMPLETED/);
     assert.match(summary, /Processed kingdoms: 2/);
+    assert.match(summary, /Generated money: 115/);
+    assert.match(summary, /Generated food: 120/);
+    assert.match(summary, /Generated manpower: 25/);
+    assert.match(summary, /Generated knowledge: 20/);
   });
 
   it("normalizes unknown errors", () => {

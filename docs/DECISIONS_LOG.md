@@ -128,3 +128,10 @@
 - Decision: Tick keys are stable UTC ISO timestamps rounded down to locked 10-minute slots.
 - Decision: `TickLog.tickKey` is unique and is the duplicate-processing guard for v0.1 tick execution.
 - Decision: The first tick worker implementation records tick status and counts kingdoms only; resource generation, Food consumption, population effects, construction progress, and training progress remain later Sprint 2 tasks.
+
+## 2026-06-19 - Sprint 2 Resource Generation Formulas
+
+- Decision: Initial v0.1 resource formulas live in `packages/game/src/economy/resource-generation.ts` so worker and future UI/read models can share deterministic game logic.
+- Decision: Only `ACTIVE` buildings generate resources; `CONSTRUCTING` and `UPGRADING` buildings produce nothing until their owning queue tasks complete them.
+- Decision: S2-003 generates Food from Farms but does not subtract Food consumption. Consumption remains S2-004.
+- Decision: Initial formulas clamp invalid population and building levels to non-negative integers instead of throwing during tick processing.

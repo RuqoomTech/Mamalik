@@ -1,10 +1,13 @@
 import { randomUUID } from "node:crypto";
 
 import { getPrismaClient, type MamalikPrismaClient } from "../../../packages/db/src/client";
+import { STARTING_RESOURCES } from "../../../packages/game/src/constants";
+import { calculateResourceGeneration } from "../../../packages/game/src/economy/resource-generation";
 import { getTickKey } from "./tick-clock";
 import {
   formatTickRunResult,
   isDuplicateTickInsert,
+  type ResourceGenerationSummary,
   toErrorMessage,
   type TickRunResult,
 } from "./tick-log";
@@ -51,8 +54,72 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
   }
 
   try {
-    const { processedKingdomCount, finishedAt } = await prisma.$transaction(async (tx) => {
-      const processedKingdomCount = await tx.kingdom.count();
+    const { processedKingdomCount, finishedAt, resourceGeneration, warnings } = await prisma.$transaction(async (tx) => {
+      const kingdoms = await tx.kingdom.findMany({
+        select: {
+          id: true,
+          name: true,
+          population: true,
+          resourceStockpile: {
+            select: {
+              id: true,
+            },
+          },
+          buildings: {
+            select: {
+              type: true,
+              level: true,
+              status: true,
+            },
+          },
+        },
+      });
+
+      const resourceGeneration: ResourceGenerationSummary = {
+        money: 0,
+        food: 0,
+        manpower: 0,
+        knowledge: 0,
+      };
+      const warnings: string[] = [];
+
+      for (const kingdom of kingdoms) {
+        const generated = calculateResourceGeneration({
+          population: kingdom.population,
+          buildings: kingdom.buildings,
+        });
+
+        resourceGeneration.money += generated.money;
+        resourceGeneration.food += generated.food;
+        resourceGeneration.manpower += generated.manpower;
+        resourceGeneration.knowledge += generated.knowledge;
+
+        if (kingdom.resourceStockpile) {
+          await tx.resourceStockpile.update({
+            where: { kingdomId: kingdom.id },
+            data: {
+              money: { increment: generated.money },
+              food: { increment: generated.food },
+              manpower: { increment: generated.manpower },
+              knowledge: { increment: generated.knowledge },
+            },
+          });
+        } else {
+          warnings.push(`Kingdom "${kingdom.name}" had no ResourceStockpile; created one before applying generation.`);
+
+          await tx.resourceStockpile.create({
+            data: {
+              kingdomId: kingdom.id,
+              money: STARTING_RESOURCES.money + generated.money,
+              food: STARTING_RESOURCES.food + generated.food,
+              manpower: STARTING_RESOURCES.manpower + generated.manpower,
+              knowledge: STARTING_RESOURCES.knowledge + generated.knowledge,
+            },
+          });
+        }
+      }
+
+      const processedKingdomCount = kingdoms.length;
       const finishedAt = new Date();
 
       await tx.$executeRaw`
@@ -65,13 +132,15 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         WHERE "tickKey" = ${tickKey}
       `;
 
-      return { processedKingdomCount, finishedAt };
+      return { processedKingdomCount, finishedAt, resourceGeneration, warnings };
     });
 
     return {
       tickKey,
       status: "COMPLETED",
       processedKingdomCount,
+      resourceGeneration,
+      warnings,
       startedAt,
       finishedAt,
     };

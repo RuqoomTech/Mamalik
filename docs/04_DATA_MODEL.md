@@ -108,6 +108,12 @@ Defaults:
 - Manpower: 500
 - Knowledge: 0
 
+Sprint 2 resource generation:
+
+- `workers/tick-worker` increments these stockpile values once per processed non-duplicate tick.
+- Missing stockpiles are treated as data repair: the worker creates a stockpile with starting defaults before applying generation and includes a warning in the tick result.
+- Food consumption is not applied in S2-003; it remains S2-004.
+
 ### BuildingInstance
 
 - `id`
@@ -195,7 +201,9 @@ Notes:
 - Added in Sprint 2 Task S2-001/S2-002 as the tick execution foundation.
 - `tickKey` is unique and represents a stable 10-minute slot, preventing the same tick from being processed twice.
 - The first worker implementation records `STARTED`, `COMPLETED`, and `FAILED` rows; duplicate attempts return a `SKIPPED` worker result without creating a second row for the same key.
-- `processedKingdomCount` is currently the active kingdom count only. Resource, Food, population, construction, and training mutations are later Sprint 2 tasks.
+- `processedKingdomCount` is the number of kingdoms loaded for a completed tick.
+- S2-003 adds resource generation before the TickLog is marked `COMPLETED`.
+- Food consumption, population effects beyond the current formula inputs, construction, and training mutations are later Sprint 2 tasks.
 
 ## Dashboard Read Model
 
@@ -339,4 +347,5 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - PostGIS geometry fields may require raw SQL migration support.
 - Shared starter-state constants now live in `packages/game/src/constants.ts`, including starting usable land, population, resources, district allocations, starter buildings and land footprints, starter units, land purchase packages, beginner protection, and temporary validation constants.
 - Tick duration constants also live in `packages/game/src/constants.ts`; `workers/tick-worker` uses those constants to compute stable 10-minute tick keys.
+- Initial resource-generation formulas live in `packages/game/src/economy/resource-generation.ts`.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

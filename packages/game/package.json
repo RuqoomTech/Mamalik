@@ -1,0 +1,10 @@
+{
+  "name": "@mamalik/game",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm run --prefix ../.. game:test",
+    "typecheck": "npm run --prefix ../.. game:typecheck"
+  }
+}

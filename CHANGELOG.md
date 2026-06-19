@@ -14,6 +14,9 @@ All notable Mamalik project changes are recorded here.
 - Added `TickLogStatus` and `TickLog` to Prisma with migration `000003_tick_logs`.
 - Added root tick scripts: `tick:once`, `tick:dev`, `tick:test`, and `tick:typecheck`.
 - Added worker unit tests for tick key calculation and tick-log helpers.
+- Added the first `packages/game` package manifest, TypeScript config, and shared exports.
+- Added deterministic resource-generation formulas for Money, Food, Manpower, and Knowledge.
+- Added unit tests for population-only generation, starter kingdom generation, inactive buildings, building stacking, and invalid input clamping.
 
 ### Changed
 
@@ -26,6 +29,8 @@ All notable Mamalik project changes are recorded here.
 - Updated root `npm run test` to include worker tests after web tests.
 - Documented the tick worker command convention, TickLog model, and duplicate tick-key protection.
 - Applied migration `000003_tick_logs` to the configured database and verified `npm run tick:once` completes.
+- Wired `tick:once` to apply resource generation for each processed kingdom and report generated totals.
+- Updated root `npm run test` and `npm run typecheck` to include shared game package checks.
 
 ### Fixed
 
@@ -36,7 +41,7 @@ All notable Mamalik project changes are recorded here.
 ### Deferred
 
 - Google Cloud Console OAuth consent configuration remains an external deployment/setup step.
-- Tick resource generation, Food consumption, population effects, construction progress, training progress, scheduler behavior, and admin tick controls remain deferred to later Sprint 2 tasks.
+- Food consumption, population effects beyond the current formula inputs, construction progress, training progress, scheduler behavior, and admin tick controls remain deferred to later Sprint 2 tasks.
 
 ### Known issues
 
