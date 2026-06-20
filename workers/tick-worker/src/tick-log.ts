@@ -5,6 +5,8 @@ export type ResourceGenerationSummary = {
   food: number;
   manpower: number;
   knowledge: number;
+  populationTax: number;
+  populationManpowerGrowth: number;
 };
 
 export type FoodConsumptionSummary = {
@@ -57,6 +59,8 @@ export function formatTickRunResult(result: TickRunResult): string {
       `Generated food: ${result.resourceGeneration.food}`,
       `Generated manpower: ${result.resourceGeneration.manpower}`,
       `Generated knowledge: ${result.resourceGeneration.knowledge}`,
+      `Population tax generated: ${result.resourceGeneration.populationTax}`,
+      `Population manpower generated: ${result.resourceGeneration.populationManpowerGrowth}`,
     );
   }
 

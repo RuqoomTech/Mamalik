@@ -111,6 +111,7 @@ Defaults:
 Sprint 2 resource generation and Food consumption:
 
 - `workers/tick-worker` increments these stockpile values once per processed non-duplicate tick.
+- Resource-generation formulas now expose named population-effect breakdowns, including `populationTax` for Money and `populationManpowerGrowth` for Manpower; these are worker output/read-model values and do not add stockpile columns.
 - Food is updated as `max(0, current Food + generated Food - consumed Food)`.
 - Food shortage means the available Food after generation did not cover consumption; S2-004 only counts the shortage and clamps Food to zero.
 - Missing stockpiles are treated as data repair: the worker creates a stockpile with starting defaults before applying generation and includes a warning in the tick result.
@@ -206,7 +207,8 @@ Notes:
 - `processedKingdomCount` is the number of kingdoms loaded for a completed tick.
 - S2-003 adds resource generation before the TickLog is marked `COMPLETED`.
 - S2-004 adds Food consumption before the TickLog is marked `COMPLETED`.
-- Population effects beyond the current formula inputs, construction, and training mutations are later Sprint 2 tasks.
+- S2-005 adds named population-effect breakdowns to formula and worker output without changing TickLog columns.
+- Population count growth, construction, and training mutations are later Sprint 2 tasks.
 
 ## Dashboard Read Model
 
@@ -350,6 +352,6 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - PostGIS geometry fields may require raw SQL migration support.
 - Shared starter-state constants now live in `packages/game/src/constants.ts`, including starting usable land, population, resources, district allocations, starter buildings and land footprints, starter units, land purchase packages, beginner protection, and temporary validation constants.
 - Tick duration constants also live in `packages/game/src/constants.ts`; `workers/tick-worker` uses those constants to compute stable 10-minute tick keys.
-- Initial resource-generation formulas live in `packages/game/src/economy/resource-generation.ts`.
+- Initial resource-generation formulas live in `packages/game/src/economy/resource-generation.ts` and return named output breakdowns plus reusable flat totals for worker stockpile updates.
 - Initial Food consumption formulas live in `packages/game/src/economy/food-consumption.ts`.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

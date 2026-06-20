@@ -84,14 +84,14 @@ Status: Prisma config, PostgreSQL datasource, package-local dependencies, genera
 - Building definitions
 - Research definitions
 
-Status: Sprint 2 added the first package manifest, TypeScript config, exports, deterministic resource-generation formulas, and deterministic Food consumption formulas.
+Status: Sprint 2 added the first package manifest, TypeScript config, exports, deterministic resource-generation formulas with named population-effect breakdowns, and deterministic Food consumption formulas.
 
 ### `workers/tick-worker`
 
 - Lives outside the web app as a separate worker package/process.
 - Computes stable 10-minute tick keys.
 - Writes persistent `TickLog` rows with duplicate tick protection.
-- `tick:once` currently generates Money, Food, Manpower, and Knowledge for each processed kingdom, subtracts Food consumption for population and army, clamps Food at zero, then records tick completion.
+- `tick:once` currently generates Money, Food, Manpower, and Knowledge for each processed kingdom, reports named population tax and population Manpower contributions, subtracts Food consumption for population and army, clamps Food at zero, then records tick completion.
 - Construction queues and training queues remain later Sprint 2 tasks.
 - Movement, combat, scouting, notifications, and report-center behavior remain later sprint work.
 

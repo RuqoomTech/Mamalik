@@ -21,12 +21,37 @@ export type ResourceGenerationInput = {
   }>;
 };
 
-export type ResourceGenerationResult = {
+export type ResourceGenerationTotals = {
   money: number;
   food: number;
   manpower: number;
   knowledge: number;
 };
+
+export type ResourceGenerationBreakdown = {
+  money: {
+    populationTax: number;
+    marketBonus: number;
+    taxOfficeBonus: number;
+    palaceBonus: number;
+    total: number;
+  };
+  food: {
+    farmProduction: number;
+    total: number;
+  };
+  manpower: {
+    populationManpowerGrowth: number;
+    housesBonus: number;
+    total: number;
+  };
+  knowledge: {
+    scholarHallProduction: number;
+    total: number;
+  };
+};
+
+export type ResourceGenerationResult = ResourceGenerationBreakdown;
 
 export const RESOURCE_GENERATION_RATES = {
   moneyPerPopulation: 0.05,
@@ -41,11 +66,27 @@ export const RESOURCE_GENERATION_RATES = {
 
 export function calculateResourceGeneration(input: ResourceGenerationInput): ResourceGenerationResult {
   const population = toNonNegativeInteger(input.population);
-  const result: ResourceGenerationResult = {
-    money: Math.floor(population * RESOURCE_GENERATION_RATES.moneyPerPopulation),
-    food: 0,
-    manpower: Math.floor(population * RESOURCE_GENERATION_RATES.manpowerPerPopulation),
-    knowledge: 0,
+  const result: ResourceGenerationBreakdown = {
+    money: {
+      populationTax: Math.floor(population * RESOURCE_GENERATION_RATES.moneyPerPopulation),
+      marketBonus: 0,
+      taxOfficeBonus: 0,
+      palaceBonus: 0,
+      total: 0,
+    },
+    food: {
+      farmProduction: 0,
+      total: 0,
+    },
+    manpower: {
+      populationManpowerGrowth: Math.floor(population * RESOURCE_GENERATION_RATES.manpowerPerPopulation),
+      housesBonus: 0,
+      total: 0,
+    },
+    knowledge: {
+      scholarHallProduction: 0,
+      total: 0,
+    },
   };
 
   for (const building of input.buildings) {
@@ -57,33 +98,44 @@ export function calculateResourceGeneration(input: ResourceGenerationInput): Res
 
     switch (building.type) {
       case "MARKET":
-        result.money += level * RESOURCE_GENERATION_RATES.marketMoneyPerLevel;
+        result.money.marketBonus += level * RESOURCE_GENERATION_RATES.marketMoneyPerLevel;
         break;
       case "TAX_OFFICE":
-        result.money += level * RESOURCE_GENERATION_RATES.taxOfficeMoneyPerLevel;
+        result.money.taxOfficeBonus += level * RESOURCE_GENERATION_RATES.taxOfficeMoneyPerLevel;
         break;
       case "PALACE":
-        result.money += level * RESOURCE_GENERATION_RATES.palaceMoneyPerLevel;
+        result.money.palaceBonus += level * RESOURCE_GENERATION_RATES.palaceMoneyPerLevel;
         break;
       case "FARM":
-        result.food += level * RESOURCE_GENERATION_RATES.farmFoodPerLevel;
+        result.food.farmProduction += level * RESOURCE_GENERATION_RATES.farmFoodPerLevel;
         break;
       case "HOUSES":
-        result.manpower += level * RESOURCE_GENERATION_RATES.housesManpowerPerLevel;
+        result.manpower.housesBonus += level * RESOURCE_GENERATION_RATES.housesManpowerPerLevel;
         break;
       case "SCHOLAR_HALL":
-        result.knowledge += level * RESOURCE_GENERATION_RATES.scholarHallKnowledgePerLevel;
+        result.knowledge.scholarHallProduction += level * RESOURCE_GENERATION_RATES.scholarHallKnowledgePerLevel;
         break;
       default:
         break;
     }
   }
 
+  result.money.total = toNonNegativeInteger(
+    result.money.populationTax + result.money.marketBonus + result.money.taxOfficeBonus + result.money.palaceBonus,
+  );
+  result.food.total = toNonNegativeInteger(result.food.farmProduction);
+  result.manpower.total = toNonNegativeInteger(result.manpower.populationManpowerGrowth + result.manpower.housesBonus);
+  result.knowledge.total = toNonNegativeInteger(result.knowledge.scholarHallProduction);
+
+  return result;
+}
+
+export function getResourceGenerationTotals(generation: ResourceGenerationBreakdown): ResourceGenerationTotals {
   return {
-    money: toNonNegativeInteger(result.money),
-    food: toNonNegativeInteger(result.food),
-    manpower: toNonNegativeInteger(result.manpower),
-    knowledge: toNonNegativeInteger(result.knowledge),
+    money: generation.money.total,
+    food: generation.food.total,
+    manpower: generation.manpower.total,
+    knowledge: generation.knowledge.total,
   };
 }
 

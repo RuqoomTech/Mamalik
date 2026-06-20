@@ -2,27 +2,30 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-20 22:30:17 +03:00
+- Current date/time: 2026-06-20 22:54:59 +03:00
 - Current sprint: Sprint 2 - Tick Engine + Economy
 - Current sprint file: `docs/sprints/SPRINT_02_TICK_ENGINE.md`
-- Current task: S2-004 - Implement Food consumption for population and army
+- Current task: S2-005 - Implement population effects on taxes and manpower
 
 ## Last Completed Task
 
-- Completed S2-004: Implement Food consumption for population and army.
-- Added `packages/game/src/economy/food-consumption.ts` with deterministic Food consumption and net-Food clamping helpers.
-- Implemented formulas:
-  - Population Food consumption: `floor(population * 0.02)`
-  - Army Food consumption: `ceil(INFANTRY * 0.03 + ARCHERS * 0.035 + CAVALRY * 0.06 + SCOUTS * 0.025 + SIEGE * 0.12)`
-  - Starter kingdom consumption: 20 population Food + 4 army Food = 24 Food per tick.
-- Wired `runOneTick` to calculate resource generation and Food consumption for each kingdom, then update stockpiles as `Food = max(0, current Food + generated Food - consumed Food)`.
-- Added tick output summary lines for consumed Food totals and kingdoms with Food shortage.
-- Preserved duplicate tick protection; duplicate ticks still skip before generation or consumption.
-- Did not implement starvation death, training pauses, shortage penalties, construction queue progress, training queue progress, land buying, combat, scouting, alliances, rankings, or map validation.
+- Completed S2-005: Implement population effects on taxes and manpower.
+- Refactored `packages/game/src/economy/resource-generation.ts` so resource generation returns named breakdowns while preserving flat totals for stockpile updates.
+- Added explicit formula outputs:
+  - Money population effect: `populationTax = floor(population * 0.05)`
+  - Manpower population effect: `populationManpowerGrowth = floor(population * 0.01)`
+- Preserved starter kingdom generation totals:
+  - Money: 115
+  - Food: 120
+  - Manpower: 25
+  - Knowledge: 20
+- Extended `tick:once` output with population tax and population Manpower totals.
+- Preserved duplicate tick protection; duplicate ticks still skip before generation, Food consumption, or population-effect aggregation.
+- Did not implement population count growth, starvation death, happiness, unrest, migration, housing caps, construction queue progress, training queue progress, land buying, combat, scouting, alliances, rankings, or map validation.
 
 ## Files Changed Recently
 
-Changed for Sprint 2 S2-004:
+Changed for Sprint 2 S2-005:
 
 - `CHANGELOG.md`
 - `context.md`
@@ -31,9 +34,8 @@ Changed for Sprint 2 S2-004:
 - `docs/DECISIONS_LOG.md`
 - `docs/TESTING_STRATEGY.md`
 - `docs/sprints/SPRINT_02_TICK_ENGINE.md`
-- `packages/game/src/economy/food-consumption.ts`
-- `packages/game/src/economy/food-consumption.test.ts`
-- `packages/game/src/index.ts`
+- `packages/game/src/economy/resource-generation.ts`
+- `packages/game/src/economy/resource-generation.test.ts`
 - `session_state.md`
 - `tasks/backlog.md`
 - `tasks/sprint_02.md`
@@ -57,65 +59,65 @@ Changed for Sprint 2 S2-004:
 - `Get-Content CHANGELOG.md`
 - `Get-Content packages/game/src/economy/resource-generation.ts`
 - `Get-Content packages/game/src/economy/resource-generation.test.ts`
-- `Get-Content packages/game/src/index.ts`
 - `Get-Content workers/tick-worker/src/run-one-tick.ts`
 - `Get-Content workers/tick-worker/src/tick-log.ts`
-- `git status --short`
+- `Get-Content workers/tick-worker/src/tick-log.test.ts`
+- `git grep "calculateResourceGeneration"`
+- `git grep "ResourceGenerationSummary\|resourceGeneration:"`
 - `npm run game:typecheck`
 - `npm run tick:typecheck`
-- `npm run game:test` outside sandbox
-- `npm run tick:test` outside sandbox
-- One-off read-only Prisma query for pre-tick resources and expected generation/consumption.
-- `npm run tick:once` outside sandbox for tick key `2026-06-20T19:20:00.000Z`; completed and processed 2 kingdoms.
+- `npm run game:test` failed inside sandbox with Windows `spawn EPERM`, then passed outside sandbox.
+- `npm run tick:test` failed inside sandbox with Windows `spawn EPERM`, then passed outside sandbox.
+- One-off read-only Prisma query for pre-tick resources and expected generation/consumption/breakdowns.
+- `npm run tick:once` outside sandbox for tick key `2026-06-20T19:50:00.000Z`; completed and processed 2 kingdoms.
 - One-off read-only Prisma query for post-tick resources.
 - `npm run tick:once` outside sandbox again in the same slot; returned `SKIPPED`.
 - One-off read-only Prisma query after duplicate skip.
 - `npm run typecheck`
 - `npm run lint`
 - `npm run db:typecheck`
-- `npm run game:typecheck`
-- `npm run tick:typecheck`
 - `npm run test` outside sandbox
 - `npm run build` outside sandbox
 - `npm run db:validate` outside sandbox
-- `npm run game:test` outside sandbox
-- `npm run tick:test` outside sandbox
+- `git diff --check`
+- `git status --short`
 - `Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`
 
 ## Test Status
 
-- `npm run test`: passed outside sandbox; 44 web tests, 12 game tests, and 8 worker tests passed.
+- `npm run test`: passed outside sandbox; 44 web tests, 13 game tests, and 8 worker tests passed.
 - `npm run typecheck`: passed and includes `game:typecheck`.
 - `npm run lint`: passed.
 - `npm run build`: passed outside sandbox. It still emits the existing Node v26.1.0 deprecation warning for `module.register()`.
 - `npm run db:validate`: passed outside sandbox.
 - `npm run db:typecheck`: passed.
-- `npm run game:test`: passed outside sandbox.
+- `npm run game:test`: passed outside sandbox after the sandbox run hit Windows `spawn EPERM`.
 - `npm run game:typecheck`: passed.
-- `npm run tick:test`: passed outside sandbox.
+- `npm run tick:test`: passed outside sandbox after the sandbox run hit Windows `spawn EPERM`.
 - `npm run tick:typecheck`: passed.
+- `git diff --check`: passed with CRLF normalization warnings only.
 
 ## Manual Smoke Status
 
 - Live pre-tick stockpiles:
-  - `OmarTesting Kingdom`: Money 10,230, Food 5,240, Manpower 550, Knowledge 40.
-  - `Asmaa Kingdom`: Money 10,000, Food 5,000, Manpower 500, Knowledge 0.
+  - `Asmaa Kingdom`: Money 10,115, Food 5,096, Manpower 525, Knowledge 20.
+  - `OmarTesting Kingdom`: Money 10,345, Food 5,336, Manpower 575, Knowledge 60.
 - Expected per starter kingdom:
-  - Generation: +115 Money, +120 Food, +25 Manpower, +20 Knowledge.
+  - Generation totals: +115 Money, +120 Food, +25 Manpower, +20 Knowledge.
+  - Population breakdown: 50 population tax and 10 population Manpower.
   - Consumption: 20 population Food + 4 army Food = 24 Food.
   - Net Food change: +96.
-- `npm run tick:once` for tick key `2026-06-20T19:20:00.000Z`: `COMPLETED`, processed 2 kingdoms, generated Food 240, consumed Food 48, Food shortages 0.
+- `npm run tick:once` for tick key `2026-06-20T19:50:00.000Z`: `COMPLETED`, processed 2 kingdoms, generated Money 230, Food 240, Manpower 50, Knowledge 40, population tax 100, population Manpower 20, consumed Food 48, Food shortages 0.
 - Live post-tick stockpiles:
-  - `OmarTesting Kingdom`: Money 10,345, Food 5,336, Manpower 575, Knowledge 60.
-  - `Asmaa Kingdom`: Money 10,115, Food 5,096, Manpower 525, Knowledge 20.
+  - `Asmaa Kingdom`: Money 10,230, Food 5,192, Manpower 550, Knowledge 40.
+  - `OmarTesting Kingdom`: Money 10,460, Food 5,432, Manpower 600, Knowledge 80.
 - Duplicate same-slot run returned `SKIPPED`.
-- Post-duplicate stockpiles were unchanged, confirming Food was not consumed twice.
-- Low-Food shortage behavior was covered by formula tests; no live low-Food kingdom was created for this task to avoid introducing extra test data.
+- Post-duplicate stockpiles were unchanged, confirming resources and Food were not processed twice.
 
 ## Known Issues
 
+- Population count growth is not implemented; `populationManpowerGrowth` is only a Manpower resource contribution.
 - Starvation death, training pauses, and shortage penalties are not implemented yet.
-- Population effects beyond the current base Money/Manpower and Food consumption inputs remain S2-005.
 - Construction queue progress remains S2-006.
 - Training queue progress remains S2-007.
 - Tick worker currently runs only by manual `tick:once`; scheduler behavior remains deferred.
@@ -133,4 +135,4 @@ Changed for Sprint 2 S2-004:
 
 ## Next Recommended Task
 
-- S2-005: Implement population effects on taxes and manpower.
+- S2-006: Implement construction queue progress.

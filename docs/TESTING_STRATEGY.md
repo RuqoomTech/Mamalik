@@ -40,6 +40,7 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Tick key calculation and tick-log helper unit tests after S2-001/S2-002.
 - Resource-generation formula tests after S2-003.
 - Food consumption formula and net-Food clamping tests after S2-004.
+- Resource-generation breakdown tests after S2-005 should verify population tax, population-driven Manpower, unchanged starter totals, inactive-building behavior, and breakdown-total consistency.
 - `npm run test` now includes web tests, `npm run game:test`, and `npm run tick:test`.
 - `npm run typecheck` now includes web typecheck and `npm run game:typecheck`; `npm run tick:typecheck` validates the separate worker TypeScript package.
 - `npm run tick:once` is the manual smoke command for the worker, but it requires `DATABASE_URL` and the TickLog migration applied to a reachable database.

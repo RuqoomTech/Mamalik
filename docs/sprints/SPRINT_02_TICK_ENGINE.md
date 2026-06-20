@@ -38,6 +38,7 @@ The world updates every 10-minute tick.
 - [x] A tick can be run manually in development.
 - [x] A kingdom produces Money, Food, Manpower, and Knowledge every tick.
 - [x] Population and army consume Food every processed non-duplicate tick.
+- [x] Population tax and population-driven Manpower effects are named, tested, and included in tick output.
 - [x] The same tick cannot be processed twice.
 - [ ] A player can start one construction/upgrade.
 - [ ] Construction progresses and completes correctly.
@@ -52,6 +53,7 @@ The world updates every 10-minute tick.
 - [x] S2-002: TickLog model, migration, and duplicate tick-key protection.
 - [x] S2-003: Resource generation formulas.
 - [x] S2-004: Food consumption for population and army.
+- [x] S2-005: Population effects on taxes and manpower.
 
 ## Implementation Notes
 
@@ -63,6 +65,11 @@ The world updates every 10-minute tick.
   - Food: `FARM level * 120`
   - Manpower: `floor(population * 0.01) + HOUSES level * 15`
   - Knowledge: `SCHOLAR_HALL level * 20`
+- S2-005 keeps those totals unchanged while exposing named formula breakdowns:
+  - Money population effect: `populationTax = floor(population * 0.05)`
+  - Manpower population effect: `populationManpowerGrowth = floor(population * 0.01)`
+  - Starter kingdom breakdown: 50 population tax, 40 Market bonus, 25 Palace bonus, 10 population Manpower, 15 Houses bonus.
+- Tick output includes total generated Money/Manpower plus the named population tax and population Manpower totals.
 - Only `ACTIVE` buildings generate resources; `CONSTRUCTING` and `UPGRADING` buildings do not.
 - S2-004 Food consumption formulas per tick:
   - Population Food: `floor(population * 0.02)`

@@ -19,6 +19,8 @@ describe("tick log helpers", () => {
         food: 120,
         manpower: 25,
         knowledge: 20,
+        populationTax: 50,
+        populationManpowerGrowth: 10,
       },
       foodConsumption: {
         population: 20,
@@ -37,6 +39,8 @@ describe("tick log helpers", () => {
     assert.match(summary, /Generated food: 120/);
     assert.match(summary, /Generated manpower: 25/);
     assert.match(summary, /Generated knowledge: 20/);
+    assert.match(summary, /Population tax generated: 50/);
+    assert.match(summary, /Population manpower generated: 10/);
     assert.match(summary, /Consumed food: 24/);
     assert.match(summary, /Population food consumed: 20/);
     assert.match(summary, /Army food consumed: 4/);

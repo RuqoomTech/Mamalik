@@ -143,3 +143,10 @@
 - Decision: Army consumption uses unit rates and rounds the total army consumption up with `Math.ceil`.
 - Decision: Food cannot go below zero. If generated plus existing Food cannot cover consumption, the worker records a Food shortage and clamps Food to zero.
 - Decision: Starvation death, training pause behavior, and shortage penalties remain deferred to later Sprint 2 tasks.
+
+## 2026-06-20 - Sprint 2 Population Effect Breakdowns
+
+- Decision: Resource generation now returns named breakdowns in `packages/game/src/economy/resource-generation.ts` while preserving flat totals for worker stockpile updates.
+- Decision: The Money population effect is named `populationTax`.
+- Decision: The Manpower population effect is named `populationManpowerGrowth`; this increases the Manpower resource only and does not change the kingdom population count.
+- Decision: Tick output reports population tax and population Manpower totals for each processed non-duplicate tick.

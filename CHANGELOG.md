@@ -9,12 +9,16 @@ All notable Mamalik project changes are recorded here.
 - Added deterministic Food consumption formulas for population and army in `packages/game`.
 - Added net Food clamping helper so Food cannot go below zero after a tick.
 - Added Food consumption unit tests for population-only consumption, starter kingdom consumption, each v0.1 unit type, invalid quantity clamping, unknown unit rejection, and non-negative Food results.
+- Added named resource-generation breakdowns for population tax and population-driven Manpower generation.
+- Added tests that confirm starter generation totals remain unchanged while formula breakdown totals stay consistent.
 
 ### Changed
 
 - Wired `tick:once` to subtract Food consumption after Food generation for each processed kingdom.
 - Extended tick output with consumed Food totals and Food shortage count.
 - Marked S2-004 complete in Sprint 2 task trackers.
+- Extended tick output with population tax and population Manpower summary totals.
+- Marked S2-005 complete in Sprint 2 task trackers.
 
 ### Deferred
 

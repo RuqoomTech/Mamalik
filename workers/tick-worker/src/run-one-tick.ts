@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import { getPrismaClient, type MamalikPrismaClient } from "../../../packages/db/src/client";
 import { STARTING_RESOURCES } from "../../../packages/game/src/constants";
 import { calculateFoodAfterTick, calculateFoodConsumption } from "../../../packages/game/src/economy/food-consumption";
-import { calculateResourceGeneration } from "../../../packages/game/src/economy/resource-generation";
+import { calculateResourceGeneration, getResourceGenerationTotals } from "../../../packages/game/src/economy/resource-generation";
 import { getTickKey } from "./tick-clock";
 import {
   type FoodConsumptionSummary,
@@ -89,6 +89,8 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         food: 0,
         manpower: 0,
         knowledge: 0,
+        populationTax: 0,
+        populationManpowerGrowth: 0,
       };
       const foodConsumption: FoodConsumptionSummary = {
         population: 0,
@@ -99,10 +101,11 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
       const warnings: string[] = [];
 
       for (const kingdom of kingdoms) {
-        const generated = calculateResourceGeneration({
+        const generationBreakdown = calculateResourceGeneration({
           population: kingdom.population,
           buildings: kingdom.buildings,
         });
+        const generated = getResourceGenerationTotals(generationBreakdown);
         const consumed = calculateFoodConsumption({
           population: kingdom.population,
           units: kingdom.unitStacks,
@@ -112,6 +115,8 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         resourceGeneration.food += generated.food;
         resourceGeneration.manpower += generated.manpower;
         resourceGeneration.knowledge += generated.knowledge;
+        resourceGeneration.populationTax += generationBreakdown.money.populationTax;
+        resourceGeneration.populationManpowerGrowth += generationBreakdown.manpower.populationManpowerGrowth;
         foodConsumption.population += consumed.populationFoodConsumption;
         foodConsumption.army += consumed.armyFoodConsumption;
         foodConsumption.total += consumed.totalFoodConsumption;
