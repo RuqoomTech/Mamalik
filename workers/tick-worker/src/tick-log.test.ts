@@ -20,6 +20,12 @@ describe("tick log helpers", () => {
         manpower: 25,
         knowledge: 20,
       },
+      foodConsumption: {
+        population: 20,
+        army: 4,
+        total: 24,
+        kingdomsWithFoodShortage: 1,
+      },
       startedAt: new Date("2026-06-19T12:31:00.000Z"),
       finishedAt: new Date("2026-06-19T12:31:01.000Z"),
     });
@@ -31,6 +37,10 @@ describe("tick log helpers", () => {
     assert.match(summary, /Generated food: 120/);
     assert.match(summary, /Generated manpower: 25/);
     assert.match(summary, /Generated knowledge: 20/);
+    assert.match(summary, /Consumed food: 24/);
+    assert.match(summary, /Population food consumed: 20/);
+    assert.match(summary, /Army food consumed: 4/);
+    assert.match(summary, /Kingdoms with Food shortage: 1/);
   });
 
   it("normalizes unknown errors", () => {

@@ -35,7 +35,7 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S2-001: Create tick worker skeleton.
 - [x] S2-002: Add TickLog model and duplicate tick protection.
 - [x] S2-003: Implement resource generation formulas.
-- [ ] S2-004: Implement Food consumption for population and army.
+- [x] S2-004: Implement Food consumption for population and army.
 - [ ] S2-005: Implement population effects on taxes and manpower.
 - [ ] S2-006: Implement construction queue progress.
 - [ ] S2-007: Implement training queue progress.

@@ -7,11 +7,19 @@ export type ResourceGenerationSummary = {
   knowledge: number;
 };
 
+export type FoodConsumptionSummary = {
+  population: number;
+  army: number;
+  total: number;
+  kingdomsWithFoodShortage: number;
+};
+
 export type TickRunResult = {
   tickKey: string;
   status: TickRunStatus;
   processedKingdomCount: number;
   resourceGeneration?: ResourceGenerationSummary;
+  foodConsumption?: FoodConsumptionSummary;
   warnings?: string[];
   startedAt: Date;
   finishedAt: Date;
@@ -49,6 +57,15 @@ export function formatTickRunResult(result: TickRunResult): string {
       `Generated food: ${result.resourceGeneration.food}`,
       `Generated manpower: ${result.resourceGeneration.manpower}`,
       `Generated knowledge: ${result.resourceGeneration.knowledge}`,
+    );
+  }
+
+  if (result.foodConsumption) {
+    lines.push(
+      `Consumed food: ${result.foodConsumption.total}`,
+      `Population food consumed: ${result.foodConsumption.population}`,
+      `Army food consumed: ${result.foodConsumption.army}`,
+      `Kingdoms with Food shortage: ${result.foodConsumption.kingdomsWithFoodShortage}`,
     );
   }
 

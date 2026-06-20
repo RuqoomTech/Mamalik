@@ -37,7 +37,7 @@ The world updates every 10-minute tick.
 
 - [x] A tick can be run manually in development.
 - [x] A kingdom produces Money, Food, Manpower, and Knowledge every tick.
-- [ ] Population and army consume Food every tick.
+- [x] Population and army consume Food every processed non-duplicate tick.
 - [x] The same tick cannot be processed twice.
 - [ ] A player can start one construction/upgrade.
 - [ ] Construction progresses and completes correctly.
@@ -51,6 +51,7 @@ The world updates every 10-minute tick.
 - [x] S2-001: Tick worker package and manual one-tick command foundation.
 - [x] S2-002: TickLog model, migration, and duplicate tick-key protection.
 - [x] S2-003: Resource generation formulas.
+- [x] S2-004: Food consumption for population and army.
 
 ## Implementation Notes
 
@@ -63,5 +64,11 @@ The world updates every 10-minute tick.
   - Manpower: `floor(population * 0.01) + HOUSES level * 15`
   - Knowledge: `SCHOLAR_HALL level * 20`
 - Only `ACTIVE` buildings generate resources; `CONSTRUCTING` and `UPGRADING` buildings do not.
-- Food consumption, construction progress, and training progress are intentionally not implemented yet.
+- S2-004 Food consumption formulas per tick:
+  - Population Food: `floor(population * 0.02)`
+  - Army Food: `ceil(INFANTRY * 0.03 + ARCHERS * 0.035 + CAVALRY * 0.06 + SCOUTS * 0.025 + SIEGE * 0.12)`
+  - Starter kingdom consumption: 24 Food per tick.
+- Food is updated as `max(0, current Food + generated Food - total Food consumption)`.
+- Food shortages are counted and clamp Food to zero; starvation death, training pauses, and shortage penalties are deferred.
+- Construction progress and training progress are intentionally not implemented yet.
 - Live `tick:once` smoke testing passed after applying migration `000003_tick_logs`; the first run completed and the second run in the same 10-minute slot returned `SKIPPED`.

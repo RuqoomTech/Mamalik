@@ -2,6 +2,28 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-20
+
+### Added
+
+- Added deterministic Food consumption formulas for population and army in `packages/game`.
+- Added net Food clamping helper so Food cannot go below zero after a tick.
+- Added Food consumption unit tests for population-only consumption, starter kingdom consumption, each v0.1 unit type, invalid quantity clamping, unknown unit rejection, and non-negative Food results.
+
+### Changed
+
+- Wired `tick:once` to subtract Food consumption after Food generation for each processed kingdom.
+- Extended tick output with consumed Food totals and Food shortage count.
+- Marked S2-004 complete in Sprint 2 task trackers.
+
+### Deferred
+
+- Starvation deaths, training pauses, shortage penalties, construction progress, and training progress remain deferred to later Sprint 2 tasks.
+
+### Known issues
+
+- None blocking the next Sprint 2 implementation task.
+
 ## 2026-06-19
 
 ### Added

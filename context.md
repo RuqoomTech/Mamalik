@@ -196,6 +196,7 @@ v0.1 must include:
 - Starter kingdom constants for land, resources, population, districts, starter building footprints, starter units, land purchase packages, and beginner protection live in `packages/game/src/constants.ts` so UI and server creation logic use the same locked values.
 - The locked 10-minute tick duration also lives in `packages/game/src/constants.ts` for reuse by worker logic.
 - Initial Sprint 2 resource generation formulas live in `packages/game/src/economy/resource-generation.ts`; active buildings generate resources, constructing/upgrading buildings do not, and Food consumption remains a separate Sprint 2 task.
+- Initial Sprint 2 Food consumption formulas live in `packages/game/src/economy/food-consumption.ts`; population and army consume Food every processed non-duplicate tick, Food clamps at zero, and starvation penalties are deferred.
 - `POST /api/kingdom/create` creates the user's first kingdom in a database transaction and re-runs temporary server-side location validation; it does not trust client-submitted starter state.
 - Sprint 1 starter building footprints are simple 1,000 m2 constants per starter building until later balancing changes them deliberately.
 - Initial land purchase cooldown records are created with `availableAt = now`; package cooldown durations apply after future purchases.

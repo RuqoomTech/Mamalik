@@ -2,9 +2,11 @@ import { randomUUID } from "node:crypto";
 
 import { getPrismaClient, type MamalikPrismaClient } from "../../../packages/db/src/client";
 import { STARTING_RESOURCES } from "../../../packages/game/src/constants";
+import { calculateFoodAfterTick, calculateFoodConsumption } from "../../../packages/game/src/economy/food-consumption";
 import { calculateResourceGeneration } from "../../../packages/game/src/economy/resource-generation";
 import { getTickKey } from "./tick-clock";
 import {
+  type FoodConsumptionSummary,
   formatTickRunResult,
   isDuplicateTickInsert,
   type ResourceGenerationSummary,
@@ -54,7 +56,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
   }
 
   try {
-    const { processedKingdomCount, finishedAt, resourceGeneration, warnings } = await prisma.$transaction(async (tx) => {
+    const { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, warnings } = await prisma.$transaction(async (tx) => {
       const kingdoms = await tx.kingdom.findMany({
         select: {
           id: true,
@@ -63,6 +65,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
           resourceStockpile: {
             select: {
               id: true,
+              food: true,
             },
           },
           buildings: {
@@ -70,6 +73,12 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
               type: true,
               level: true,
               status: true,
+            },
+          },
+          unitStacks: {
+            select: {
+              unitType: true,
+              quantity: true,
             },
           },
         },
@@ -81,6 +90,12 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         manpower: 0,
         knowledge: 0,
       };
+      const foodConsumption: FoodConsumptionSummary = {
+        population: 0,
+        army: 0,
+        total: 0,
+        kingdomsWithFoodShortage: 0,
+      };
       const warnings: string[] = [];
 
       for (const kingdom of kingdoms) {
@@ -88,30 +103,56 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
           population: kingdom.population,
           buildings: kingdom.buildings,
         });
+        const consumed = calculateFoodConsumption({
+          population: kingdom.population,
+          units: kingdom.unitStacks,
+        });
 
         resourceGeneration.money += generated.money;
         resourceGeneration.food += generated.food;
         resourceGeneration.manpower += generated.manpower;
         resourceGeneration.knowledge += generated.knowledge;
+        foodConsumption.population += consumed.populationFoodConsumption;
+        foodConsumption.army += consumed.armyFoodConsumption;
+        foodConsumption.total += consumed.totalFoodConsumption;
 
         if (kingdom.resourceStockpile) {
+          const foodAfterTick = calculateFoodAfterTick({
+            currentFood: kingdom.resourceStockpile.food,
+            generatedFood: generated.food,
+            totalFoodConsumption: consumed.totalFoodConsumption,
+          });
+
+          if (foodAfterTick.foodShortage) {
+            foodConsumption.kingdomsWithFoodShortage += 1;
+          }
+
           await tx.resourceStockpile.update({
             where: { kingdomId: kingdom.id },
             data: {
               money: { increment: generated.money },
-              food: { increment: generated.food },
+              food: foodAfterTick.food,
               manpower: { increment: generated.manpower },
               knowledge: { increment: generated.knowledge },
             },
           });
         } else {
-          warnings.push(`Kingdom "${kingdom.name}" had no ResourceStockpile; created one before applying generation.`);
+          warnings.push(`Kingdom "${kingdom.name}" had no ResourceStockpile; created one before applying generation and Food consumption.`);
+          const foodAfterTick = calculateFoodAfterTick({
+            currentFood: STARTING_RESOURCES.food,
+            generatedFood: generated.food,
+            totalFoodConsumption: consumed.totalFoodConsumption,
+          });
+
+          if (foodAfterTick.foodShortage) {
+            foodConsumption.kingdomsWithFoodShortage += 1;
+          }
 
           await tx.resourceStockpile.create({
             data: {
               kingdomId: kingdom.id,
               money: STARTING_RESOURCES.money + generated.money,
-              food: STARTING_RESOURCES.food + generated.food,
+              food: foodAfterTick.food,
               manpower: STARTING_RESOURCES.manpower + generated.manpower,
               knowledge: STARTING_RESOURCES.knowledge + generated.knowledge,
             },
@@ -132,7 +173,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         WHERE "tickKey" = ${tickKey}
       `;
 
-      return { processedKingdomCount, finishedAt, resourceGeneration, warnings };
+      return { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, warnings };
     });
 
     return {
@@ -140,6 +181,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
       status: "COMPLETED",
       processedKingdomCount,
       resourceGeneration,
+      foodConsumption,
       warnings,
       startedAt,
       finishedAt,

@@ -135,3 +135,11 @@
 - Decision: Only `ACTIVE` buildings generate resources; `CONSTRUCTING` and `UPGRADING` buildings produce nothing until their owning queue tasks complete them.
 - Decision: S2-003 generates Food from Farms but does not subtract Food consumption. Consumption remains S2-004.
 - Decision: Initial formulas clamp invalid population and building levels to non-negative integers instead of throwing during tick processing.
+
+## 2026-06-20 - Sprint 2 Food Consumption Formulas
+
+- Decision: Initial v0.1 Food consumption formulas live in `packages/game/src/economy/food-consumption.ts`.
+- Decision: Population consumes `floor(population * 0.02)` Food per processed tick.
+- Decision: Army consumption uses unit rates and rounds the total army consumption up with `Math.ceil`.
+- Decision: Food cannot go below zero. If generated plus existing Food cannot cover consumption, the worker records a Food shortage and clamps Food to zero.
+- Decision: Starvation death, training pause behavior, and shortage penalties remain deferred to later Sprint 2 tasks.
