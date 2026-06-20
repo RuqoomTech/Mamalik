@@ -150,3 +150,10 @@
 - Decision: The Money population effect is named `populationTax`.
 - Decision: The Manpower population effect is named `populationManpowerGrowth`; this increases the Manpower resource only and does not change the kingdom population count.
 - Decision: Tick output reports population tax and population Manpower totals for each processed non-duplicate tick.
+
+## 2026-06-20 - Sprint 2 Construction Progress
+
+- Decision: Sprint 2 Task S2-006 uses existing `BuildingInstance.status` and `constructionRemainingTicks` fields for construction progress instead of adding queue tables yet.
+- Decision: Tick processing advances construction after resource generation and Food consumption, so buildings completed this tick begin producing on the next processed tick.
+- Decision: `UPGRADING` buildings are treated as already carrying the target `level`; completion sets `status` to `ACTIVE` and leaves `level` unchanged until a richer queue model exists.
+- Decision: Completed construction and upgrade timers create `CONSTRUCTION` reports in the same tick transaction.

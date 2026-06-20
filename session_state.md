@@ -2,30 +2,30 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-20 22:54:59 +03:00
+- Current date/time: 2026-06-20 23:15:10 +03:00
 - Current sprint: Sprint 2 - Tick Engine + Economy
 - Current sprint file: `docs/sprints/SPRINT_02_TICK_ENGINE.md`
-- Current task: S2-005 - Implement population effects on taxes and manpower
+- Current task: S2-006 - Implement construction queue progress
 
 ## Last Completed Task
 
-- Completed S2-005: Implement population effects on taxes and manpower.
-- Refactored `packages/game/src/economy/resource-generation.ts` so resource generation returns named breakdowns while preserving flat totals for stockpile updates.
-- Added explicit formula outputs:
-  - Money population effect: `populationTax = floor(population * 0.05)`
-  - Manpower population effect: `populationManpowerGrowth = floor(population * 0.01)`
-- Preserved starter kingdom generation totals:
-  - Money: 115
-  - Food: 120
-  - Manpower: 25
-  - Knowledge: 20
-- Extended `tick:once` output with population tax and population Manpower totals.
-- Preserved duplicate tick protection; duplicate ticks still skip before generation, Food consumption, or population-effect aggregation.
-- Did not implement population count growth, starvation death, happiness, unrest, migration, housing caps, construction queue progress, training queue progress, land buying, combat, scouting, alliances, rankings, or map validation.
+- Completed S2-006: Implement construction queue progress.
+- Added `packages/game/src/buildings/construction-progress.ts` with deterministic construction timer progression.
+- Implemented behavior:
+  - `ACTIVE` buildings do not progress.
+  - `CONSTRUCTING` and `UPGRADING` buildings with more than 1 remaining tick keep their status and decrement by 1.
+  - `CONSTRUCTING` and `UPGRADING` buildings with 1 remaining tick become `ACTIVE` with 0 remaining ticks.
+  - `CONSTRUCTING` and `UPGRADING` buildings already at 0 or negative ticks normalize to `ACTIVE` with 0 remaining ticks.
+  - Remaining ticks never go below 0.
+- Wired `runOneTick` to advance construction after resource generation and Food consumption, so completed buildings begin producing on the following processed tick.
+- Added tick output summary fields for buildings progressed, buildings completed, and buildings still in progress.
+- Added `CONSTRUCTION` report creation when a construction or upgrade timer completes.
+- Chosen temporary upgrade behavior: an `UPGRADING` `BuildingInstance` is considered to already hold the target `level`; completion only changes `status` to `ACTIVE` until a richer queue model exists.
+- Did not implement player-facing start-construction/start-upgrade UI, training queue progress, land buying, combat, scouting, alliances, rankings, or map validation.
 
 ## Files Changed Recently
 
-Changed for Sprint 2 S2-005:
+Changed for Sprint 2 S2-006:
 
 - `CHANGELOG.md`
 - `context.md`
@@ -34,8 +34,10 @@ Changed for Sprint 2 S2-005:
 - `docs/DECISIONS_LOG.md`
 - `docs/TESTING_STRATEGY.md`
 - `docs/sprints/SPRINT_02_TICK_ENGINE.md`
-- `packages/game/src/economy/resource-generation.ts`
-- `packages/game/src/economy/resource-generation.test.ts`
+- `package.json`
+- `packages/game/src/buildings/construction-progress.ts`
+- `packages/game/src/buildings/construction-progress.test.ts`
+- `packages/game/src/index.ts`
 - `session_state.md`
 - `tasks/backlog.md`
 - `tasks/sprint_02.md`
@@ -57,35 +59,40 @@ Changed for Sprint 2 S2-005:
 - `Get-Content tasks/sprint_02.md`
 - `Get-Content tasks/backlog.md`
 - `Get-Content CHANGELOG.md`
-- `Get-Content packages/game/src/economy/resource-generation.ts`
-- `Get-Content packages/game/src/economy/resource-generation.test.ts`
+- `Get-Content packages/db/prisma/schema.prisma`
 - `Get-Content workers/tick-worker/src/run-one-tick.ts`
 - `Get-Content workers/tick-worker/src/tick-log.ts`
 - `Get-Content workers/tick-worker/src/tick-log.test.ts`
-- `git grep "calculateResourceGeneration"`
-- `git grep "ResourceGenerationSummary\|resourceGeneration:"`
+- `Get-Content packages/game/src/index.ts`
+- `Get-ChildItem -Recurse -File packages/game/src`
 - `npm run game:typecheck`
 - `npm run tick:typecheck`
 - `npm run game:test` failed inside sandbox with Windows `spawn EPERM`, then passed outside sandbox.
 - `npm run tick:test` failed inside sandbox with Windows `spawn EPERM`, then passed outside sandbox.
-- One-off read-only Prisma query for pre-tick resources and expected generation/consumption/breakdowns.
-- `npm run tick:once` outside sandbox for tick key `2026-06-20T19:50:00.000Z`; completed and processed 2 kingdoms.
-- One-off read-only Prisma query for post-tick resources.
-- `npm run tick:once` outside sandbox again in the same slot; returned `SKIPPED`.
-- One-off read-only Prisma query after duplicate skip.
+- Live controlled construction smoke script:
+  - Set `Asmaa Kingdom` Barracks to `CONSTRUCTING` with 2 ticks.
+  - Ran `runOneTick` for tick key `2040-01-01T00:00:00.000Z`.
+  - Ran duplicate `runOneTick` for the same tick key.
+  - Ran `runOneTick` for tick key `2040-01-01T00:10:00.000Z`.
+  - Verified completion report creation.
 - `npm run typecheck`
 - `npm run lint`
 - `npm run db:typecheck`
+- `npm run game:typecheck`
+- `npm run tick:typecheck`
 - `npm run test` outside sandbox
 - `npm run build` outside sandbox
 - `npm run db:validate` outside sandbox
+- `npm run game:test` outside sandbox
+- `npm run tick:test` outside sandbox
+- `npm run tick:once` outside sandbox for tick key `2026-06-20T20:10:00.000Z`.
 - `git diff --check`
 - `git status --short`
 - `Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`
 
 ## Test Status
 
-- `npm run test`: passed outside sandbox; 44 web tests, 13 game tests, and 8 worker tests passed.
+- `npm run test`: passed outside sandbox; 44 web tests, 19 game tests, and 8 worker tests passed.
 - `npm run typecheck`: passed and includes `game:typecheck`.
 - `npm run lint`: passed.
 - `npm run build`: passed outside sandbox. It still emits the existing Node v26.1.0 deprecation warning for `module.register()`.
@@ -99,33 +106,45 @@ Changed for Sprint 2 S2-005:
 
 ## Manual Smoke Status
 
-- Live pre-tick stockpiles:
-  - `Asmaa Kingdom`: Money 10,115, Food 5,096, Manpower 525, Knowledge 20.
-  - `OmarTesting Kingdom`: Money 10,345, Food 5,336, Manpower 575, Knowledge 60.
-- Expected per starter kingdom:
-  - Generation totals: +115 Money, +120 Food, +25 Manpower, +20 Knowledge.
-  - Population breakdown: 50 population tax and 10 population Manpower.
-  - Consumption: 20 population Food + 4 army Food = 24 Food.
-  - Net Food change: +96.
-- `npm run tick:once` for tick key `2026-06-20T19:50:00.000Z`: `COMPLETED`, processed 2 kingdoms, generated Money 230, Food 240, Manpower 50, Knowledge 40, population tax 100, population Manpower 20, consumed Food 48, Food shortages 0.
-- Live post-tick stockpiles:
-  - `Asmaa Kingdom`: Money 10,230, Food 5,192, Manpower 550, Knowledge 40.
-  - `OmarTesting Kingdom`: Money 10,460, Food 5,432, Manpower 600, Knowledge 80.
-- Duplicate same-slot run returned `SKIPPED`.
-- Post-duplicate stockpiles were unchanged, confirming resources and Food were not processed twice.
+- Controlled live construction smoke used `Asmaa Kingdom` Barracks.
+- Starting test state: `CONSTRUCTING`, `constructionRemainingTicks = 2`.
+- First controlled tick:
+  - Tick key: `2040-01-01T00:00:00.000Z`.
+  - Result: `COMPLETED`.
+  - Construction summary: 1 progressed, 0 completed, 1 still in progress.
+  - Building after tick: `CONSTRUCTING`, `constructionRemainingTicks = 1`.
+- Duplicate controlled tick:
+  - Same tick key: `2040-01-01T00:00:00.000Z`.
+  - Result: `SKIPPED`.
+  - Building remained `CONSTRUCTING`, `constructionRemainingTicks = 1`.
+- Second controlled tick:
+  - Tick key: `2040-01-01T00:10:00.000Z`.
+  - Result: `COMPLETED`.
+  - Construction summary: 1 progressed, 1 completed, 0 still in progress.
+  - Building after tick: `ACTIVE`, `constructionRemainingTicks = 0`.
+  - Latest construction report: `Construction completed` with body including `buildingType = BARRACKS`, `level = 1`, `district = MILITARY`, and completed tick key.
+- Required live `npm run tick:once`:
+  - Tick key: `2026-06-20T20:10:00.000Z`.
+  - Result: `COMPLETED`.
+  - Processed 2 kingdoms.
+  - Generated Money 230, Food 240, Manpower 50, Knowledge 40.
+  - Population tax 100, population Manpower 20.
+  - Consumed Food 48.
+  - Buildings progressed 0, completed 0, still in progress 0.
 
 ## Known Issues
 
-- Population count growth is not implemented; `populationManpowerGrowth` is only a Manpower resource contribution.
-- Starvation death, training pauses, and shortage penalties are not implemented yet.
-- Construction queue progress remains S2-006.
+- Player-facing start-construction and start-upgrade actions are not implemented yet.
+- Construction currently uses `BuildingInstance.status` and `constructionRemainingTicks`; richer queue tables remain deferred until needed by the player-facing construction flow.
+- `UPGRADING` rows are treated as already carrying target `level`; there is no pending target-level field yet.
 - Training queue progress remains S2-007.
+- Starvation death, training pauses, and shortage penalties are not implemented yet.
 - Tick worker currently runs only by manual `tick:once`; scheduler behavior remains deferred.
 - Sprint 1 location validation is temporary and intentionally does not perform real water, restricted-zone, dynamic-buffer, or PostGIS polygon validation.
 - Starter building footprints are simple 1,000 m2 constants and may need later balancing.
 - Initial land purchase cooldown rows use `availableAt = now`; actual land-buying behavior remains Sprint 3.
 - `npm run build` passes but emits a Node v26.1.0 deprecation warning for `module.register()`.
-- `npm run tick:once` currently emits a `pg` deprecation warning about `client.query()` during tick processing; the tick succeeds and this should be revisited if it becomes noisy or blocks pg v9.
+- `npm run tick:once` and the live construction smoke currently emit a `pg` deprecation warning about `client.query()` during tick processing; the ticks succeed and this should be revisited if it becomes noisy or blocks pg v9.
 - MapLibre dependency installation previously reported npm audit findings; no audit remediation was included.
 - Production Google OAuth publication still requires external Google Cloud Console OAuth consent/app branding configuration with the production domain, callback URI, support email, logo, `/privacy`, and `/terms`.
 
@@ -135,4 +154,4 @@ Changed for Sprint 2 S2-005:
 
 ## Next Recommended Task
 
-- S2-006: Implement construction queue progress.
+- S2-007: Implement training queue progress.

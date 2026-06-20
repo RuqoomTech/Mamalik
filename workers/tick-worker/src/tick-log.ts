@@ -16,12 +16,19 @@ export type FoodConsumptionSummary = {
   kingdomsWithFoodShortage: number;
 };
 
+export type ConstructionProgressSummary = {
+  buildingsProgressed: number;
+  buildingsCompleted: number;
+  buildingsStillInProgress: number;
+};
+
 export type TickRunResult = {
   tickKey: string;
   status: TickRunStatus;
   processedKingdomCount: number;
   resourceGeneration?: ResourceGenerationSummary;
   foodConsumption?: FoodConsumptionSummary;
+  constructionProgress?: ConstructionProgressSummary;
   warnings?: string[];
   startedAt: Date;
   finishedAt: Date;
@@ -70,6 +77,14 @@ export function formatTickRunResult(result: TickRunResult): string {
       `Population food consumed: ${result.foodConsumption.population}`,
       `Army food consumed: ${result.foodConsumption.army}`,
       `Kingdoms with Food shortage: ${result.foodConsumption.kingdomsWithFoodShortage}`,
+    );
+  }
+
+  if (result.constructionProgress) {
+    lines.push(
+      `Buildings progressed: ${result.constructionProgress.buildingsProgressed}`,
+      `Buildings completed: ${result.constructionProgress.buildingsCompleted}`,
+      `Buildings still in progress: ${result.constructionProgress.buildingsStillInProgress}`,
     );
   }
 

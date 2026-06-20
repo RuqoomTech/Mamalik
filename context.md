@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 2 - Tick Engine + Economy
-- Active task sequence: Sprint 1 foundation is complete; Sprint 2 has started with the tick worker package, stable 10-minute tick key calculation, TickLog persistence, duplicate tick protection, manual `tick:once`, resource generation, Food consumption, and named population-effect breakdowns
+- Active task sequence: Sprint 1 foundation is complete; Sprint 2 has started with the tick worker package, stable 10-minute tick key calculation, TickLog persistence, duplicate tick protection, manual `tick:once`, resource generation, Food consumption, named population-effect breakdowns, and construction progress
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -197,6 +197,7 @@ v0.1 must include:
 - The locked 10-minute tick duration also lives in `packages/game/src/constants.ts` for reuse by worker logic.
 - Initial Sprint 2 resource generation formulas live in `packages/game/src/economy/resource-generation.ts`; active buildings generate resources, constructing/upgrading buildings do not, and the formula returns named breakdowns for population tax and population-driven Manpower growth while preserving flat totals for worker updates.
 - Initial Sprint 2 Food consumption formulas live in `packages/game/src/economy/food-consumption.ts`; population and army consume Food every processed non-duplicate tick, Food clamps at zero, and starvation penalties are deferred.
+- Initial Sprint 2 construction progress rules live in `packages/game/src/buildings/construction-progress.ts`; the worker decrements `CONSTRUCTING` and `UPGRADING` building timers once per processed non-duplicate tick, sets completed buildings to `ACTIVE`, and treats an `UPGRADING` row as already carrying its target level until a richer queue model exists.
 - `POST /api/kingdom/create` creates the user's first kingdom in a database transaction and re-runs temporary server-side location validation; it does not trust client-submitted starter state.
 - Sprint 1 starter building footprints are simple 1,000 m2 constants per starter building until later balancing changes them deliberately.
 - Initial land purchase cooldown records are created with `availableAt = now`; package cooldown durations apply after future purchases.

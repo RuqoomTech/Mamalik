@@ -11,6 +11,9 @@ All notable Mamalik project changes are recorded here.
 - Added Food consumption unit tests for population-only consumption, starter kingdom consumption, each v0.1 unit type, invalid quantity clamping, unknown unit rejection, and non-negative Food results.
 - Added named resource-generation breakdowns for population tax and population-driven Manpower generation.
 - Added tests that confirm starter generation totals remain unchanged while formula breakdown totals stay consistent.
+- Added construction progress helpers and tests for active, constructing, upgrading, completion, normalization, and negative-timer cases.
+- Added construction progress summaries to tick output.
+- Added construction completion report creation during tick processing.
 
 ### Changed
 
@@ -19,10 +22,12 @@ All notable Mamalik project changes are recorded here.
 - Marked S2-004 complete in Sprint 2 task trackers.
 - Extended tick output with population tax and population Manpower summary totals.
 - Marked S2-005 complete in Sprint 2 task trackers.
+- Wired `tick:once` to decrement `CONSTRUCTING` and `UPGRADING` building timers after generation and Food consumption.
+- Marked S2-006 complete in Sprint 2 task trackers.
 
 ### Deferred
 
-- Starvation deaths, training pauses, shortage penalties, construction progress, and training progress remain deferred to later Sprint 2 tasks.
+- Starvation deaths, training pauses, shortage penalties, player-facing construction start actions, and training progress remain deferred to later Sprint 2 tasks.
 
 ### Known issues
 

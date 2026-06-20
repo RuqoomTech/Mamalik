@@ -136,7 +136,11 @@ Notes:
 
 - Buildings consume land through districts, not manual map placement.
 - Starter building footprints are simple 1,000 m2 constants per starter building in S1-014.
-- Construction and upgrade queue tables are deferred until Sprint 2.
+- S2-006 uses `BuildingInstance.status` and `constructionRemainingTicks` as the temporary v0.1 construction representation.
+- Each processed non-duplicate tick decrements `CONSTRUCTING` and `UPGRADING` rows with positive `constructionRemainingTicks`.
+- Rows that reach zero are set to `ACTIVE` with `constructionRemainingTicks = 0`.
+- `CONSTRUCTING` or `UPGRADING` rows already at zero ticks are normalized to `ACTIVE`.
+- `UPGRADING` rows are treated as already carrying the target `level`; completion only changes `status` to `ACTIVE` until a richer queue model exists.
 
 ### UnitStack
 
@@ -185,7 +189,8 @@ Notes:
 Notes:
 
 - Sprint 1 only needs the storage foundation.
-- Report center behavior is deferred until Sprint 6.
+- S2-006 creates `CONSTRUCTION` reports when the tick worker completes a construction or upgrade timer.
+- Full report-center behavior is deferred until Sprint 6.
 
 ### TickLog
 
@@ -208,7 +213,8 @@ Notes:
 - S2-003 adds resource generation before the TickLog is marked `COMPLETED`.
 - S2-004 adds Food consumption before the TickLog is marked `COMPLETED`.
 - S2-005 adds named population-effect breakdowns to formula and worker output without changing TickLog columns.
-- Population count growth, construction, and training mutations are later Sprint 2 tasks.
+- S2-006 adds construction progress summary fields to worker output without changing TickLog columns.
+- Population count growth and training mutations are later Sprint 2 tasks.
 
 ## Dashboard Read Model
 
@@ -354,4 +360,5 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Tick duration constants also live in `packages/game/src/constants.ts`; `workers/tick-worker` uses those constants to compute stable 10-minute tick keys.
 - Initial resource-generation formulas live in `packages/game/src/economy/resource-generation.ts` and return named output breakdowns plus reusable flat totals for worker stockpile updates.
 - Initial Food consumption formulas live in `packages/game/src/economy/food-consumption.ts`.
+- Initial construction progress helpers live in `packages/game/src/buildings/construction-progress.ts`.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

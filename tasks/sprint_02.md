@@ -11,7 +11,7 @@ The world updates every 10-minute tick.
 - [x] S2-003: Implement resource generation formulas.
 - [x] S2-004: Implement Food consumption for population and army.
 - [x] S2-005: Implement population effects on taxes and manpower.
-- [ ] S2-006: Implement construction queue progress.
+- [x] S2-006: Implement construction queue progress.
 - [ ] S2-007: Implement training queue progress.
 - [ ] S2-008: Add dashboard economy/tick display.
 - [ ] S2-009: Add admin test tick action.
@@ -22,7 +22,8 @@ The world updates every 10-minute tick.
 - [x] Resources update every processed non-duplicate tick.
 - [x] Food consumption is applied every processed non-duplicate tick.
 - [x] Population tax and population-driven Manpower effects are named in formula output and tick summaries.
-- [ ] Construction and training progress correctly.
+- [x] Construction progress works for already queued building timers.
+- [ ] Training progress correctly.
 - [ ] Admin can inspect tick logs.
 
 ## Notes
@@ -32,3 +33,4 @@ The world updates every 10-minute tick.
 - S2-003 adds resource generation for Money, Food, Manpower, and Knowledge.
 - S2-004 subtracts Food consumption for population and army, clamps Food to zero, and counts Food shortages without applying starvation penalties.
 - S2-005 makes population tax and population-driven Manpower generation explicit in `packages/game` formula breakdowns and worker output without changing starter totals.
+- S2-006 advances `CONSTRUCTING` and `UPGRADING` building timers in the tick worker, activates completed buildings, and writes construction completion reports. Player-facing start-construction actions remain separate.

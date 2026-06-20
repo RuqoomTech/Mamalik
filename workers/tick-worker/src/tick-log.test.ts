@@ -28,6 +28,11 @@ describe("tick log helpers", () => {
         total: 24,
         kingdomsWithFoodShortage: 1,
       },
+      constructionProgress: {
+        buildingsProgressed: 2,
+        buildingsCompleted: 1,
+        buildingsStillInProgress: 1,
+      },
       startedAt: new Date("2026-06-19T12:31:00.000Z"),
       finishedAt: new Date("2026-06-19T12:31:01.000Z"),
     });
@@ -45,6 +50,9 @@ describe("tick log helpers", () => {
     assert.match(summary, /Population food consumed: 20/);
     assert.match(summary, /Army food consumed: 4/);
     assert.match(summary, /Kingdoms with Food shortage: 1/);
+    assert.match(summary, /Buildings progressed: 2/);
+    assert.match(summary, /Buildings completed: 1/);
+    assert.match(summary, /Buildings still in progress: 1/);
   });
 
   it("normalizes unknown errors", () => {

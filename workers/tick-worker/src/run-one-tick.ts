@@ -1,11 +1,13 @@
 import { randomUUID } from "node:crypto";
 
 import { getPrismaClient, type MamalikPrismaClient } from "../../../packages/db/src/client";
+import { progressConstruction } from "../../../packages/game/src/buildings/construction-progress";
 import { STARTING_RESOURCES } from "../../../packages/game/src/constants";
 import { calculateFoodAfterTick, calculateFoodConsumption } from "../../../packages/game/src/economy/food-consumption";
 import { calculateResourceGeneration, getResourceGenerationTotals } from "../../../packages/game/src/economy/resource-generation";
 import { getTickKey } from "./tick-clock";
 import {
+  type ConstructionProgressSummary,
   type FoodConsumptionSummary,
   formatTickRunResult,
   isDuplicateTickInsert,
@@ -56,7 +58,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
   }
 
   try {
-    const { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, warnings } = await prisma.$transaction(async (tx) => {
+    const { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, constructionProgress, warnings } = await prisma.$transaction(async (tx) => {
       const kingdoms = await tx.kingdom.findMany({
         select: {
           id: true,
@@ -70,9 +72,16 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
           },
           buildings: {
             select: {
+              id: true,
               type: true,
               level: true,
               status: true,
+              constructionRemainingTicks: true,
+              district: {
+                select: {
+                  type: true,
+                },
+              },
             },
           },
           unitStacks: {
@@ -97,6 +106,11 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         army: 0,
         total: 0,
         kingdomsWithFoodShortage: 0,
+      };
+      const constructionProgress: ConstructionProgressSummary = {
+        buildingsProgressed: 0,
+        buildingsCompleted: 0,
+        buildingsStillInProgress: 0,
       };
       const warnings: string[] = [];
 
@@ -163,6 +177,56 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
             },
           });
         }
+
+        for (const building of kingdom.buildings) {
+          const progress = progressConstruction({
+            status: building.status,
+            constructionRemainingTicks: building.constructionRemainingTicks,
+          });
+          const statusChanged = progress.status !== building.status;
+          const remainingTicksChanged = progress.constructionRemainingTicks !== building.constructionRemainingTicks;
+
+          if (!statusChanged && !remainingTicksChanged) {
+            continue;
+          }
+
+          if (progress.progressed) {
+            constructionProgress.buildingsProgressed += 1;
+          }
+
+          if (progress.completed) {
+            constructionProgress.buildingsCompleted += 1;
+          }
+
+          if (progress.status !== "ACTIVE") {
+            constructionProgress.buildingsStillInProgress += 1;
+          }
+
+          await tx.buildingInstance.update({
+            where: { id: building.id },
+            data: {
+              status: progress.status,
+              constructionRemainingTicks: progress.constructionRemainingTicks,
+            },
+          });
+
+          if (progress.completed) {
+            await tx.report.create({
+              data: {
+                kingdomId: kingdom.id,
+                type: "CONSTRUCTION",
+                title: building.status === "UPGRADING" ? "Upgrade completed" : "Construction completed",
+                bodyJson: {
+                  buildingType: building.type,
+                  level: building.level,
+                  district: building.district.type,
+                  previousStatus: building.status,
+                  completedTickKey: tickKey,
+                },
+              },
+            });
+          }
+        }
       }
 
       const processedKingdomCount = kingdoms.length;
@@ -178,7 +242,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         WHERE "tickKey" = ${tickKey}
       `;
 
-      return { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, warnings };
+      return { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, constructionProgress, warnings };
     });
 
     return {
@@ -187,6 +251,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
       processedKingdomCount,
       resourceGeneration,
       foodConsumption,
+      constructionProgress,
       warnings,
       startedAt,
       finishedAt,

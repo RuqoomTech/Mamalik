@@ -41,7 +41,7 @@ The world updates every 10-minute tick.
 - [x] Population tax and population-driven Manpower effects are named, tested, and included in tick output.
 - [x] The same tick cannot be processed twice.
 - [ ] A player can start one construction/upgrade.
-- [ ] Construction progresses and completes correctly.
+- [x] Construction and upgrade timers progress and complete correctly once a building is already queued.
 - [ ] A player can start one unit training queue.
 - [ ] Training progresses and completes correctly.
 - [ ] Dashboard shows resources, queues, and per-tick numbers.
@@ -54,6 +54,7 @@ The world updates every 10-minute tick.
 - [x] S2-003: Resource generation formulas.
 - [x] S2-004: Food consumption for population and army.
 - [x] S2-005: Population effects on taxes and manpower.
+- [x] S2-006: Construction queue progress.
 
 ## Implementation Notes
 
@@ -77,5 +78,11 @@ The world updates every 10-minute tick.
   - Starter kingdom consumption: 24 Food per tick.
 - Food is updated as `max(0, current Food + generated Food - total Food consumption)`.
 - Food shortages are counted and clamp Food to zero; starvation death, training pauses, and shortage penalties are deferred.
-- Construction progress and training progress are intentionally not implemented yet.
+- S2-006 construction progress rules:
+  - `CONSTRUCTING` and `UPGRADING` buildings with positive `constructionRemainingTicks` decrement by 1 after this tick's generation/consumption.
+  - Buildings that reach zero ticks become `ACTIVE` with `constructionRemainingTicks = 0`.
+  - `CONSTRUCTING` or `UPGRADING` buildings already at zero ticks are normalized to `ACTIVE`.
+  - `UPGRADING` rows are treated as already carrying their target `level`; completion only changes `status` until a richer queue model exists.
+  - Completed construction/upgrades create `CONSTRUCTION` reports.
+- Player-facing start-construction/start-upgrade actions and training progress are intentionally not implemented yet.
 - Live `tick:once` smoke testing passed after applying migration `000003_tick_logs`; the first run completed and the second run in the same 10-minute slot returned `SKIPPED`.

@@ -14,7 +14,7 @@
     "db:migrate:deploy": "npm --prefix packages/db run db:migrate:deploy",
     "db:studio": "npm --prefix packages/db run db:studio",
     "db:typecheck": "npm --prefix packages/db run typecheck",
-    "game:test": "npm --prefix apps/web exec -- tsx --test packages/game/src/economy/*.test.ts",
+    "game:test": "npm --prefix apps/web exec -- tsx --test packages/game/src/**/*.test.ts",
     "game:typecheck": "npm --prefix apps/web exec -- tsc -p packages/game/tsconfig.json --noEmit",
     "tick:once": "npm --prefix apps/web exec -- tsx workers/tick-worker/src/index.ts once",
     "tick:dev": "npm --prefix apps/web exec -- tsx workers/tick-worker/src/index.ts once",

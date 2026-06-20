@@ -37,7 +37,7 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S2-003: Implement resource generation formulas.
 - [x] S2-004: Implement Food consumption for population and army.
 - [x] S2-005: Implement population effects on taxes and manpower.
-- [ ] S2-006: Implement construction queue progress.
+- [x] S2-006: Implement construction queue progress.
 - [ ] S2-007: Implement training queue progress.
 - [ ] S2-008: Add dashboard economy/tick display.
 - [ ] S2-009: Add admin test tick action.
