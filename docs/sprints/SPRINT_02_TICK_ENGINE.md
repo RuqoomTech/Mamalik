@@ -40,9 +40,9 @@ The world updates every 10-minute tick.
 - [x] Population and army consume Food every processed non-duplicate tick.
 - [x] Population tax and population-driven Manpower effects are named, tested, and included in tick output.
 - [x] The same tick cannot be processed twice.
-- [ ] A player can start one construction/upgrade.
+- [x] Worker-side construction/upgrade progress works for queued buildings.
 - [x] Construction and upgrade timers progress and complete correctly once a building is already queued.
-- [ ] A player can start one unit training queue.
+- [x] Worker-side training progress works for queued training items.
 - [x] Training timers progress and complete correctly once a queue already exists.
 - [x] Dashboard shows resources, queues, and per-tick numbers.
 - [x] Admin can run a test tick and view tick logs.
@@ -58,6 +58,15 @@ The world updates every 10-minute tick.
 - [x] S2-007: Training queue progress.
 - [x] S2-008: Dashboard economy/tick display.
 - [x] S2-009: Admin test tick action and TickLog inspection.
+- [x] Sprint 2 QA, stabilization, and closure review.
+
+## Closure Status
+
+- Sprint 2 is complete for the implemented manual/admin tick engine, economy processing, construction/training progress, dashboard visibility, and TickLog inspection scope.
+- Player-facing start-construction/start-upgrade actions are deferred to a future v0.1 API/UI task because they require cost validation, slot enforcement, and build/upgrade request handling.
+- Player-facing start-training actions are deferred to a future v0.1 API/UI task because they require cost validation, one-active-queue enforcement, and training request handling.
+- Automatic scheduling is deferred until the production worker hosting strategy is chosen. The stable manual command and admin one-tick action are the Sprint 2 closure boundary.
+- Failed TickLog cleanup is deferred; failed rows remain visible in admin as audit records.
 
 ## Implementation Notes
 
@@ -104,5 +113,5 @@ The world updates every 10-minute tick.
   - The mutation re-checks admin authorization inside the action path before calling `runOneTick`.
   - The admin action reuses `workers/tick-worker/src/run-one-tick.ts`; it does not duplicate tick logic or add a public tick API.
   - Duplicate same-slot clicks return `SKIPPED` through the `TickLog.tickKey` unique guard and do not double-apply resources, construction, or training.
-- Player-facing start-construction/start-upgrade and start-training actions are intentionally not implemented yet.
+- Player-facing start-construction/start-upgrade and start-training actions are intentionally deferred to separate v0.1 tasks.
 - Live `tick:once` smoke testing passed after applying migration `000003_tick_logs`; the first run completed and the second run in the same 10-minute slot returned `SKIPPED`.

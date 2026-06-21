@@ -48,7 +48,9 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - `npm run test` now includes web tests, `npm run game:test`, and `npm run tick:test`.
 - `npm run typecheck` now includes web typecheck and `npm run game:typecheck`; `npm run tick:typecheck` validates the separate worker TypeScript package.
 - `npm run tick:once` is the manual smoke command for the worker, but it requires `DATABASE_URL` and the TickLog migration applied to a reachable database.
-- Construction and training tests should be added with the owning Sprint 2 tasks.
+- Construction and training tests were added with the owning Sprint 2 tasks.
+- Sprint 2 closure checks should include the full root test/typecheck/lint/build suite, database validation/typecheck, game and worker tests/typechecks, migration deploy verification when a live database is available, and two `npm run tick:once` runs in the same tick slot to confirm duplicate skipping.
+- Browser smoke for dashboard/admin remains useful when a browser session is available, but server-side tests and live tick checks are the required baseline for Sprint 2 closure.
 
 ## Documentation Requirement
 

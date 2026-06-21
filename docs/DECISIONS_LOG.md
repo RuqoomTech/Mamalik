@@ -180,3 +180,13 @@
 - Decision: The admin action reuses `runOneTick` from `workers/tick-worker` so CLI and web-triggered manual ticks share duplicate protection and gameplay mutation behavior.
 - Decision: Recent TickLog inspection is added to `/admin`; failed historical TickLog rows remain visible and are not deleted or repaired by this task.
 - Decision: Automatic scheduling remains deferred; this task only adds one manual admin-triggered tick.
+
+## 2026-06-21 - Sprint 2 Closure
+
+- Decision: Sprint 2 is complete for the manual/admin tick engine, resource generation, Food consumption, population effects, construction progress, training progress, dashboard economy display, and admin TickLog inspection scope.
+- Decision: Player-facing start-construction/start-upgrade actions are deferred to a future v0.1 API/UI task because they require request validation, resource costs, slot enforcement, and build/upgrade initiation behavior.
+- Decision: Player-facing start-training actions and one-active-training-queue enforcement are deferred to a future v0.1 API/UI task because they require request validation, resource costs, queue creation, and queue-limit enforcement.
+- Decision: Automatic scheduling is deferred until the production worker hosting strategy is chosen; Sprint 2 supports manual `tick:once` and admin one-tick execution.
+- Decision: Failed TickLog cleanup is deferred. Failed rows remain visible in admin as audit/debug records.
+- Decision: Node and `pg` deprecation warnings are non-blocking for Sprint 2 closure and should be revisited during dependency/toolchain maintenance.
+- Decision: The 30-second Prisma interactive transaction timeout remains the v0.1 tick-worker convention for remote database reliability.

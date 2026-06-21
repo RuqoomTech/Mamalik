@@ -31,7 +31,7 @@ mamalik/
   tasks/
 ```
 
-Status: `apps/web`, `packages/db`, `packages/game`, and `workers/tick-worker` now contain implementation code. `workers/tick-worker` starts as a manual one-tick command foundation in Sprint 2 before scheduler behavior is added.
+Status: `apps/web`, `packages/db`, `packages/game`, and `workers/tick-worker` now contain implementation code. `workers/tick-worker` supports manual one-tick execution and admin-triggered one-tick execution in Sprint 2; automatic scheduler behavior remains deferred until the production worker hosting strategy is chosen.
 
 ## Package manager
 
@@ -43,6 +43,7 @@ Status: `apps/web`, `packages/db`, `packages/game`, and `workers/tick-worker` no
 - Root scripts now include `game:test` and `game:typecheck` for shared game-domain logic.
 - `tick:once` is the first supported tick command and should be stabilized before relying on a long-running scheduler.
 - Tick worker database processing uses a 30-second Prisma interactive transaction timeout for remote database reliability.
+- Automatic recurring scheduling is not part of Sprint 2 closure. The stable manual/admin tick path is the current supported operation mode.
 
 ## Environment files
 
@@ -98,7 +99,7 @@ Status: Sprint 2 added the first package manifest, TypeScript config, exports, d
 - Writes persistent `TickLog` rows with duplicate tick protection.
 - `tick:once` currently generates Money, Food, Manpower, and Knowledge for each processed kingdom, reports named population tax and population Manpower contributions, subtracts Food consumption for population and army, clamps Food at zero, advances construction/upgrading building timers, advances active training queue timers, writes construction/training completion reports, then records tick completion.
 - `/admin` can trigger the same one-tick core through an admin-only Server Action; duplicate processing is still guarded by `TickLog.tickKey`.
-- A richer player-facing construction queue/start-construction flow and player-facing start-training API/UI remain later Sprint 2 tasks.
+- A richer player-facing construction queue/start-construction flow and player-facing start-training API/UI remain deferred v0.1 tasks outside Sprint 2 closure.
 - Movement, combat, scouting, notifications, and report-center behavior remain later sprint work.
 
 ## Spatial strategy

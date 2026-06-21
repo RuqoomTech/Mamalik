@@ -42,6 +42,10 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S2-008: Add dashboard economy/tick display.
 - [x] S2-009: Add admin test tick action.
 
+## Sprint 2 Maintenance
+
+- [x] 2026-06-21: Complete Sprint 2 QA, stabilization, and closure review.
+
 ## Sprint 3 - Land Buying + District Management
 
 - [ ] See `tasks/sprint_03.md`.

@@ -12,20 +12,23 @@ All notable Mamalik project changes are recorded here.
 - Added an admin-only Server Action that runs one manual tick through the existing tick worker core.
 - Added Tick Controls and Recent Tick Logs sections to `/admin`.
 - Added admin tick authorization tests and TickLog row-shaping tests.
+- Added `docs/sprints/SPRINT_02_REVIEW.md` with Sprint 2 closure status, deferred items, migration status, and Sprint 3 readiness.
 
 ### Changed
 
 - Reused `packages/game` resource-generation and Food-consumption formulas for dashboard per-tick estimates instead of duplicating formulas in UI components.
 - Marked S2-008 complete in Sprint 2 task trackers.
 - Marked S2-009 complete in Sprint 2 task trackers.
+- Completed Sprint 2 QA, stabilization, and closure review documentation.
+- Documented that Sprint 2 closes on worker-side processing, dashboard visibility, and admin/manual tick controls.
 
 ### Deferred
 
-- Player-facing start-construction/start-upgrade actions, player-facing start-training actions, and automatic tick scheduling remain deferred to their owning tasks.
+- Player-facing start-construction/start-upgrade actions, player-facing start-training actions, one-active-training-queue enforcement, automatic tick scheduling, failed TickLog cleanup tooling, starvation penalties, and deprecation-warning cleanup remain deferred to their owning future v0.1 or maintenance tasks.
 
 ### Known issues
 
-- None blocking the next Sprint 2 implementation task.
+- None blocking Sprint 3 start from the Sprint 2 tick-engine standpoint.
 
 ## 2026-06-20
 

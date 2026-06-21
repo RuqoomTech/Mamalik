@@ -243,7 +243,8 @@ Notes:
 - S2-006 adds construction progress summary fields to worker output without changing TickLog columns.
 - S2-007 adds training progress summary fields to worker output without changing TickLog columns.
 - S2-009 reads recent TickLog rows in the admin panel for inspection. Failed historical rows remain visible and are not cleaned up automatically.
-- Population count growth is a later Sprint 2 or balancing task.
+- Sprint 2 closure keeps failed TickLog rows as audit/debug records. Cleanup tooling is deferred unless the volume becomes operationally noisy.
+- Population count growth is a future v0.1 or balancing task.
 
 ## Dashboard Read Model
 
@@ -280,6 +281,8 @@ The admin panel reads limited rows from:
 - `TickLog`
 
 The admin read model uses explicit `select` fields and row limits for inspection. It derives display-only values such as free land, enum labels, report read/unread state, and TickLog status labels. The S2-009 admin tick Server Action is the first admin mutation, and it only runs one tick through the existing worker core after re-checking admin authorization.
+
+Sprint 2 closure does not add player-facing queue start models or mutation routes. Existing construction and training models support worker-side progress for rows that are already queued.
 
 ## Deferred Queue Models
 

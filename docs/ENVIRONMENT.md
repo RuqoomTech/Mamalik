@@ -19,7 +19,7 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 | `GOOGLE_CLIENT_SECRET` | Server/auth | Google OAuth client secret for Google login. |
 | `NEXT_PUBLIC_MAP_STYLE_URL` | Public map | MapLibre style URL used by the `/create-kingdom` map-selection page. |
 | `ADMIN_EMAILS` | Server/admin | Optional comma-separated email allowlist for v0.1 `/admin` access. `User.role === "ADMIN"` is checked first. |
-| `TICK_WORKER_SECRET` | Server/worker | Shared secret for protected tick worker or admin-triggered tick calls. |
+| `TICK_WORKER_SECRET` | Server/worker | Reserved for future protected external tick calls. The current Sprint 2 admin Server Action does not require a public tick secret. |
 
 ## Secret Handling
 
@@ -34,7 +34,7 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 - `SESSION_SECRET` is active for email/password auth.
 - Google OAuth variables are active for `GET /api/auth/google` and `GET /api/auth/google/callback`.
 - `NEXT_PUBLIC_MAP_STYLE_URL` is active for the `/create-kingdom` MapLibre page.
-- `TICK_WORKER_SECRET` is reserved for the tick worker/admin test tick flow.
+- `TICK_WORKER_SECRET` is reserved for future protected external tick flows. Sprint 2 admin ticks run through a server-only action and current-user admin authorization.
 
 ## Tick Worker Environment
 
@@ -66,7 +66,9 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 - `/admin` is restricted to authenticated users with `User.role === "ADMIN"` or an email listed in `ADMIN_EMAILS`.
 - `ADMIN_EMAILS` is server-only and must not be exposed to the browser.
 - Keep `ADMIN_EMAILS` empty unless an operator account needs temporary v0.1 access before role management exists.
-- The Sprint 1 admin panel is read-only. `ADMIN_EMAILS` grants inspection access only; it does not enable write, reset, delete, or tick controls.
+- The Sprint 2 admin panel can run one manual tick through a server-only action after re-checking admin authorization.
+- `ADMIN_EMAILS` can grant v0.1 admin access, including the manual tick control. Prefer assigning `User.role = "ADMIN"` for durable operator accounts.
+- Admin access does not enable reset, delete, or edit controls in v0.1.
 
 ## Database Package
 

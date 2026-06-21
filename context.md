@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 2 - Tick Engine + Economy
-- Active task sequence: Sprint 1 foundation is complete; Sprint 2 has started with the tick worker package, stable 10-minute tick key calculation, TickLog persistence, duplicate tick protection, manual `tick:once`, resource generation, Food consumption, named population-effect breakdowns, construction progress, training queue progress, dashboard economy/tick display, and admin manual tick control
+- Active task sequence: Sprint 1 foundation is complete; Sprint 2 tick engine and economy implementation is complete through manual/admin tick execution, TickLog persistence, duplicate tick protection, resource generation, Food consumption, named population-effect breakdowns, construction progress, training queue progress, dashboard economy/tick display, and admin manual tick control. Sprint 2 closure review is the final step before Sprint 3 starts.
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -209,6 +209,8 @@ v0.1 must include:
 - `/admin` began as a read-only server-rendered Sprint 1 inspection panel protected by the existing server-side admin guard; it uses explicit limited database selects and still does not expose edit/reset/delete controls.
 - Sprint 2 adds an admin-only Server Action from `/admin` that re-checks admin authorization and calls the existing `runOneTick` worker core for one manual tick. It does not expose a public tick API or automatic scheduler.
 - `/admin` reads recent TickLog rows for inspection, including failed historical rows.
+- Sprint 2 closes with manual/admin tick execution only. Automatic recurring scheduling, player-facing start-construction/start-upgrade actions, and player-facing start-training actions remain deferred v0.1 follow-ups.
+- Failed TickLog rows are kept as audit/debug records and shown in admin; cleanup tooling is deferred.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - Next.js `outputFileTracingRoot` is configured to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.
