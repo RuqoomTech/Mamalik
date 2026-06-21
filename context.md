@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 2 - Tick Engine + Economy
-- Active task sequence: Sprint 1 foundation is complete; Sprint 2 has started with the tick worker package, stable 10-minute tick key calculation, TickLog persistence, duplicate tick protection, manual `tick:once`, resource generation, Food consumption, named population-effect breakdowns, construction progress, training queue progress, and dashboard economy/tick display
+- Active task sequence: Sprint 1 foundation is complete; Sprint 2 has started with the tick worker package, stable 10-minute tick key calculation, TickLog persistence, duplicate tick protection, manual `tick:once`, resource generation, Food consumption, named population-effect breakdowns, construction progress, training queue progress, dashboard economy/tick display, and admin manual tick control
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -206,7 +206,9 @@ v0.1 must include:
 - `/dashboard` is a read-only server-rendered kingdom overview that uses the existing server-side route guard and loads kingdom state from the database.
 - Dashboard calculations such as free land, beginner-protection remaining time, per-tick economy estimates, Food status, active queue display, latest tick rows, and report summaries live in `apps/web/src/lib/kingdom/dashboard-data.ts`, not in client-side UI.
 - Dashboard per-tick estimates reuse `packages/game` formulas and helpers; UI components do not duplicate economy or Food-consumption formulas.
-- `/admin` is a read-only server-rendered Sprint 1 inspection panel protected by the existing server-side admin guard; it uses explicit limited database selects and does not expose edit/reset/delete/tick controls.
+- `/admin` began as a read-only server-rendered Sprint 1 inspection panel protected by the existing server-side admin guard; it uses explicit limited database selects and still does not expose edit/reset/delete controls.
+- Sprint 2 adds an admin-only Server Action from `/admin` that re-checks admin authorization and calls the existing `runOneTick` worker core for one manual tick. It does not expose a public tick API or automatic scheduler.
+- `/admin` reads recent TickLog rows for inspection, including failed historical rows.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - Next.js `outputFileTracingRoot` is configured to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.

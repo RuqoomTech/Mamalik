@@ -14,7 +14,7 @@ The world updates every 10-minute tick.
 - [x] S2-006: Implement construction queue progress.
 - [x] S2-007: Implement training queue progress.
 - [x] S2-008: Add dashboard economy/tick display.
-- [ ] S2-009: Add admin test tick action.
+- [x] S2-009: Add admin test tick action.
 
 ## Acceptance Criteria
 
@@ -25,7 +25,7 @@ The world updates every 10-minute tick.
 - [x] Construction progress works for already queued building timers.
 - [x] Training progress works for already queued unit training.
 - [x] Dashboard shows resources, queues, per-tick estimates, latest ticks, and latest reports.
-- [ ] Admin can inspect tick logs.
+- [x] Admin can run a manual test tick and inspect recent tick logs.
 
 ## Notes
 
@@ -37,3 +37,4 @@ The world updates every 10-minute tick.
 - S2-006 advances `CONSTRUCTING` and `UPGRADING` building timers in the tick worker, activates completed buildings, and writes construction completion reports. Player-facing start-construction actions remain separate.
 - S2-007 adds `TrainingQueueItem`, advances active training timers in the tick worker, adds completed units to garrison stacks, and writes training completion reports. Player-facing start-training actions remain separate.
 - S2-008 expands `/dashboard` with read-only stockpiles, per-tick economy estimates, Food status, active construction/training progress, latest TickLog rows, and latest kingdom reports.
+- S2-009 adds an admin-only Server Action for one manual tick and a recent TickLog inspection table. Automatic scheduling remains separate.

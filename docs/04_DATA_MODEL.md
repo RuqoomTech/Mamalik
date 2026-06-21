@@ -242,6 +242,7 @@ Notes:
 - S2-005 adds named population-effect breakdowns to formula and worker output without changing TickLog columns.
 - S2-006 adds construction progress summary fields to worker output without changing TickLog columns.
 - S2-007 adds training progress summary fields to worker output without changing TickLog columns.
+- S2-009 reads recent TickLog rows in the admin panel for inspection. Failed historical rows remain visible and are not cleaned up automatically.
 - Population count growth is a later Sprint 2 or balancing task.
 
 ## Dashboard Read Model
@@ -276,8 +277,9 @@ The admin panel reads limited rows from:
 - `BuildingInstance`
 - `UnitStack`
 - `Report`
+- `TickLog`
 
-The admin read model uses explicit `select` fields and row limits for Sprint 1 inspection. It derives display-only values such as free land, enum labels, and report read/unread state. It does not mutate game state and does not expose admin write actions.
+The admin read model uses explicit `select` fields and row limits for inspection. It derives display-only values such as free land, enum labels, report read/unread state, and TickLog status labels. The S2-009 admin tick Server Action is the first admin mutation, and it only runs one tick through the existing worker core after re-checking admin authorization.
 
 ## Deferred Queue Models
 

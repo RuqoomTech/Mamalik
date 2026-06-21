@@ -40,7 +40,7 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S2-006: Implement construction queue progress.
 - [x] S2-007: Implement training queue progress.
 - [x] S2-008: Add dashboard economy/tick display.
-- [ ] S2-009: Add admin test tick action.
+- [x] S2-009: Add admin test tick action.
 
 ## Sprint 3 - Land Buying + District Management
 

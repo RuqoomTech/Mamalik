@@ -172,3 +172,11 @@
 - Decision: Dashboard per-tick estimates reuse `packages/game` resource-generation, Food-consumption, and tick-duration helpers instead of duplicating formulas in UI components.
 - Decision: Latest TickLog activity is loaded through the dashboard read model for visibility only; admin-triggered ticks remain S2-009.
 - Decision: Player-facing start-construction and start-training actions remain deferred to their owning tasks and are not introduced from the dashboard.
+
+## 2026-06-21 - Sprint 2 Admin Test Tick
+
+- Decision: Sprint 2 Task S2-009 uses a Next.js Server Action for the admin "Run one tick" control instead of adding a public tick-execution route.
+- Decision: The Server Action re-checks the current signed-in user and admin authorization before calling the tick worker core.
+- Decision: The admin action reuses `runOneTick` from `workers/tick-worker` so CLI and web-triggered manual ticks share duplicate protection and gameplay mutation behavior.
+- Decision: Recent TickLog inspection is added to `/admin`; failed historical TickLog rows remain visible and are not deleted or repaired by this task.
+- Decision: Automatic scheduling remains deferred; this task only adds one manual admin-triggered tick.

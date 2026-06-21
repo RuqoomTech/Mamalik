@@ -6,6 +6,7 @@ import {
   shapeAdminBuildingRow,
   shapeAdminDistrictRow,
   shapeAdminReportRow,
+  shapeAdminTickLogRow,
   shapeAdminUnitRow,
 } from "./admin-data";
 
@@ -96,5 +97,26 @@ test("shapes report preview rows without exposing report body", () => {
     kingdomName: "Preview Kingdom",
     createdAt: new Date("2026-06-17T00:00:00.000Z"),
     readState: "Unread",
+  });
+});
+
+test("shapes TickLog rows for admin display", () => {
+  const row = shapeAdminTickLogRow({
+    tickKey: "2026-06-21T20:00:00.000Z",
+    status: "COMPLETED",
+    processedKingdomCount: 2,
+    startedAt: new Date("2026-06-21T20:00:01.000Z"),
+    finishedAt: new Date("2026-06-21T20:00:05.000Z"),
+    errorMessage: null,
+  });
+
+  assert.deepEqual(row, {
+    tickKey: "2026-06-21T20:00:00.000Z",
+    status: "COMPLETED",
+    statusLabel: "Completed",
+    processedKingdomCount: 2,
+    startedAt: new Date("2026-06-21T20:00:01.000Z"),
+    finishedAt: new Date("2026-06-21T20:00:05.000Z"),
+    errorMessage: null,
   });
 });

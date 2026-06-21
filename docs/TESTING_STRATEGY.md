@@ -44,6 +44,7 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Construction progress tests after S2-006 should verify active buildings do not progress, constructing/upgrading timers decrement, completed buildings activate, stale zero-tick rows normalize, and timers never go negative.
 - Training progress tests after S2-007 should verify active queues decrement, active queues complete at zero, stale zero-tick queues normalize, completed/cancelled queues do not progress, unit stacks receive completed quantities, and duplicate ticks do not train units twice.
 - Dashboard economy tests after S2-008 should verify per-tick estimates use formula totals, net Food and Food status are calculated correctly, active construction/training rows are shaped for display, latest TickLog rows are exposed, and report summaries remain display-only.
+- Admin tick action tests after S2-009 should verify unauthenticated users and non-admin users cannot call the tick wrapper, admins can call it, duplicate tick results return `SKIPPED` cleanly, failed tick results surface worker errors, and admin TickLog rows shape correctly.
 - `npm run test` now includes web tests, `npm run game:test`, and `npm run tick:test`.
 - `npm run typecheck` now includes web typecheck and `npm run game:typecheck`; `npm run tick:typecheck` validates the separate worker TypeScript package.
 - `npm run tick:once` is the manual smoke command for the worker, but it requires `DATABASE_URL` and the TickLog migration applied to a reachable database.

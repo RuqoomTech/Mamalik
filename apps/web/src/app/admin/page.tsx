@@ -1,10 +1,12 @@
 import { Children, type ReactNode } from "react";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/guards";
+import { AdminTickControls } from "@/components/admin/AdminTickControls";
 import {
   ADMIN_DETAIL_TABLE_LIMIT,
   ADMIN_REPORT_PREVIEW_LIMIT,
   ADMIN_TABLE_LIMIT,
+  ADMIN_TICK_LOG_LIMIT,
   getAdminOverviewData,
 } from "@/lib/admin/admin-data";
 
@@ -20,6 +22,10 @@ const numberFormatter = new Intl.NumberFormat("en");
 
 function formatDate(value: Date): string {
   return `${dateFormatter.format(value)} UTC`;
+}
+
+function formatOptionalDate(value: Date | null): string {
+  return value ? formatDate(value) : "Not finished";
 }
 
 function formatNumber(value: number): string {
@@ -159,6 +165,50 @@ export default async function AdminPage() {
             <StatCard label="Kingdoms" value={data.counts.kingdoms} />
             <StatCard label="Reports" value={data.counts.reports} />
           </div>
+        </AdminSection>
+
+        <AdminSection title="Tick Controls">
+          <AdminTickControls />
+        </AdminSection>
+
+        <AdminSection
+          title="Recent Tick Logs"
+          limitLabel={`Latest ${ADMIN_TICK_LOG_LIMIT}`}
+        >
+          <AdminTable
+            emptyMessage="No tick logs found."
+            headers={[
+              "Tick key",
+              "Status",
+              "Kingdoms",
+              "Started",
+              "Finished",
+              "Error",
+            ]}
+          >
+            {data.tickLogs.map((row) => (
+              <tr key={row.tickKey}>
+                <td className="whitespace-nowrap px-3 py-2 font-medium text-neutral-950">
+                  {row.tickKey}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2 text-neutral-700">
+                  {row.statusLabel}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2 text-neutral-700">
+                  {formatNumber(row.processedKingdomCount)}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2 text-neutral-700">
+                  {formatDate(row.startedAt)}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2 text-neutral-700">
+                  {formatOptionalDate(row.finishedAt)}
+                </td>
+                <td className="max-w-[280px] whitespace-normal px-3 py-2 text-[#9f3030]">
+                  {row.status === "FAILED" ? row.errorMessage ?? "Tick failed" : ""}
+                </td>
+              </tr>
+            ))}
+          </AdminTable>
         </AdminSection>
 
         <AdminSection title="Users" limitLabel={`Latest ${ADMIN_TABLE_LIMIT}`}>

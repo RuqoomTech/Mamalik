@@ -45,7 +45,7 @@ The world updates every 10-minute tick.
 - [ ] A player can start one unit training queue.
 - [x] Training timers progress and complete correctly once a queue already exists.
 - [x] Dashboard shows resources, queues, and per-tick numbers.
-- [ ] Admin can run a test tick and view tick logs.
+- [x] Admin can run a test tick and view tick logs.
 
 ## Task Status
 
@@ -57,6 +57,7 @@ The world updates every 10-minute tick.
 - [x] S2-006: Construction queue progress.
 - [x] S2-007: Training queue progress.
 - [x] S2-008: Dashboard economy/tick display.
+- [x] S2-009: Admin test tick action and TickLog inspection.
 
 ## Implementation Notes
 
@@ -98,5 +99,10 @@ The world updates every 10-minute tick.
   - Current stockpiles, per-tick generation, Food consumption, net Food, Food status, active construction, active training, latest TickLog rows, and latest kingdom reports are loaded through `apps/web/src/lib/kingdom/dashboard-data.ts`.
   - Per-tick estimates reuse `packages/game` resource-generation and Food-consumption formulas instead of duplicating calculations in UI components.
   - Remaining queue time uses the shared `formatTicksAsDuration` helper based on the locked 10-minute tick duration.
+- S2-009 admin tick rules:
+  - `/admin` includes a server-action-backed "Run one tick" control and a recent TickLog table.
+  - The mutation re-checks admin authorization inside the action path before calling `runOneTick`.
+  - The admin action reuses `workers/tick-worker/src/run-one-tick.ts`; it does not duplicate tick logic or add a public tick API.
+  - Duplicate same-slot clicks return `SKIPPED` through the `TickLog.tickKey` unique guard and do not double-apply resources, construction, or training.
 - Player-facing start-construction/start-upgrade and start-training actions are intentionally not implemented yet.
 - Live `tick:once` smoke testing passed after applying migration `000003_tick_logs`; the first run completed and the second run in the same 10-minute slot returned `SKIPPED`.

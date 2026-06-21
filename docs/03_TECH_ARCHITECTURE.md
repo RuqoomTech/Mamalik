@@ -67,6 +67,8 @@ Status: `apps/web`, `packages/db`, `packages/game`, and `workers/tick-worker` no
 
 Sprint 2 dashboard data stays server-side and read-only. `apps/web/src/lib/kingdom/dashboard-data.ts` loads kingdom state, active queue state, latest reports, and latest TickLog rows, then reuses `packages/game` formulas for display-only per-tick estimates.
 
+Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
+
 ### `packages/db`
 
 - Prisma schema
@@ -95,6 +97,7 @@ Status: Sprint 2 added the first package manifest, TypeScript config, exports, d
 - Computes stable 10-minute tick keys.
 - Writes persistent `TickLog` rows with duplicate tick protection.
 - `tick:once` currently generates Money, Food, Manpower, and Knowledge for each processed kingdom, reports named population tax and population Manpower contributions, subtracts Food consumption for population and army, clamps Food at zero, advances construction/upgrading building timers, advances active training queue timers, writes construction/training completion reports, then records tick completion.
+- `/admin` can trigger the same one-tick core through an admin-only Server Action; duplicate processing is still guarded by `TickLog.tickKey`.
 - A richer player-facing construction queue/start-construction flow and player-facing start-training API/UI remain later Sprint 2 tasks.
 - Movement, combat, scouting, notifications, and report-center behavior remain later sprint work.
 

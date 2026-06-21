@@ -4,6 +4,7 @@ import { calculateFreeLandM2 } from "@/lib/kingdom/dashboard-data";
 export const ADMIN_TABLE_LIMIT = 50;
 export const ADMIN_DETAIL_TABLE_LIMIT = 100;
 export const ADMIN_REPORT_PREVIEW_LIMIT = 20;
+export const ADMIN_TICK_LOG_LIMIT = 20;
 
 export type AdminUserRow = {
   email: string;
@@ -78,6 +79,16 @@ export type AdminReportRow = {
   readState: "Read" | "Unread";
 };
 
+export type AdminTickLogRow = {
+  tickKey: string;
+  status: string;
+  statusLabel: string;
+  processedKingdomCount: number;
+  startedAt: Date;
+  finishedAt: Date | null;
+  errorMessage: string | null;
+};
+
 export type AdminOverviewData = {
   counts: {
     users: number;
@@ -91,6 +102,7 @@ export type AdminOverviewData = {
   buildings: AdminBuildingRow[];
   units: AdminUnitRow[];
   reports: AdminReportRow[];
+  tickLogs: AdminTickLogRow[];
 };
 
 export type AdminDistrictSource = {
@@ -132,6 +144,15 @@ export type AdminReportSource = {
   kingdom: {
     name: string;
   };
+};
+
+export type AdminTickLogSource = {
+  tickKey: string;
+  status: string;
+  processedKingdomCount: number;
+  startedAt: Date;
+  finishedAt: Date | null;
+  errorMessage: string | null;
 };
 
 export function formatAdminEnumLabel(value: string): string {
@@ -194,6 +215,18 @@ export function shapeAdminReportRow(source: AdminReportSource): AdminReportRow {
   };
 }
 
+export function shapeAdminTickLogRow(source: AdminTickLogSource): AdminTickLogRow {
+  return {
+    tickKey: source.tickKey,
+    status: source.status,
+    statusLabel: formatAdminEnumLabel(source.status),
+    processedKingdomCount: source.processedKingdomCount,
+    startedAt: source.startedAt,
+    finishedAt: source.finishedAt,
+    errorMessage: source.errorMessage,
+  };
+}
+
 export async function getAdminOverviewData(): Promise<AdminOverviewData> {
   const prisma = getPrismaClient();
   const [
@@ -207,6 +240,7 @@ export async function getAdminOverviewData(): Promise<AdminOverviewData> {
     buildings,
     units,
     reports,
+    tickLogs,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.kingdom.count(),
@@ -326,6 +360,18 @@ export async function getAdminOverviewData(): Promise<AdminOverviewData> {
         },
       },
     }),
+    prisma.$queryRaw<AdminTickLogSource[]>`
+      SELECT
+        "tickKey",
+        "status"::text AS "status",
+        "processedKingdomCount",
+        "startedAt",
+        "finishedAt",
+        "errorMessage"
+      FROM "TickLog"
+      ORDER BY "startedAt" DESC
+      LIMIT ${ADMIN_TICK_LOG_LIMIT}
+    `,
   ]);
 
   return {
@@ -369,5 +415,6 @@ export async function getAdminOverviewData(): Promise<AdminOverviewData> {
     buildings: buildings.map(shapeAdminBuildingRow),
     units: units.map(shapeAdminUnitRow),
     reports: reports.map(shapeAdminReportRow),
+    tickLogs: tickLogs.map(shapeAdminTickLogRow),
   };
 }

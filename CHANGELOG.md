@@ -9,15 +9,19 @@ All notable Mamalik project changes are recorded here.
 - Added read-only dashboard sections for resource stockpiles, per-tick economy estimates, Food status, active construction progress, active training progress, latest TickLog activity, and latest kingdom reports.
 - Added dashboard data shaping for net Food, ticks until Food reaches zero, queue duration display, and report summaries.
 - Added shared tick-duration display helper tests in `packages/game`.
+- Added an admin-only Server Action that runs one manual tick through the existing tick worker core.
+- Added Tick Controls and Recent Tick Logs sections to `/admin`.
+- Added admin tick authorization tests and TickLog row-shaping tests.
 
 ### Changed
 
 - Reused `packages/game` resource-generation and Food-consumption formulas for dashboard per-tick estimates instead of duplicating formulas in UI components.
 - Marked S2-008 complete in Sprint 2 task trackers.
+- Marked S2-009 complete in Sprint 2 task trackers.
 
 ### Deferred
 
-- Player-facing start-construction/start-upgrade actions, player-facing start-training actions, and admin test tick controls remain deferred to their owning Sprint 2 tasks.
+- Player-facing start-construction/start-upgrade actions, player-facing start-training actions, and automatic tick scheduling remain deferred to their owning tasks.
 
 ### Known issues
 
