@@ -42,6 +42,7 @@ Status: `apps/web`, `packages/db`, `packages/game`, and `workers/tick-worker` no
 - Root scripts now include `tick:once`, `tick:dev`, `tick:test`, and `tick:typecheck`.
 - Root scripts now include `game:test` and `game:typecheck` for shared game-domain logic.
 - `tick:once` is the first supported tick command and should be stabilized before relying on a long-running scheduler.
+- Tick worker database processing uses a 30-second Prisma interactive transaction timeout for remote database reliability.
 
 ## Environment files
 
@@ -64,6 +65,8 @@ Status: `apps/web`, `packages/db`, `packages/game`, and `workers/tick-worker` no
 - Admin panel
 - API route handlers
 
+Sprint 2 dashboard data stays server-side and read-only. `apps/web/src/lib/kingdom/dashboard-data.ts` loads kingdom state, active queue state, latest reports, and latest TickLog rows, then reuses `packages/game` formulas for display-only per-tick estimates.
+
 ### `packages/db`
 
 - Prisma schema
@@ -84,15 +87,15 @@ Status: Prisma config, PostgreSQL datasource, package-local dependencies, genera
 - Building definitions
 - Research definitions
 
-Status: Sprint 2 added the first package manifest, TypeScript config, exports, deterministic resource-generation formulas with named population-effect breakdowns, deterministic Food consumption formulas, and construction progress helpers.
+Status: Sprint 2 added the first package manifest, TypeScript config, exports, deterministic resource-generation formulas with named population-effect breakdowns, deterministic Food consumption formulas, construction progress helpers, training progress helpers, and tick-duration display helpers.
 
 ### `workers/tick-worker`
 
 - Lives outside the web app as a separate worker package/process.
 - Computes stable 10-minute tick keys.
 - Writes persistent `TickLog` rows with duplicate tick protection.
-- `tick:once` currently generates Money, Food, Manpower, and Knowledge for each processed kingdom, reports named population tax and population Manpower contributions, subtracts Food consumption for population and army, clamps Food at zero, advances construction/upgrading building timers, writes construction completion reports, then records tick completion.
-- A richer player-facing construction queue/start-construction flow and training queues remain later Sprint 2 tasks.
+- `tick:once` currently generates Money, Food, Manpower, and Knowledge for each processed kingdom, reports named population tax and population Manpower contributions, subtracts Food consumption for population and army, clamps Food at zero, advances construction/upgrading building timers, advances active training queue timers, writes construction/training completion reports, then records tick completion.
+- A richer player-facing construction queue/start-construction flow and player-facing start-training API/UI remain later Sprint 2 tasks.
 - Movement, combat, scouting, notifications, and report-center behavior remain later sprint work.
 
 ## Spatial strategy
@@ -116,6 +119,7 @@ Examples of PostGIS-heavy actions:
 - The first migration enables PostGIS with `CREATE EXTENSION IF NOT EXISTS postgis;`.
 - The second migration creates the initial v0.1 relational model foundation.
 - The third migration creates `TickLogStatus` and `TickLog`.
+- The fourth migration creates `TrainingQueueStatus` and `TrainingQueueItem`.
 - Applying migrations requires a reachable PostgreSQL database with permission to create PostGIS extensions.
 
 ## Auth Strategy

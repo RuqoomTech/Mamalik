@@ -43,8 +43,8 @@ The world updates every 10-minute tick.
 - [ ] A player can start one construction/upgrade.
 - [x] Construction and upgrade timers progress and complete correctly once a building is already queued.
 - [ ] A player can start one unit training queue.
-- [ ] Training progresses and completes correctly.
-- [ ] Dashboard shows resources, queues, and per-tick numbers.
+- [x] Training timers progress and complete correctly once a queue already exists.
+- [x] Dashboard shows resources, queues, and per-tick numbers.
 - [ ] Admin can run a test tick and view tick logs.
 
 ## Task Status
@@ -55,6 +55,8 @@ The world updates every 10-minute tick.
 - [x] S2-004: Food consumption for population and army.
 - [x] S2-005: Population effects on taxes and manpower.
 - [x] S2-006: Construction queue progress.
+- [x] S2-007: Training queue progress.
+- [x] S2-008: Dashboard economy/tick display.
 
 ## Implementation Notes
 
@@ -84,5 +86,17 @@ The world updates every 10-minute tick.
   - `CONSTRUCTING` or `UPGRADING` buildings already at zero ticks are normalized to `ACTIVE`.
   - `UPGRADING` rows are treated as already carrying their target `level`; completion only changes `status` until a richer queue model exists.
   - Completed construction/upgrades create `CONSTRUCTION` reports.
-- Player-facing start-construction/start-upgrade actions and training progress are intentionally not implemented yet.
+- S2-007 training progress rules:
+  - Active `TrainingQueueItem` rows decrement `remainingTicks` by 1 after this tick's generation/consumption/construction progress.
+  - Active queues that reach zero become `COMPLETED`, receive `completedAt`, and add completed units to the kingdom's `GARRISON` stack.
+  - Active queues already at zero or negative ticks normalize to `COMPLETED`.
+  - `COMPLETED` and `CANCELLED` queues do not progress.
+  - Completed training creates `TRAINING` reports.
+  - One-active-training-queue enforcement remains deferred to the future start-training API.
+- S2-008 dashboard display rules:
+  - `/dashboard` remains read-only and server-rendered.
+  - Current stockpiles, per-tick generation, Food consumption, net Food, Food status, active construction, active training, latest TickLog rows, and latest kingdom reports are loaded through `apps/web/src/lib/kingdom/dashboard-data.ts`.
+  - Per-tick estimates reuse `packages/game` resource-generation and Food-consumption formulas instead of duplicating calculations in UI components.
+  - Remaining queue time uses the shared `formatTicksAsDuration` helper based on the locked 10-minute tick duration.
+- Player-facing start-construction/start-upgrade and start-training actions are intentionally not implemented yet.
 - Live `tick:once` smoke testing passed after applying migration `000003_tick_logs`; the first run completed and the second run in the same 10-minute slot returned `SKIPPED`.

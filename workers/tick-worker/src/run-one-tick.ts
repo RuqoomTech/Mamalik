@@ -5,6 +5,7 @@ import { progressConstruction } from "../../../packages/game/src/buildings/const
 import { STARTING_RESOURCES } from "../../../packages/game/src/constants";
 import { calculateFoodAfterTick, calculateFoodConsumption } from "../../../packages/game/src/economy/food-consumption";
 import { calculateResourceGeneration, getResourceGenerationTotals } from "../../../packages/game/src/economy/resource-generation";
+import { progressTraining } from "../../../packages/game/src/units/training-progress";
 import { getTickKey } from "./tick-clock";
 import {
   type ConstructionProgressSummary,
@@ -12,6 +13,7 @@ import {
   formatTickRunResult,
   isDuplicateTickInsert,
   type ResourceGenerationSummary,
+  type TrainingProgressSummary,
   toErrorMessage,
   type TickRunResult,
 } from "./tick-log";
@@ -58,7 +60,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
   }
 
   try {
-    const { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, constructionProgress, warnings } = await prisma.$transaction(async (tx) => {
+    const { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, constructionProgress, trainingProgress, warnings } = await prisma.$transaction(async (tx) => {
       const kingdoms = await tx.kingdom.findMany({
         select: {
           id: true,
@@ -90,6 +92,18 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
               quantity: true,
             },
           },
+          trainingQueueItems: {
+            where: {
+              status: "ACTIVE",
+            },
+            select: {
+              id: true,
+              unitType: true,
+              quantity: true,
+              remainingTicks: true,
+              status: true,
+            },
+          },
         },
       });
 
@@ -111,6 +125,12 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         buildingsProgressed: 0,
         buildingsCompleted: 0,
         buildingsStillInProgress: 0,
+      };
+      const trainingProgress: TrainingProgressSummary = {
+        trainingQueuesProgressed: 0,
+        trainingQueuesCompleted: 0,
+        unitsTrained: 0,
+        trainingQueuesStillInProgress: 0,
       };
       const warnings: string[] = [];
 
@@ -227,6 +247,77 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
             });
           }
         }
+
+        for (const trainingQueueItem of kingdom.trainingQueueItems) {
+          const progress = progressTraining({
+            status: trainingQueueItem.status,
+            remainingTicks: trainingQueueItem.remainingTicks,
+          });
+          const statusChanged = progress.status !== trainingQueueItem.status;
+          const remainingTicksChanged = progress.remainingTicks !== trainingQueueItem.remainingTicks;
+
+          if (!statusChanged && !remainingTicksChanged) {
+            continue;
+          }
+
+          if (progress.progressed) {
+            trainingProgress.trainingQueuesProgressed += 1;
+          }
+
+          if (progress.completed) {
+            trainingProgress.trainingQueuesCompleted += 1;
+            trainingProgress.unitsTrained += trainingQueueItem.quantity;
+          }
+
+          if (progress.status === "ACTIVE") {
+            trainingProgress.trainingQueuesStillInProgress += 1;
+          }
+
+          const completedAt = progress.completed ? new Date() : undefined;
+
+          await tx.trainingQueueItem.update({
+            where: { id: trainingQueueItem.id },
+            data: {
+              status: progress.status,
+              remainingTicks: progress.remainingTicks,
+              completedAt,
+            },
+          });
+
+          if (progress.completed) {
+            await tx.unitStack.upsert({
+              where: {
+                kingdomId_unitType_locationType: {
+                  kingdomId: kingdom.id,
+                  unitType: trainingQueueItem.unitType,
+                  locationType: "GARRISON",
+                },
+              },
+              create: {
+                kingdomId: kingdom.id,
+                unitType: trainingQueueItem.unitType,
+                quantity: trainingQueueItem.quantity,
+                locationType: "GARRISON",
+              },
+              update: {
+                quantity: { increment: trainingQueueItem.quantity },
+              },
+            });
+
+            await tx.report.create({
+              data: {
+                kingdomId: kingdom.id,
+                type: "TRAINING",
+                title: "Training completed",
+                bodyJson: {
+                  unitType: trainingQueueItem.unitType,
+                  quantity: trainingQueueItem.quantity,
+                  completedTickKey: tickKey,
+                },
+              },
+            });
+          }
+        }
       }
 
       const processedKingdomCount = kingdoms.length;
@@ -242,8 +333,8 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         WHERE "tickKey" = ${tickKey}
       `;
 
-      return { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, constructionProgress, warnings };
-    });
+      return { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, constructionProgress, trainingProgress, warnings };
+    }, { timeout: 30_000 });
 
     return {
       tickKey,
@@ -252,6 +343,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
       resourceGeneration,
       foodConsumption,
       constructionProgress,
+      trainingProgress,
       warnings,
       startedAt,
       finishedAt,

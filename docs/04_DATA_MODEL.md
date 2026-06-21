@@ -14,6 +14,7 @@ This is the canonical v0.1 data-model plan. Sprint 1 Task 6 added the first Pris
 - `UnitLocationType`: `GARRISON`, `MOVING`
 - `ReportType`: `BATTLE`, `SCOUT`, `LAND_PURCHASE`, `CONSTRUCTION`, `TRAINING`
 - `TickLogStatus`: `STARTED`, `COMPLETED`, `FAILED`, `SKIPPED`
+- `TrainingQueueStatus`: `ACTIVE`, `COMPLETED`, `CANCELLED`
 
 ## Implemented Prisma Models
 
@@ -56,6 +57,7 @@ Notes:
 - `resourceStockpile`
 - `buildings`
 - `unitStacks`
+- `trainingQueueItems`
 - `landCooldowns`
 - `reports`
 - `createdAt`
@@ -157,7 +159,31 @@ Notes:
 
 - One stack per kingdom, unit type, and location type.
 - Starting units remain locked at 100 Infantry and 25 Archers.
+- S2-007 adds completed training quantities to `GARRISON` stacks, incrementing an existing stack or creating one if missing.
 - Movement order tables are deferred until Sprint 5.
+
+### TrainingQueueItem
+
+- `id`
+- `kingdomId`
+- `kingdom`
+- `unitType`
+- `quantity`
+- `remainingTicks`
+- `status`
+- `createdAt`
+- `updatedAt`
+- `completedAt`
+
+Notes:
+
+- Added in Sprint 2 Task S2-007 with migration `000004_training_queue_items`.
+- The tick worker processes rows where `status = ACTIVE`.
+- Active queues decrement `remainingTicks` once per processed non-duplicate tick.
+- Active queues reaching zero are set to `COMPLETED`, receive `completedAt`, add their units to the kingdom's garrison, and create a `TRAINING` report.
+- Active queues found with zero or negative remaining ticks normalize to `COMPLETED`.
+- `COMPLETED` and `CANCELLED` rows do not progress.
+- One-active-training-queue enforcement is deferred to the future start-training API; S2-007 does not add a partial unique index.
 
 ### LandPurchaseCooldown
 
@@ -190,6 +216,7 @@ Notes:
 
 - Sprint 1 only needs the storage foundation.
 - S2-006 creates `CONSTRUCTION` reports when the tick worker completes a construction or upgrade timer.
+- S2-007 creates `TRAINING` reports when the tick worker completes an active training queue.
 - Full report-center behavior is deferred until Sprint 6.
 
 ### TickLog
@@ -214,7 +241,8 @@ Notes:
 - S2-004 adds Food consumption before the TickLog is marked `COMPLETED`.
 - S2-005 adds named population-effect breakdowns to formula and worker output without changing TickLog columns.
 - S2-006 adds construction progress summary fields to worker output without changing TickLog columns.
-- Population count growth and training mutations are later Sprint 2 tasks.
+- S2-007 adds training progress summary fields to worker output without changing TickLog columns.
+- Population count growth is a later Sprint 2 or balancing task.
 
 ## Dashboard Read Model
 
@@ -227,8 +255,13 @@ The dashboard reads:
 - `District`
 - `BuildingInstance` with `District`
 - `UnitStack`
+- `TrainingQueueItem`
+- `Report`
+- `TickLog`
 
-The read model derives display-only values such as free land, district free land, enum labels, and beginner-protection remaining time. It does not mutate game state.
+The read model derives display-only values such as free land, district free land, enum labels, beginner-protection remaining time, per-tick economy estimates, Food status, queue remaining time, report summaries, and latest tick activity. It does not mutate game state.
+
+Sprint 2 Task S2-008 expands the dashboard read model so per-tick Money, Food, Manpower, Knowledge, and Food consumption estimates reuse `packages/game` formulas. The dashboard does not store these estimates as new database columns.
 
 ## Admin Read Model
 
@@ -248,7 +281,7 @@ The admin read model uses explicit `select` fields and row limits for Sprint 1 i
 
 ## Deferred Queue Models
 
-These remain planned but are not part of Sprint 1 Task 6:
+These remain planned but are not part of the current implemented model:
 
 ### ConstructionQueueItem
 
@@ -257,15 +290,6 @@ These remain planned but are not part of Sprint 1 Task 6:
 - `buildingId`
 - `buildingType`
 - `actionType`: `BUILD | UPGRADE`
-- `remainingTicks`
-- `status`
-
-### TrainingQueueItem
-
-- `id`
-- `kingdomId`
-- `unitType`
-- `quantity`
 - `remainingTicks`
 - `status`
 
@@ -361,4 +385,6 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Initial resource-generation formulas live in `packages/game/src/economy/resource-generation.ts` and return named output breakdowns plus reusable flat totals for worker stockpile updates.
 - Initial Food consumption formulas live in `packages/game/src/economy/food-consumption.ts`.
 - Initial construction progress helpers live in `packages/game/src/buildings/construction-progress.ts`.
+- Initial training progress helpers live in `packages/game/src/units/training-progress.ts`.
+- Initial tick-duration display helpers live in `packages/game/src/time/tick-duration.ts`.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

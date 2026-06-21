@@ -76,6 +76,12 @@ enum TickLogStatus {
   SKIPPED
 }
 
+enum TrainingQueueStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id            String       @id @default(cuid())
   email         String       @unique
@@ -108,6 +114,7 @@ model Kingdom {
   resourceStockpile    ResourceStockpile?
   buildings            BuildingInstance[]
   unitStacks           UnitStack[]
+  trainingQueueItems   TrainingQueueItem[]
   landCooldowns        LandPurchaseCooldown[]
   reports              Report[]
   createdAt            DateTime               @default(now())
@@ -171,6 +178,22 @@ model UnitStack {
   updatedAt    DateTime         @updatedAt
 
   @@unique([kingdomId, unitType, locationType])
+}
+
+model TrainingQueueItem {
+  id             String              @id @default(cuid())
+  kingdomId      String
+  kingdom        Kingdom             @relation(fields: [kingdomId], references: [id], onDelete: Cascade)
+  unitType       UnitType
+  quantity       Int
+  remainingTicks Int
+  status         TrainingQueueStatus @default(ACTIVE)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  completedAt    DateTime?
+
+  @@index([kingdomId, status])
+  @@index([status, remainingTicks])
 }
 
 model LandPurchaseCooldown {

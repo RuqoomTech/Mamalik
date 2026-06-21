@@ -23,6 +23,8 @@
       "@/*": ["./src/*"],
       "@mamalik/db": ["../../packages/db/src/client.ts"],
       "@mamalik/db/client": ["../../packages/db/generated/prisma/client.ts"],
+      "@mamalik/game": ["../../packages/game/src/index.ts"],
+      "@mamalik/game/*": ["../../packages/game/src/*"],
       "@mamalik/game/constants": ["../../packages/game/src/constants.ts"]
     }
   },

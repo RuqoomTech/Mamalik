@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 2 - Tick Engine + Economy
-- Active task sequence: Sprint 1 foundation is complete; Sprint 2 has started with the tick worker package, stable 10-minute tick key calculation, TickLog persistence, duplicate tick protection, manual `tick:once`, resource generation, Food consumption, named population-effect breakdowns, and construction progress
+- Active task sequence: Sprint 1 foundation is complete; Sprint 2 has started with the tick worker package, stable 10-minute tick key calculation, TickLog persistence, duplicate tick protection, manual `tick:once`, resource generation, Food consumption, named population-effect breakdowns, construction progress, training queue progress, and dashboard economy/tick display
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -198,11 +198,14 @@ v0.1 must include:
 - Initial Sprint 2 resource generation formulas live in `packages/game/src/economy/resource-generation.ts`; active buildings generate resources, constructing/upgrading buildings do not, and the formula returns named breakdowns for population tax and population-driven Manpower growth while preserving flat totals for worker updates.
 - Initial Sprint 2 Food consumption formulas live in `packages/game/src/economy/food-consumption.ts`; population and army consume Food every processed non-duplicate tick, Food clamps at zero, and starvation penalties are deferred.
 - Initial Sprint 2 construction progress rules live in `packages/game/src/buildings/construction-progress.ts`; the worker decrements `CONSTRUCTING` and `UPGRADING` building timers once per processed non-duplicate tick, sets completed buildings to `ACTIVE`, and treats an `UPGRADING` row as already carrying its target level until a richer queue model exists.
+- Initial Sprint 2 training progress rules live in `packages/game/src/units/training-progress.ts`; the worker decrements active `TrainingQueueItem` rows once per processed non-duplicate tick, completes ready queues, adds completed units to the kingdom's garrison, and writes `TRAINING` reports.
+- Initial Sprint 2 tick-duration display helpers live in `packages/game/src/time/tick-duration.ts` and reuse the locked 10-minute tick duration.
 - `POST /api/kingdom/create` creates the user's first kingdom in a database transaction and re-runs temporary server-side location validation; it does not trust client-submitted starter state.
 - Sprint 1 starter building footprints are simple 1,000 m2 constants per starter building until later balancing changes them deliberately.
 - Initial land purchase cooldown records are created with `availableAt = now`; package cooldown durations apply after future purchases.
 - `/dashboard` is a read-only server-rendered kingdom overview that uses the existing server-side route guard and loads kingdom state from the database.
-- Dashboard calculations such as free land and beginner-protection remaining time live in `apps/web/src/lib/kingdom/dashboard-data.ts`, not in client-side UI.
+- Dashboard calculations such as free land, beginner-protection remaining time, per-tick economy estimates, Food status, active queue display, latest tick rows, and report summaries live in `apps/web/src/lib/kingdom/dashboard-data.ts`, not in client-side UI.
+- Dashboard per-tick estimates reuse `packages/game` formulas and helpers; UI components do not duplicate economy or Food-consumption formulas.
 - `/admin` is a read-only server-rendered Sprint 1 inspection panel protected by the existing server-side admin guard; it uses explicit limited database selects and does not expose edit/reset/delete/tick controls.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - Next.js `outputFileTracingRoot` is configured to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
@@ -211,6 +214,7 @@ v0.1 must include:
 - Canonical v0.1 documentation sources are listed in `AGENTS.md`; duplicate historical docs and task artifacts live under `docs/archive/` and `tasks/archive/` as read-only references.
 - Active Sprint 1-6 task tracking uses `tasks/backlog.md` and `tasks/sprint_01.md` through `tasks/sprint_06.md`; JSON/CSV exports are reference artifacts only.
 - The Sprint 2 tick worker lives in `workers/tick-worker`; root scripts `tick:once`, `tick:dev`, `tick:test`, and `tick:typecheck` invoke it through existing app-local TypeScript tooling.
+- Tick worker processing uses a 30-second Prisma interactive transaction timeout so remote database latency does not fail otherwise valid multi-step ticks.
 - Shared game logic can be checked with root scripts `game:test` and `game:typecheck`; root `test` and `typecheck` include these checks.
 
 ## Glossary

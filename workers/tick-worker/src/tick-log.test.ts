@@ -33,6 +33,12 @@ describe("tick log helpers", () => {
         buildingsCompleted: 1,
         buildingsStillInProgress: 1,
       },
+      trainingProgress: {
+        trainingQueuesProgressed: 2,
+        trainingQueuesCompleted: 1,
+        unitsTrained: 10,
+        trainingQueuesStillInProgress: 1,
+      },
       startedAt: new Date("2026-06-19T12:31:00.000Z"),
       finishedAt: new Date("2026-06-19T12:31:01.000Z"),
     });
@@ -53,6 +59,10 @@ describe("tick log helpers", () => {
     assert.match(summary, /Buildings progressed: 2/);
     assert.match(summary, /Buildings completed: 1/);
     assert.match(summary, /Buildings still in progress: 1/);
+    assert.match(summary, /Training queues progressed: 2/);
+    assert.match(summary, /Training queues completed: 1/);
+    assert.match(summary, /Units trained: 10/);
+    assert.match(summary, /Training queues still in progress: 1/);
   });
 
   it("normalizes unknown errors", () => {

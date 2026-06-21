@@ -22,6 +22,13 @@ export type ConstructionProgressSummary = {
   buildingsStillInProgress: number;
 };
 
+export type TrainingProgressSummary = {
+  trainingQueuesProgressed: number;
+  trainingQueuesCompleted: number;
+  unitsTrained: number;
+  trainingQueuesStillInProgress: number;
+};
+
 export type TickRunResult = {
   tickKey: string;
   status: TickRunStatus;
@@ -29,6 +36,7 @@ export type TickRunResult = {
   resourceGeneration?: ResourceGenerationSummary;
   foodConsumption?: FoodConsumptionSummary;
   constructionProgress?: ConstructionProgressSummary;
+  trainingProgress?: TrainingProgressSummary;
   warnings?: string[];
   startedAt: Date;
   finishedAt: Date;
@@ -85,6 +93,15 @@ export function formatTickRunResult(result: TickRunResult): string {
       `Buildings progressed: ${result.constructionProgress.buildingsProgressed}`,
       `Buildings completed: ${result.constructionProgress.buildingsCompleted}`,
       `Buildings still in progress: ${result.constructionProgress.buildingsStillInProgress}`,
+    );
+  }
+
+  if (result.trainingProgress) {
+    lines.push(
+      `Training queues progressed: ${result.trainingProgress.trainingQueuesProgressed}`,
+      `Training queues completed: ${result.trainingProgress.trainingQueuesCompleted}`,
+      `Units trained: ${result.trainingProgress.unitsTrained}`,
+      `Training queues still in progress: ${result.trainingProgress.trainingQueuesStillInProgress}`,
     );
   }
 

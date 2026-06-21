@@ -157,3 +157,18 @@
 - Decision: Tick processing advances construction after resource generation and Food consumption, so buildings completed this tick begin producing on the next processed tick.
 - Decision: `UPGRADING` buildings are treated as already carrying the target `level`; completion sets `status` to `ACTIVE` and leaves `level` unchanged until a richer queue model exists.
 - Decision: Completed construction and upgrade timers create `CONSTRUCTION` reports in the same tick transaction.
+
+## 2026-06-20 - Sprint 2 Training Queue Progress
+
+- Decision: Sprint 2 Task S2-007 adds `TrainingQueueStatus` and `TrainingQueueItem` to persist active unit training queues.
+- Decision: Tick processing advances training after resource generation, Food consumption, and construction progress, so completed units begin consuming Food on the next processed tick.
+- Decision: Completed training queues increment or create a `GARRISON` `UnitStack` and create a `TRAINING` report in the same tick transaction.
+- Decision: One-active-training-queue enforcement remains deferred to the future start-training API instead of adding a partial unique index in S2-007.
+- Decision: Tick processing uses a 30-second Prisma interactive transaction timeout because live remote database ticks can exceed Prisma's 5-second default while still completing correctly.
+
+## 2026-06-21 - Sprint 2 Dashboard Economy Display
+
+- Decision: Sprint 2 Task S2-008 keeps `/dashboard` read-only and server-rendered while adding current stockpiles, per-tick economy estimates, Food status, active construction/training progress, latest TickLog rows, and latest kingdom reports.
+- Decision: Dashboard per-tick estimates reuse `packages/game` resource-generation, Food-consumption, and tick-duration helpers instead of duplicating formulas in UI components.
+- Decision: Latest TickLog activity is loaded through the dashboard read model for visibility only; admin-triggered ticks remain S2-009.
+- Decision: Player-facing start-construction and start-training actions remain deferred to their owning tasks and are not introduced from the dashboard.

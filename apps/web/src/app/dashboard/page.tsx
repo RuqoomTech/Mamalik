@@ -5,6 +5,7 @@ import { isAdminUser } from "@/lib/auth/route-destinations";
 import {
   DASHBOARD_STATUS_NOTE,
   getKingdomDashboardData,
+  type FoodStatusLevel,
   type KingdomDashboardData,
 } from "@/lib/kingdom/dashboard-data";
 import type { ReactNode } from "react";
@@ -26,6 +27,10 @@ function formatNumber(value: number): string {
   return numberFormatter.format(value);
 }
 
+function formatSignedNumber(value: number): string {
+  return value > 0 ? `+${formatNumber(value)}` : formatNumber(value);
+}
+
 function formatLand(value: number): string {
   return `${formatNumber(value)} m2`;
 }
@@ -36,6 +41,14 @@ function formatCoordinate(value: number): string {
 
 function formatDateTime(value: Date): string {
   return `${dateFormatter.format(value)} UTC`;
+}
+
+function formatOptionalDateTime(value: Date | null): string {
+  return value ? formatDateTime(value) : "Not finished";
+}
+
+function formatTicks(value: number): string {
+  return `${formatNumber(value)} tick${value === 1 ? "" : "s"}`;
 }
 
 function SummaryCard({
@@ -64,16 +77,32 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="mamalik-card p-5">
+    <section className="space-y-3">
       <h2 className="text-lg font-semibold text-[#10140f]">{title}</h2>
-      <div className="mt-4">{children}</div>
+      {children}
     </section>
+  );
+}
+
+function TableCard({
+  children,
+  minWidth,
+}: {
+  children: ReactNode;
+  minWidth?: string;
+}) {
+  return (
+    <div className="mamalik-card overflow-x-auto p-4">
+      <table className={`mamalik-table text-sm ${minWidth ?? "min-w-[640px]"}`}>
+        {children}
+      </table>
+    </div>
   );
 }
 
 function ResourcePanel({ resources }: { resources: KingdomDashboardData["resources"] }) {
   return (
-    <Section title="Resources">
+    <Section title="Resource stockpiles">
       <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <SummaryCard label="Money" value={formatNumber(resources.money)} />
         <SummaryCard label="Food" value={formatNumber(resources.food)} />
@@ -84,33 +113,160 @@ function ResourcePanel({ resources }: { resources: KingdomDashboardData["resourc
   );
 }
 
+function EconomyPanel({
+  economyEstimate,
+}: {
+  economyEstimate: KingdomDashboardData["economyEstimate"];
+}) {
+  return (
+    <Section title="Per-tick economy estimate">
+      <TableCard minWidth="min-w-[720px]">
+        <thead>
+          <tr>
+            <th>Resource</th>
+            <th>Source</th>
+            <th>Per tick</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td className="font-medium text-[#10140f]">Money</td>
+            <td className="text-[#5f665d]">Population tax</td>
+            <td className="text-[#183f35]">
+              {formatSignedNumber(economyEstimate.money.populationTax)}
+            </td>
+          </tr>
+          <tr>
+            <td className="font-medium text-[#10140f]">Money</td>
+            <td className="text-[#5f665d]">Market, Tax Office, Palace bonuses</td>
+            <td className="text-[#183f35]">
+              {formatSignedNumber(
+                economyEstimate.money.marketBonus +
+                  economyEstimate.money.taxOfficeBonus +
+                  economyEstimate.money.palaceBonus,
+              )}
+            </td>
+          </tr>
+          <tr>
+            <td className="font-semibold text-[#10140f]">Money</td>
+            <td className="font-semibold text-[#10140f]">Total generated</td>
+            <td className="font-semibold text-[#183f35]">
+              {formatSignedNumber(economyEstimate.money.total)}
+            </td>
+          </tr>
+          <tr>
+            <td className="font-medium text-[#10140f]">Food</td>
+            <td className="text-[#5f665d]">Farm production</td>
+            <td className="text-[#183f35]">
+              {formatSignedNumber(economyEstimate.food.generatedTotal)}
+            </td>
+          </tr>
+          <tr>
+            <td className="font-medium text-[#10140f]">Food</td>
+            <td className="text-[#5f665d]">Population consumption</td>
+            <td className="text-[#8a4f19]">
+              -{formatNumber(economyEstimate.food.populationConsumption)}
+            </td>
+          </tr>
+          <tr>
+            <td className="font-medium text-[#10140f]">Food</td>
+            <td className="text-[#5f665d]">Army consumption</td>
+            <td className="text-[#8a4f19]">
+              -{formatNumber(economyEstimate.food.armyConsumption)}
+            </td>
+          </tr>
+          <tr>
+            <td className="font-semibold text-[#10140f]">Food</td>
+            <td className="font-semibold text-[#10140f]">Net change</td>
+            <td
+              className={
+                economyEstimate.food.net >= 0
+                  ? "font-semibold text-[#183f35]"
+                  : "font-semibold text-[#9f3030]"
+              }
+            >
+              {formatSignedNumber(economyEstimate.food.net)}
+            </td>
+          </tr>
+          <tr>
+            <td className="font-medium text-[#10140f]">Manpower</td>
+            <td className="text-[#5f665d]">Population manpower</td>
+            <td className="text-[#183f35]">
+              {formatSignedNumber(economyEstimate.manpower.populationManpowerGrowth)}
+            </td>
+          </tr>
+          <tr>
+            <td className="font-medium text-[#10140f]">Manpower</td>
+            <td className="text-[#5f665d]">Houses bonus</td>
+            <td className="text-[#183f35]">
+              {formatSignedNumber(economyEstimate.manpower.housesBonus)}
+            </td>
+          </tr>
+          <tr>
+            <td className="font-semibold text-[#10140f]">Manpower</td>
+            <td className="font-semibold text-[#10140f]">Total generated</td>
+            <td className="font-semibold text-[#183f35]">
+              {formatSignedNumber(economyEstimate.manpower.total)}
+            </td>
+          </tr>
+          <tr>
+            <td className="font-medium text-[#10140f]">Knowledge</td>
+            <td className="text-[#5f665d]">Scholar Hall production</td>
+            <td className="text-[#183f35]">
+              {formatSignedNumber(economyEstimate.knowledge.scholarHallProduction)}
+            </td>
+          </tr>
+        </tbody>
+      </TableCard>
+    </Section>
+  );
+}
+
+function getFoodStatusClass(level: FoodStatusLevel): string {
+  switch (level) {
+    case "shortage":
+      return "border-[#e1b8b8] bg-[#fff0f0] text-[#7a1d1d]";
+    case "warning":
+      return "border-[#e7d6a0] bg-[#fff9e7] text-[#6a4a0a]";
+    case "healthy":
+      return "border-[#cbd8cd] bg-[#eff6ed] text-[#183f35]";
+  }
+}
+
+function FoodStatusPanel({ foodStatus }: { foodStatus: KingdomDashboardData["foodStatus"] }) {
+  return (
+    <Section title="Food status">
+      <div className={`rounded-md border px-4 py-3 ${getFoodStatusClass(foodStatus.level)}`}>
+        <p className="font-semibold">{foodStatus.label}</p>
+        <p className="mt-1 text-sm">{foodStatus.detail}</p>
+      </div>
+    </Section>
+  );
+}
+
 function DistrictPanel({ districts }: { districts: KingdomDashboardData["districts"] }) {
   return (
     <Section title="Districts">
-      <div className="overflow-x-auto">
-        <table className="mamalik-table min-w-[560px] text-sm">
-          <thead>
-            <tr>
-              <th>District</th>
-              <th>Allocated</th>
-              <th>Used</th>
-              <th>Free</th>
+      <TableCard minWidth="min-w-[560px]">
+        <thead>
+          <tr>
+            <th>District</th>
+            <th>Allocated</th>
+            <th>Used</th>
+            <th>Free</th>
+          </tr>
+        </thead>
+        <tbody>
+          {districts.map((district) => (
+            <tr key={district.id}>
+              <td className="font-medium text-[#10140f]">{district.label}</td>
+              <td className="text-[#5f665d]">{formatLand(district.allocatedLandM2)}</td>
+              <td className="text-[#5f665d]">{formatLand(district.usedLandM2)}</td>
+              <td className="text-[#5f665d]">{formatLand(district.freeLandM2)}</td>
             </tr>
-          </thead>
-          <tbody>
-            {districts.map((district) => (
-              <tr key={district.id}>
-                <td className="font-medium text-[#10140f]">{district.label}</td>
-                <td className="text-[#5f665d]">
-                  {formatLand(district.allocatedLandM2)}
-                </td>
-                <td className="text-[#5f665d]">{formatLand(district.usedLandM2)}</td>
-                <td className="text-[#5f665d]">{formatLand(district.freeLandM2)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </TableCard>
     </Section>
   );
 }
@@ -119,32 +275,116 @@ function BuildingPanel({ buildings }: { buildings: KingdomDashboardData["buildin
   return (
     <Section title="Buildings">
       {buildings.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="mamalik-table min-w-[680px] text-sm">
-            <thead>
-              <tr>
-                <th>Building</th>
-                <th>Level</th>
-                <th>Status</th>
-                <th>Land</th>
-                <th>District</th>
+        <TableCard minWidth="min-w-[760px]">
+          <thead>
+            <tr>
+              <th>Building</th>
+              <th>Level</th>
+              <th>Status</th>
+              <th>Land</th>
+              <th>District</th>
+              <th>Remaining</th>
+            </tr>
+          </thead>
+          <tbody>
+            {buildings.map((building) => (
+              <tr key={building.id}>
+                <td className="font-medium text-[#10140f]">{building.label}</td>
+                <td className="text-[#5f665d]">{building.level}</td>
+                <td className="text-[#5f665d]">{building.statusLabel}</td>
+                <td className="text-[#5f665d]">{formatLand(building.landUsedM2)}</td>
+                <td className="text-[#5f665d]">{building.districtLabel}</td>
+                <td className="text-[#5f665d]">
+                  {building.constructionRemainingTicks > 0
+                    ? formatTicks(building.constructionRemainingTicks)
+                    : "Complete"}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {buildings.map((building) => (
-                <tr key={building.id}>
-                  <td className="font-medium text-[#10140f]">{building.label}</td>
-                  <td className="text-[#5f665d]">{building.level}</td>
-                  <td className="text-[#5f665d]">{building.statusLabel}</td>
-                  <td className="text-[#5f665d]">{formatLand(building.landUsedM2)}</td>
-                  <td className="text-[#5f665d]">{building.districtLabel}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </TableCard>
       ) : (
-        <p className="text-sm text-[#5f665d]">No buildings exist yet.</p>
+        <p className="mamalik-card p-4 text-sm text-[#5f665d]">No buildings exist yet.</p>
+      )}
+    </Section>
+  );
+}
+
+function ConstructionProgressPanel({
+  activeConstruction,
+}: {
+  activeConstruction: KingdomDashboardData["activeConstruction"];
+}) {
+  return (
+    <Section title="Construction progress">
+      {activeConstruction.length > 0 ? (
+        <TableCard minWidth="min-w-[680px]">
+          <thead>
+            <tr>
+              <th>Building</th>
+              <th>Level</th>
+              <th>District</th>
+              <th>Status</th>
+              <th>Remaining ticks</th>
+              <th>Estimated time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {activeConstruction.map((building) => (
+              <tr key={building.id}>
+                <td className="font-medium text-[#10140f]">{building.label}</td>
+                <td className="text-[#5f665d]">{building.level}</td>
+                <td className="text-[#5f665d]">{building.districtLabel}</td>
+                <td className="text-[#5f665d]">{building.statusLabel}</td>
+                <td className="text-[#5f665d]">{formatTicks(building.remainingTicks)}</td>
+                <td className="text-[#5f665d]">{building.estimatedTimeRemaining}</td>
+              </tr>
+            ))}
+          </tbody>
+        </TableCard>
+      ) : (
+        <p className="mamalik-card p-4 text-sm text-[#5f665d]">
+          No construction or upgrades are active.
+        </p>
+      )}
+    </Section>
+  );
+}
+
+function TrainingProgressPanel({
+  trainingQueues,
+}: {
+  trainingQueues: KingdomDashboardData["trainingQueues"];
+}) {
+  return (
+    <Section title="Training progress">
+      {trainingQueues.length > 0 ? (
+        <TableCard minWidth="min-w-[640px]">
+          <thead>
+            <tr>
+              <th>Unit</th>
+              <th>Quantity</th>
+              <th>Status</th>
+              <th>Remaining ticks</th>
+              <th>Estimated time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {trainingQueues.map((queue) => (
+              <tr key={queue.id}>
+                <td className="font-medium text-[#10140f]">{queue.label}</td>
+                <td className="text-[#5f665d]">{formatNumber(queue.quantity)}</td>
+                <td className="text-[#5f665d]">{queue.statusLabel}</td>
+                <td className="text-[#5f665d]">{formatTicks(queue.remainingTicks)}</td>
+                <td className="text-[#5f665d]">{queue.estimatedTimeRemaining}</td>
+              </tr>
+            ))}
+          </tbody>
+        </TableCard>
+      ) : (
+        <p className="mamalik-card p-4 text-sm text-[#5f665d]">
+          No unit training is active.
+        </p>
       )}
     </Section>
   );
@@ -165,7 +405,77 @@ function ArmyPanel({ army }: { army: KingdomDashboardData["army"] }) {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-[#5f665d]">No garrisoned units exist yet.</p>
+        <p className="mamalik-card p-4 text-sm text-[#5f665d]">No garrisoned units exist yet.</p>
+      )}
+    </Section>
+  );
+}
+
+function LatestTickPanel({ ticks }: { ticks: KingdomDashboardData["latestTicks"] }) {
+  return (
+    <Section title="Latest tick activity">
+      {ticks.length > 0 ? (
+        <TableCard minWidth="min-w-[860px]">
+          <thead>
+            <tr>
+              <th>Tick key</th>
+              <th>Status</th>
+              <th>Kingdoms</th>
+              <th>Started</th>
+              <th>Finished</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ticks.map((tick) => (
+              <tr key={tick.tickKey}>
+                <td className="break-all font-medium text-[#10140f]">{tick.tickKey}</td>
+                <td className="text-[#5f665d]">{tick.statusLabel}</td>
+                <td className="text-[#5f665d]">{formatNumber(tick.processedKingdomCount)}</td>
+                <td className="text-[#5f665d]">{formatDateTime(tick.startedAt)}</td>
+                <td className="text-[#5f665d]">{formatOptionalDateTime(tick.finishedAt)}</td>
+                <td className="text-[#9f3030]">
+                  {tick.status === "FAILED" ? tick.errorMessage ?? "Tick failed" : ""}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </TableCard>
+      ) : (
+        <p className="mamalik-card p-4 text-sm text-[#5f665d]">No ticks have been logged yet.</p>
+      )}
+    </Section>
+  );
+}
+
+function ReportsPanel({ reports }: { reports: KingdomDashboardData["reports"] }) {
+  return (
+    <Section title="Latest kingdom reports">
+      {reports.length > 0 ? (
+        <TableCard minWidth="min-w-[820px]">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Title</th>
+              <th>Summary</th>
+              <th>Created</th>
+              <th>State</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reports.map((report) => (
+              <tr key={report.id}>
+                <td className="font-medium text-[#10140f]">{report.typeLabel}</td>
+                <td className="text-[#5f665d]">{report.title}</td>
+                <td className="text-[#5f665d]">{report.bodySummary ?? "No summary"}</td>
+                <td className="text-[#5f665d]">{formatDateTime(report.createdAt)}</td>
+                <td className="text-[#5f665d]">{report.read ? "Read" : "Unread"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </TableCard>
+      ) : (
+        <p className="mamalik-card p-4 text-sm text-[#5f665d]">No reports yet.</p>
       )}
     </Section>
   );
@@ -182,7 +492,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="mamalik-page">
-      <div className="mamalik-container space-y-6">
+      <div className="mamalik-container space-y-7">
         <header className="mamalik-card flex flex-wrap items-center justify-between gap-4 p-5">
           <div>
             <p className="mamalik-eyebrow">Kingdom command</p>
@@ -254,9 +564,19 @@ export default async function DashboardPage() {
         </section>
 
         <ResourcePanel resources={dashboardData.resources} />
+        <EconomyPanel economyEstimate={dashboardData.economyEstimate} />
+        <FoodStatusPanel foodStatus={dashboardData.foodStatus} />
+
+        <section className="grid gap-7 xl:grid-cols-2">
+          <ConstructionProgressPanel activeConstruction={dashboardData.activeConstruction} />
+          <TrainingProgressPanel trainingQueues={dashboardData.trainingQueues} />
+        </section>
+
         <DistrictPanel districts={dashboardData.districts} />
         <BuildingPanel buildings={dashboardData.buildings} />
         <ArmyPanel army={dashboardData.army} />
+        <LatestTickPanel ticks={dashboardData.latestTicks} />
+        <ReportsPanel reports={dashboardData.reports} />
 
         <div>
           <Link

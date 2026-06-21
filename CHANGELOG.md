@@ -2,6 +2,27 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-21
+
+### Added
+
+- Added read-only dashboard sections for resource stockpiles, per-tick economy estimates, Food status, active construction progress, active training progress, latest TickLog activity, and latest kingdom reports.
+- Added dashboard data shaping for net Food, ticks until Food reaches zero, queue duration display, and report summaries.
+- Added shared tick-duration display helper tests in `packages/game`.
+
+### Changed
+
+- Reused `packages/game` resource-generation and Food-consumption formulas for dashboard per-tick estimates instead of duplicating formulas in UI components.
+- Marked S2-008 complete in Sprint 2 task trackers.
+
+### Deferred
+
+- Player-facing start-construction/start-upgrade actions, player-facing start-training actions, and admin test tick controls remain deferred to their owning Sprint 2 tasks.
+
+### Known issues
+
+- None blocking the next Sprint 2 implementation task.
+
 ## 2026-06-20
 
 ### Added
@@ -14,6 +35,10 @@ All notable Mamalik project changes are recorded here.
 - Added construction progress helpers and tests for active, constructing, upgrading, completion, normalization, and negative-timer cases.
 - Added construction progress summaries to tick output.
 - Added construction completion report creation during tick processing.
+- Added `TrainingQueueStatus` and `TrainingQueueItem` to Prisma with migration `000004_training_queue_items`.
+- Added training progress helpers and tests for active, completed, cancelled, completion, normalization, and negative-timer cases.
+- Added training progress summaries to tick output.
+- Added training completion report creation during tick processing.
 
 ### Changed
 
@@ -24,10 +49,13 @@ All notable Mamalik project changes are recorded here.
 - Marked S2-005 complete in Sprint 2 task trackers.
 - Wired `tick:once` to decrement `CONSTRUCTING` and `UPGRADING` building timers after generation and Food consumption.
 - Marked S2-006 complete in Sprint 2 task trackers.
+- Wired `tick:once` to decrement active training queues, complete ready queues, and add trained units to garrison stacks.
+- Increased tick worker transaction timeout to 30 seconds for remote database tick reliability.
+- Marked S2-007 complete in Sprint 2 task trackers.
 
 ### Deferred
 
-- Starvation deaths, training pauses, shortage penalties, player-facing construction start actions, and training progress remain deferred to later Sprint 2 tasks.
+- Starvation deaths, training pauses, shortage penalties, player-facing construction start actions, and player-facing start-training actions remain deferred to later Sprint 2 tasks.
 
 ### Known issues
 
