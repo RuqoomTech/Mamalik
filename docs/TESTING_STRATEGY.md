@@ -52,6 +52,14 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Sprint 2 closure checks should include the full root test/typecheck/lint/build suite, database validation/typecheck, game and worker tests/typechecks, migration deploy verification when a live database is available, and two `npm run tick:once` runs in the same tick slot to confirm duplicate skipping.
 - Browser smoke for dashboard/admin remains useful when a browser session is available, but server-side tests and live tick checks are the required baseline for Sprint 2 closure.
 
+## Sprint 3 Testing Priorities
+
+- Land package tests should verify all locked package sizes, keys, labels, and cooldowns.
+- Land pricing tests should verify package price, kingdom size multiplier tiers, area multipliers, unknown area defaulting, invalid package rejection, and price rounding.
+- Land cooldown tests should verify next available timestamps and active/expired cooldown detection.
+- Land purchase validation tests should verify valid purchase, insufficient Money, active cooldown, invalid package, missing kingdom, and missing stockpile results.
+- Land purchase API tasks should add server-side tests for Money changes, usable land changes, cooldown updates, report creation, and rejection paths.
+
 ## Documentation Requirement
 
 Every task must record:

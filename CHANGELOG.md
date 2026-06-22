@@ -2,6 +2,30 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-23
+
+### Added
+
+- Added shared land package constants with stable package keys, labels, sizes, and cooldowns in `packages/game`.
+- Added deterministic land pricing helpers for package size, kingdom size multiplier, and area multiplier.
+- Added land package cooldown helpers for next-available timestamps and active cooldown checks.
+- Added land purchase validation helpers for package, kingdom, stockpile, Money, and cooldown checks.
+- Added focused land package, pricing, cooldown, and validation tests.
+
+### Changed
+
+- Started Sprint 3 and marked S3-001 through S3-003 complete in active task trackers.
+- Reused existing `LandPurchaseCooldown` persistence instead of adding a duplicate cooldown model.
+- Documented the v0.1 land pricing formula and placeholder area-type behavior.
+
+### Deferred
+
+- Player-facing land purchase API, land purchase reports, dashboard purchase UI, and district reassignment remain pending Sprint 3 tasks.
+
+### Known issues
+
+- Real map-driven area classification is not implemented; current pricing defaults unknown area values to `STANDARD`.
+
 ## 2026-06-21
 
 ### Added

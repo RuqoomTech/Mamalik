@@ -11,8 +11,8 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 ## Active Release
 
 - Active milestone: v0.1
-- Active sprint: Sprint 2 - Tick Engine + Economy
-- Active task sequence: Sprint 1 foundation is complete; Sprint 2 tick engine and economy implementation is complete through manual/admin tick execution, TickLog persistence, duplicate tick protection, resource generation, Food consumption, named population-effect breakdowns, construction progress, training queue progress, dashboard economy/tick display, and admin manual tick control. Sprint 2 closure review is the final step before Sprint 3 starts.
+- Active sprint: Sprint 3 - Land Buying + District Management
+- Active task sequence: Sprint 1 and Sprint 2 are complete. Sprint 3 has started with land purchase package constants, hybrid pricing, cooldown helpers, and validation helpers.
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -211,6 +211,9 @@ v0.1 must include:
 - `/admin` reads recent TickLog rows for inspection, including failed historical rows.
 - Sprint 2 closes with manual/admin tick execution only. Automatic recurring scheduling, player-facing start-construction/start-upgrade actions, and player-facing start-training actions remain deferred v0.1 follow-ups.
 - Failed TickLog rows are kept as audit/debug records and shown in admin; cleanup tooling is deferred.
+- Initial Sprint 3 land package, pricing, cooldown, and validation helpers live under `packages/game/src/land`.
+- The initial v0.1 land price formula is `ceil(packageSizeM2 * 2 * kingdomSizeMultiplier * areaMultiplier)`, with unknown area types defaulting to `STANDARD` until real area classification exists.
+- Existing `LandPurchaseCooldown` persistence is reused for Sprint 3; no duplicate cooldown model is added.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - Next.js `outputFileTracingRoot` is configured to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.

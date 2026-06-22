@@ -90,7 +90,7 @@ Status: Prisma config, PostgreSQL datasource, package-local dependencies, genera
 - Building definitions
 - Research definitions
 
-Status: Sprint 2 added the first package manifest, TypeScript config, exports, deterministic resource-generation formulas with named population-effect breakdowns, deterministic Food consumption formulas, construction progress helpers, training progress helpers, and tick-duration display helpers.
+Status: Sprint 2 added the first package manifest, TypeScript config, exports, deterministic resource-generation formulas with named population-effect breakdowns, deterministic Food consumption formulas, construction progress helpers, training progress helpers, and tick-duration display helpers. Sprint 3 adds land package, pricing, cooldown, and validation helpers.
 
 ### `workers/tick-worker`
 

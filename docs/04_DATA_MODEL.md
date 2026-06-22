@@ -199,7 +199,8 @@ Notes:
 
 - Package size is unique per kingdom.
 - Sprint 1 Task 14 creates initial cooldown records for 500, 1,000, 5,000, and 10,000 m2 packages with `availableAt = now`.
-- Purchase history and price records are deferred until Sprint 3.
+- S3-001 through S3-003 reuse this existing model for package cooldown checks; no duplicate cooldown table is added.
+- Purchase history and price records are deferred until the land purchase API/report tasks require them.
 
 ### Report
 
@@ -392,4 +393,5 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Initial construction progress helpers live in `packages/game/src/buildings/construction-progress.ts`.
 - Initial training progress helpers live in `packages/game/src/units/training-progress.ts`.
 - Initial tick-duration display helpers live in `packages/game/src/time/tick-duration.ts`.
+- Initial land package, pricing, cooldown, and validation helpers live under `packages/game/src/land`.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

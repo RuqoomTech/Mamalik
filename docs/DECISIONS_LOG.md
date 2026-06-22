@@ -190,3 +190,13 @@
 - Decision: Failed TickLog cleanup is deferred. Failed rows remain visible in admin as audit/debug records.
 - Decision: Node and `pg` deprecation warnings are non-blocking for Sprint 2 closure and should be revisited during dependency/toolchain maintenance.
 - Decision: The 30-second Prisma interactive transaction timeout remains the v0.1 tick-worker convention for remote database reliability.
+
+## 2026-06-23 - Sprint 3 Land Purchase Foundation
+
+- Decision: Sprint 3 land package, pricing, cooldown, and validation formulas live in `packages/game/src/land`.
+- Decision: Package keys are `LAND_500`, `LAND_1000`, `LAND_5000`, and `LAND_10000`.
+- Decision: The v0.1 land price formula is `ceil(packageSizeM2 * 2 * kingdomSizeMultiplier * areaMultiplier)`.
+- Decision: Kingdom size multipliers are `1.0` below 100,000 m2, `1.25` from 100,000 to 499,999 m2, `1.5` from 500,000 to 999,999 m2, and `2.0` at 1,000,000 m2 or more.
+- Decision: Area multipliers are `STANDARD = 1.0`, `RURAL = 0.8`, `URBAN = 1.5`, and `STRATEGIC = 2.0`, but v0.1 currently defaults unknown/current persisted area values to `STANDARD`.
+- Decision: Existing `LandPurchaseCooldown` rows are reused for cooldown persistence. No duplicate cooldown model or migration is added in S3-001.
+- Decision: Player-facing purchase mutation/UI and purchase report creation remain S3-004 through S3-006.

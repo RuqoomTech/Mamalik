@@ -1,3 +1,5 @@
+export { LAND_PURCHASE_PACKAGES } from "./land/land-packages";
+
 export const STARTING_USABLE_LAND_M2 = 50_000;
 export const TEMPORARY_VISIBLE_AREA_M2 = 50_000;
 export const TEMPORARY_MIN_KINGDOM_DISTANCE_M = 250;
@@ -6,13 +8,6 @@ export const TICK_DURATION_MS = TICK_DURATION_MINUTES * 60 * 1000;
 
 export const STARTING_POPULATION = 1_000;
 export const BEGINNER_PROTECTION_DAYS = 3;
-
-export const LAND_PURCHASE_PACKAGES = [
-  { sizeM2: 500, cooldownHours: 0 },
-  { sizeM2: 1_000, cooldownHours: 6 },
-  { sizeM2: 5_000, cooldownHours: 24 },
-  { sizeM2: 10_000, cooldownHours: 48 },
-] as const;
 
 export const STARTING_RESOURCES = {
   money: 10_000,
