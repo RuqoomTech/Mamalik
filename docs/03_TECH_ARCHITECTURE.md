@@ -68,6 +68,8 @@ Status: `apps/web`, `packages/db`, `packages/game`, and `workers/tick-worker` no
 
 Sprint 2 dashboard data stays server-side and read-only. `apps/web/src/lib/kingdom/dashboard-data.ts` loads kingdom state, active queue state, latest reports, and latest TickLog rows, then reuses `packages/game` formulas for display-only per-tick estimates.
 
+Sprint 3 land purchase mutations use a Next.js Server Action that calls a server-side helper in `apps/web/src/lib/kingdom/land-purchase.ts`. The action accepts only a package key, re-checks authentication/kingdom ownership inside the server path, and recalculates price, cooldown, and area type server-side before mutating the database.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`

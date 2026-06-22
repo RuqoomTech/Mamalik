@@ -58,7 +58,8 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Land pricing tests should verify package price, kingdom size multiplier tiers, area multipliers, unknown area defaulting, invalid package rejection, and price rounding.
 - Land cooldown tests should verify next available timestamps and active/expired cooldown detection.
 - Land purchase validation tests should verify valid purchase, insufficient Money, active cooldown, invalid package, missing kingdom, and missing stockpile results.
-- Land purchase API tasks should add server-side tests for Money changes, usable land changes, cooldown updates, report creation, and rejection paths.
+- Land purchase mutation tests should verify unauthenticated access, missing kingdom, invalid package, missing stockpile, insufficient Money, active cooldown, Money changes, usable land changes, cooldown updates, report creation, and duplicate cooldown rejection paths.
+- Land purchase DB smoke should use rollback-only fixtures when possible: buy `LAND_500`, buy `LAND_1000`, retry `LAND_1000`, verify Money/land/report/cooldown behavior, then roll back test data.
 
 ## Documentation Requirement
 

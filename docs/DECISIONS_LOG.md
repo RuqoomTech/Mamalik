@@ -200,3 +200,13 @@
 - Decision: Area multipliers are `STANDARD = 1.0`, `RURAL = 0.8`, `URBAN = 1.5`, and `STRATEGIC = 2.0`, but v0.1 currently defaults unknown/current persisted area values to `STANDARD`.
 - Decision: Existing `LandPurchaseCooldown` rows are reused for cooldown persistence. No duplicate cooldown model or migration is added in S3-001.
 - Decision: Player-facing purchase mutation/UI and purchase report creation remain S3-004 through S3-006.
+
+## 2026-06-23 - Sprint 3 Land Purchase Mutation
+
+- Decision: S3-004 uses a Next.js Server Action entry point for authenticated land purchases instead of adding a public route handler.
+- Decision: The Server Action calls `apps/web/src/lib/kingdom/land-purchase.ts`, which re-checks authentication and kingdom ownership inside the server path and accepts only a package key from the client.
+- Decision: The mutation recalculates package size, price, area type, cooldown, and stockpile eligibility server-side from database state and `packages/game`; client-submitted prices, land values, and cooldowns are not accepted.
+- Decision: The purchase transaction subtracts Money, increases `Kingdom.usableLandM2`, updates the matching `LandPurchaseCooldown`, and creates a `LAND_PURCHASE` report in one transaction.
+- Decision: S3-004 uses transaction-local rechecks plus conditional stockpile/cooldown updates for v0.1 concurrency safety. Row-level locking is deferred unless production behavior shows a need for stronger hardening.
+- Decision: S3-005 is complete with S3-004 because the purchase transaction creates the land purchase report.
+- Decision: Real visible-border expansion and map polygon recalculation remain Sprint 4 work; land purchase currently changes gameplay usable land credit only.

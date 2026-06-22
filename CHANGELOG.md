@@ -11,16 +11,23 @@ All notable Mamalik project changes are recorded here.
 - Added land package cooldown helpers for next-available timestamps and active cooldown checks.
 - Added land purchase validation helpers for package, kingdom, stockpile, Money, and cooldown checks.
 - Added focused land package, pricing, cooldown, and validation tests.
+- Added an authenticated land purchase Server Action backed by a transaction-safe server helper.
+- Added read-only land purchase option shaping for the future dashboard UI.
+- Added `LAND_PURCHASE` report creation during successful land purchases.
+- Added focused land purchase mutation tests for rejection paths, Money/land changes, cooldown updates, duplicate cooldown rejection, and report creation.
 
 ### Changed
 
 - Started Sprint 3 and marked S3-001 through S3-003 complete in active task trackers.
 - Reused existing `LandPurchaseCooldown` persistence instead of adding a duplicate cooldown model.
 - Documented the v0.1 land pricing formula and placeholder area-type behavior.
+- Marked S3-004 and S3-005 complete because the purchase mutation and report creation now run in one transaction.
+- Documented the land purchase Server Action pattern and v0.1 concurrency boundary.
 
 ### Deferred
 
-- Player-facing land purchase API, land purchase reports, dashboard purchase UI, and district reassignment remain pending Sprint 3 tasks.
+- Dashboard land purchase UI and district reassignment remain pending Sprint 3 tasks.
+- Real visible-border expansion and polygon recalculation remain Sprint 4 work.
 
 ### Known issues
 

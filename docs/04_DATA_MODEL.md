@@ -200,7 +200,8 @@ Notes:
 - Package size is unique per kingdom.
 - Sprint 1 Task 14 creates initial cooldown records for 500, 1,000, 5,000, and 10,000 m2 packages with `availableAt = now`.
 - S3-001 through S3-003 reuse this existing model for package cooldown checks; no duplicate cooldown table is added.
-- Purchase history and price records are deferred until the land purchase API/report tasks require them.
+- S3-004 updates this model from the land purchase Server Action. The 500 m2 package has no blocking cooldown and stores `availableAt = now`; 1,000, 5,000, and 10,000 m2 packages store their next available timestamp using the locked 6-hour, 24-hour, and 48-hour cooldowns.
+- Purchase history and price records remain represented by `LAND_PURCHASE` reports for v0.1; a separate `LandPurchase` table is deferred until reporting/query needs require it.
 
 ### Report
 
@@ -218,6 +219,7 @@ Notes:
 - Sprint 1 only needs the storage foundation.
 - S2-006 creates `CONSTRUCTION` reports when the tick worker completes a construction or upgrade timer.
 - S2-007 creates `TRAINING` reports when the tick worker completes an active training queue.
+- S3-004 creates `LAND_PURCHASE` reports from the purchase transaction. Report body JSON includes package key, package size, price paid, area type, previous/new usable land, cooldown timestamp if any, and price breakdown.
 - Full report-center behavior is deferred until Sprint 6.
 
 ### TickLog
@@ -394,4 +396,5 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Initial training progress helpers live in `packages/game/src/units/training-progress.ts`.
 - Initial tick-duration display helpers live in `packages/game/src/time/tick-duration.ts`.
 - Initial land package, pricing, cooldown, and validation helpers live under `packages/game/src/land`.
+- Initial land purchase mutation logic lives in `apps/web/src/lib/kingdom/land-purchase.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes price/cooldown/area type from database state before mutating Money, usable land, cooldowns, and reports.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

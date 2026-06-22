@@ -44,13 +44,13 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 
 - [x] Shared land package definitions exist with correct sizes and cooldowns.
 - [x] Shared prices use package size, area multiplier, and kingdom size multiplier.
-- [ ] 500 m2 can be bought without cooldown if the player has enough Money.
-- [ ] 1,000/5,000/10,000 m2 packages enforce cooldowns.
-- [ ] Usable land increases after successful purchase.
-- [ ] Money decreases after successful purchase.
-- [ ] A land purchase report is created.
-- [ ] Player cannot buy if cooldown is active.
-- [ ] Player cannot buy if Money is insufficient.
+- [x] 500 m2 can be bought without cooldown if the player has enough Money.
+- [x] 1,000/5,000/10,000 m2 packages enforce cooldowns.
+- [x] Usable land increases after successful purchase.
+- [x] Money decreases after successful purchase.
+- [x] A land purchase report is created.
+- [x] Player cannot buy if cooldown is active.
+- [x] Player cannot buy if Money is insufficient.
 - [ ] Player can move unused land between districts.
 - [ ] Used building land cannot be moved.
 
@@ -59,8 +59,8 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - [x] S3-001: Land purchase package constants.
 - [x] S3-002: Hybrid land price formula.
 - [x] S3-003: Land package cooldown and validation helpers.
-- [ ] S3-004: Land purchase API.
-- [ ] S3-005: Land purchase report.
+- [x] S3-004: Land purchase API.
+- [x] S3-005: Land purchase report.
 - [ ] S3-006: Land package dashboard UI.
 - [ ] S3-007: District allocated/used/free land view.
 - [ ] S3-008: Unused land reassignment flow.
@@ -85,3 +85,7 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - The validation helper checks package key, kingdom presence, stockpile presence, cooldown, and Money before allowing a purchase.
 - S3-001 did not add purchase mutation/UI, did not mutate the database, and did not add a new cooldown model.
 - The prompt referenced `docs/sprints/SPRINT_03_LAND_AND_DISTRICTS.md`, but the canonical active Sprint 3 doc remains `docs/sprints/SPRINT_03_LAND_DISTRICTS.md` per `AGENTS.md`.
+- S3-004 adds an authenticated Server Action backed by a transaction-safe land purchase helper. It accepts only a package key, reloads the current kingdom/stockpile/cooldown rows server-side, recalculates price and area type server-side, subtracts Money, increments `Kingdom.usableLandM2`, updates package cooldown, and creates a `LAND_PURCHASE` report.
+- S3-004 also adds a read-only purchase-options helper for the future dashboard UI. The helper derives price, affordability, cooldown state, and disabled reasons from database state plus `packages/game` formulas.
+- S3-004 does not recalculate real map borders or visible polygons; Sprint 4 still owns real spatial validation and border expansion.
+- S3-005 is complete because the S3-004 transaction creates the land purchase report with package key, package size, price paid, area type, previous/new usable land, cooldown, and price breakdown.
