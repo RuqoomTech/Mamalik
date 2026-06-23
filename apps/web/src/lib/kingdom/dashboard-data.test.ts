@@ -207,6 +207,31 @@ test("counts buildings by district type", () => {
   });
 });
 
+test("dashboard data exposes unallocated land after land purchases", () => {
+  const dashboardData = shapeKingdomDashboardData({
+    ...sourceKingdom,
+    usableLandM2: 51_500,
+  });
+
+  assert.equal(dashboardData.landTotals.unallocatedUsableLandM2, 1_500);
+  assert.equal(dashboardData.districts.length, 5);
+  assert.deepEqual(
+    dashboardData.districts.map((district) => ({
+      id: district.id,
+      label: district.label,
+      allocatedLandM2: district.allocatedLandM2,
+      freeLandM2: district.freeLandM2,
+    })),
+    [
+      { id: "district_2", label: "Economic", allocatedLandM2: 15_000, freeLandM2: 13_000 },
+      { id: "district_1", label: "Residential", allocatedLandM2: 12_000, freeLandM2: 10_000 },
+      { id: "district_5", label: "Military", allocatedLandM2: 8_000, freeLandM2: 7_000 },
+      { id: "district_4", label: "Defensive", allocatedLandM2: 8_000, freeLandM2: 7_000 },
+      { id: "district_3", label: "Research", allocatedLandM2: 7_000, freeLandM2: 6_000 },
+    ],
+  );
+});
+
 test("formats beginner protection remaining time", () => {
   assert.equal(
     getProtectionRemainingText(

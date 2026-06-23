@@ -72,6 +72,8 @@ Sprint 3 land purchase mutations use a Next.js Server Action that calls a server
 
 Sprint 3 dashboard land purchase UI keeps pricing/cooldown calculation server-side. `dashboard-data.ts` shapes package options with `createLandPurchaseOptions`, and the client panel submits only `packageKey` to the Server Action.
 
+Sprint 3 district allocation uses the same Server Action pattern. The dashboard client panel submits only `districtId` and `amountM2`; `apps/web/src/lib/kingdom/district-allocation.ts` reloads kingdom and district state server-side, recomputes unallocated usable land, and updates the target district in a transaction. It does not move land out of districts.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`
@@ -94,7 +96,7 @@ Status: Prisma config, PostgreSQL datasource, package-local dependencies, genera
 - Building definitions
 - Research definitions
 
-Status: Sprint 2 added the first package manifest, TypeScript config, exports, deterministic resource-generation formulas with named population-effect breakdowns, deterministic Food consumption formulas, construction progress helpers, training progress helpers, and tick-duration display helpers. Sprint 3 adds land package, pricing, cooldown, and validation helpers.
+Status: Sprint 2 added the first package manifest, TypeScript config, exports, deterministic resource-generation formulas with named population-effect breakdowns, deterministic Food consumption formulas, construction progress helpers, training progress helpers, and tick-duration display helpers. Sprint 3 adds land package, pricing, cooldown, validation, and district unused-land allocation helpers.
 
 ### `workers/tick-worker`
 
@@ -128,6 +130,7 @@ Examples of PostGIS-heavy actions:
 - The second migration creates the initial v0.1 relational model foundation.
 - The third migration creates `TickLogStatus` and `TickLog`.
 - The fourth migration creates `TrainingQueueStatus` and `TrainingQueueItem`.
+- The fifth migration adds the `DISTRICT_ALLOCATION` report type for district-land allocation reports.
 - Applying migrations requires a reachable PostgreSQL database with permission to create PostGIS extensions.
 
 ## Auth Strategy

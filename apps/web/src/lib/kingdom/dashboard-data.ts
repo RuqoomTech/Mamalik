@@ -17,7 +17,7 @@ import {
 } from "@/lib/kingdom/land-purchase-options";
 
 export const DASHBOARD_STATUS_NOTE =
-  "District reassignment, scouting, combat, alliances, rankings, and player-facing start actions are coming in later v0.1 work.";
+  "Moving land between districts, scouting, combat, alliances, rankings, and player-facing start actions are coming in later v0.1 work.";
 
 const LOW_FOOD_TICK_THRESHOLD = 6;
 

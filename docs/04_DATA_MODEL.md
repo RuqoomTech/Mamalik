@@ -12,7 +12,7 @@ This is the canonical v0.1 data-model plan. Sprint 1 Task 6 added the first Pris
 - `BuildingStatus`: `ACTIVE`, `CONSTRUCTING`, `UPGRADING`
 - `UnitType`: `INFANTRY`, `ARCHERS`, `CAVALRY`, `SCOUTS`, `SIEGE`
 - `UnitLocationType`: `GARRISON`, `MOVING`
-- `ReportType`: `BATTLE`, `SCOUT`, `LAND_PURCHASE`, `CONSTRUCTION`, `TRAINING`
+- `ReportType`: `BATTLE`, `SCOUT`, `LAND_PURCHASE`, `DISTRICT_ALLOCATION`, `CONSTRUCTION`, `TRAINING`
 - `TickLogStatus`: `STARTED`, `COMPLETED`, `FAILED`, `SKIPPED`
 - `TrainingQueueStatus`: `ACTIVE`, `COMPLETED`, `CANCELLED`
 
@@ -92,6 +92,7 @@ Notes:
 - Starting district allocations remain locked in `docs/01_LOCKED_DECISIONS.md`.
 - Sprint 1 Task 14 seeds all five districts and sets each district `usedLandM2` from the starter buildings assigned to that district.
 - Sprint 3 Task S3-007 uses `District.usedLandM2` as the canonical dashboard source for district used/free land. `BuildingInstance` rows are used for per-district building counts and building detail display, not for recalculating or double-counting district used land.
+- Sprint 3 Task S3-008 allows only increasing `District.allocatedLandM2` from unallocated usable kingdom land. It does not reduce district allocation or move land between districts.
 
 ### ResourceStockpile
 
@@ -221,6 +222,7 @@ Notes:
 - S2-006 creates `CONSTRUCTION` reports when the tick worker completes a construction or upgrade timer.
 - S2-007 creates `TRAINING` reports when the tick worker completes an active training queue.
 - S3-004 creates `LAND_PURCHASE` reports from the purchase transaction. Report body JSON includes package key, package size, price paid, area type, previous/new usable land, cooldown timestamp if any, and price breakdown.
+- S3-008 creates `DISTRICT_ALLOCATION` reports when unallocated usable land is assigned into a district. Report body JSON includes amount, district type, previous/new allocated land, and unallocated land before/after.
 - Full report-center behavior is deferred until Sprint 6.
 
 ### TickLog
@@ -273,6 +275,8 @@ Sprint 2 Task S2-008 expands the dashboard read model so per-tick Money, Food, M
 Sprint 3 Task S3-006 expands the dashboard read model with server-computed land purchase options. Package prices, affordability, cooldown state, and disabled reasons are derived from `Kingdom`, `ResourceStockpile`, `LandPurchaseCooldown`, and `packages/game` helpers; the client UI does not compute or submit those values.
 
 Sprint 3 Task S3-007 expands the dashboard read model with kingdom-level land totals and per-district allocated/used/free land. District free land is displayed as `max(allocatedLandM2 - usedLandM2, 0)`, usage percentage is derived from district allocation and used land, and unallocated usable land is `max(Kingdom.usableLandM2 - sum(District.allocatedLandM2), 0)`.
+
+Sprint 3 Task S3-008 adds the allocation mutation that uses the same land totals server-side. The mutation accepts only a target district id and amount, then recomputes the unallocated land from database state before incrementing `District.allocatedLandM2`.
 
 ## Admin Read Model
 
@@ -402,5 +406,7 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Initial training progress helpers live in `packages/game/src/units/training-progress.ts`.
 - Initial tick-duration display helpers live in `packages/game/src/time/tick-duration.ts`.
 - Initial land package, pricing, cooldown, and validation helpers live under `packages/game/src/land`.
+- Initial district unused-land allocation validation lives in `packages/game/src/land/district-reassignment.ts`.
 - Initial land purchase mutation logic lives in `apps/web/src/lib/kingdom/land-purchase.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes price/cooldown/area type from database state before mutating Money, usable land, cooldowns, and reports.
+- Initial district allocation mutation logic lives in `apps/web/src/lib/kingdom/district-allocation.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes unallocated usable land from database state before incrementing the target district allocation.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

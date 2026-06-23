@@ -224,3 +224,11 @@
 - Decision: The dashboard read model uses `District.usedLandM2` as the canonical source for district used/free land and does not recalculate usage from `BuildingInstance` rows.
 - Decision: `BuildingInstance` rows are used for per-district building counts and building detail display only, avoiding double-counting when `District.usedLandM2` is already maintained.
 - Decision: District free land is displayed as `max(allocatedLandM2 - usedLandM2, 0)`, while unallocated usable land is `max(Kingdom.usableLandM2 - sum(District.allocatedLandM2), 0)`.
+
+## 2026-06-24 - Sprint 3 Unused Land Allocation
+
+- Decision: S3-008 implements allocation-only district management: unallocated usable land can be added to one existing district, but allocated land cannot be moved out of a district or between districts.
+- Decision: The district allocation Server Action accepts only `districtId` and `amountM2`, then recomputes kingdom usable land, total district allocation, target district allocation, and target district used land from database state.
+- Decision: Overused districts may receive unallocated land because that operation can repair overuse without reducing any district allocation.
+- Decision: S3-008 uses a serializable transaction and conditional target-district update for v0.1 concurrency safety. Stronger row-locking can be revisited if production contention shows a need.
+- Decision: District allocation creates `DISTRICT_ALLOCATION` reports instead of reusing `LAND_PURCHASE`, so report history distinguishes purchased land from district allocation. Migration `000005_district_allocation_report_type` adds the enum value.

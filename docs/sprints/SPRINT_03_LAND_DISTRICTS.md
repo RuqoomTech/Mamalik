@@ -14,7 +14,7 @@ A player can buy virtual land packages using Money, obey package cooldowns, upda
 - Land purchase API.
 - Land purchase reports.
 - District land view.
-- Reassign unused district land.
+- Allocate unallocated usable land into existing districts.
 
 ## Locked Packages
 
@@ -53,8 +53,8 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - [x] Player cannot buy if Money is insufficient.
 - [x] Player can view land package options and buy available packages from the dashboard.
 - [x] Player can view allocated, used, free, and unallocated land from the dashboard.
-- [ ] Player can move unused land between districts.
-- [ ] Used building land cannot be moved.
+- [x] Player can allocate unallocated usable land into an existing district.
+- [x] Used building land cannot be moved by the Sprint 3 allocation flow.
 
 ## Task Status
 
@@ -65,7 +65,7 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - [x] S3-005: Land purchase report.
 - [x] S3-006: Land package dashboard UI.
 - [x] S3-007: District allocated/used/free land view.
-- [ ] S3-008: Unused land reassignment flow.
+- [x] S3-008: Unused land reassignment flow.
 
 ## Implementation Notes
 
@@ -96,4 +96,7 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - After a successful purchase, `/dashboard` is revalidated so Money, usable land, cooldowns, and latest `LAND_PURCHASE` report display update on refresh/re-render.
 - S3-007 adds a read-only dashboard `District land` section with kingdom-level usable, allocated, used, free, and unallocated land totals.
 - S3-007 uses `District.usedLandM2` as the canonical source for district used/free land and uses `BuildingInstance` rows only for per-district building counts and building detail display.
-- District reassignment remains S3-008 and is not exposed from the S3-007 dashboard view.
+- S3-008 adds an allocation-only dashboard flow that assigns unallocated usable land into one existing district.
+- The S3-008 Server Action accepts only `districtId` and `amountM2`, reloads kingdom and district state server-side, recomputes unallocated land from `Kingdom.usableLandM2 - sum(District.allocatedLandM2)`, and updates the target district inside a transaction.
+- S3-008 does not move allocated land out of a district, does not reduce district allocations, and does not add construction or building placement actions.
+- S3-008 creates `DISTRICT_ALLOCATION` reports with the allocated amount, district type, previous/new allocation, and unallocated land before/after. Migration `000005_district_allocation_report_type` adds that report enum value.

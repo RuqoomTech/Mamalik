@@ -3,6 +3,7 @@ export * from "./constants";
 export * from "./economy/food-consumption";
 export * from "./economy/resource-generation";
 export * from "./land/land-cooldowns";
+export * from "./land/district-reassignment";
 export * from "./land/land-packages";
 export * from "./land/land-pricing";
 export * from "./land/land-purchase-validation";

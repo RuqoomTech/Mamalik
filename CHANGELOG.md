@@ -13,6 +13,11 @@ All notable Mamalik project changes are recorded here.
 - Added a read-only dashboard `District land` section with kingdom-level usable, allocated, used, free, and unallocated land totals.
 - Added per-district dashboard rows for allocated land, used land, free land, usage percentage, building count, and land status.
 - Added focused dashboard read-model tests for district free land clamping, usage percentage, overused status, unallocated land totals, and building counts.
+- Added shared district unused-land allocation validation helpers in `packages/game`.
+- Added an authenticated dashboard Server Action for assigning unallocated usable land into an existing district.
+- Added a dashboard `Allocate unused land` form that submits only district id and amount.
+- Added `DISTRICT_ALLOCATION` reports and migration `000005_district_allocation_report_type`.
+- Added focused tests for allocation validation, server-side DB recomputation, district ownership, report creation, and dashboard result messages.
 
 ### Changed
 
@@ -20,12 +25,14 @@ All notable Mamalik project changes are recorded here.
 - Preserved the mandatory Mamalik v0.1 preflight, canonical documentation sources, documentation update loop, and no-v0.2 scope guard.
 - Marked S3-006 complete in the active Sprint 3 docs and task trackers.
 - Marked S3-007 complete in the active Sprint 3 docs and task trackers.
+- Marked S3-008 complete in the active Sprint 3 docs and task trackers.
 - Updated the dashboard status note so land buying is no longer listed as future work.
 - Documented `District.usedLandM2` as the dashboard source for district used/free land, with buildings used only for counts and detail display.
+- Documented Sprint 3 district management as allocation-only: unallocated usable land can be added to districts, but allocated land is not moved out of districts.
 
 ### Deferred
 
-- Unused-land reassignment remains a pending Sprint 3 task.
+- Moving allocated land out of a district or between districts remains deferred.
 - Real visible-border expansion and polygon recalculation remain Sprint 4 work.
 
 ## 2026-06-23

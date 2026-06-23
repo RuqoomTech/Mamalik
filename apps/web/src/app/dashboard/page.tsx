@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { DistrictLandAllocationPanel } from "@/components/kingdom/DistrictLandAllocationPanel";
 import { LandPurchasePanel } from "@/components/kingdom/LandPurchasePanel";
 import { requireUserWithKingdom } from "@/lib/auth/guards";
 import { isAdminUser } from "@/lib/auth/route-destinations";
@@ -333,7 +334,16 @@ function DistrictPanel({
           ))}
         </tbody>
       </TableCard>
-      <p className="text-sm text-[#5f665d]">District reassignment will be added later.</p>
+      <DistrictLandAllocationPanel
+        districts={districts.map((district) => ({
+          id: district.id,
+          label: district.label,
+          allocatedLandM2: district.allocatedLandM2,
+          freeLandM2: district.freeLandM2,
+          statusLabel: district.statusLabel,
+        }))}
+        unallocatedLandM2={landTotals.unallocatedUsableLandM2}
+      />
     </Section>
   );
 }
