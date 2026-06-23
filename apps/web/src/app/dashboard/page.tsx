@@ -245,16 +245,60 @@ function FoodStatusPanel({ foodStatus }: { foodStatus: KingdomDashboardData["foo
   );
 }
 
-function DistrictPanel({ districts }: { districts: KingdomDashboardData["districts"] }) {
+function getDistrictLandStatusClass(
+  status: KingdomDashboardData["districts"][number]["status"],
+): string {
+  switch (status) {
+    case "full":
+      return "border-[#e1b8b8] bg-[#fff0f0] text-[#7a1d1d]";
+    case "nearly-full":
+      return "border-[#e7d6a0] bg-[#fff9e7] text-[#6a4a0a]";
+    case "healthy":
+      return "border-[#cbd8cd] bg-[#eff6ed] text-[#183f35]";
+  }
+}
+
+function DistrictPanel({
+  districts,
+  landTotals,
+}: {
+  districts: KingdomDashboardData["districts"];
+  landTotals: KingdomDashboardData["landTotals"];
+}) {
   return (
-    <Section title="Districts">
-      <TableCard minWidth="min-w-[560px]">
+    <Section title="District land">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <SummaryCard
+          label="Usable land"
+          value={formatLand(landTotals.totalUsableLandM2)}
+        />
+        <SummaryCard
+          label="Allocated"
+          value={formatLand(landTotals.totalDistrictAllocatedLandM2)}
+        />
+        <SummaryCard
+          label="Used by districts"
+          value={formatLand(landTotals.totalDistrictUsedLandM2)}
+        />
+        <SummaryCard
+          label="Free inside districts"
+          value={formatLand(landTotals.totalDistrictFreeLandM2)}
+        />
+        <SummaryCard
+          label="Unallocated"
+          value={formatLand(landTotals.unallocatedUsableLandM2)}
+        />
+      </div>
+      <TableCard minWidth="min-w-[840px]">
         <thead>
           <tr>
             <th>District</th>
             <th>Allocated</th>
             <th>Used</th>
             <th>Free</th>
+            <th>Usage</th>
+            <th>Buildings</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -264,10 +308,32 @@ function DistrictPanel({ districts }: { districts: KingdomDashboardData["distric
               <td className="text-[#5f665d]">{formatLand(district.allocatedLandM2)}</td>
               <td className="text-[#5f665d]">{formatLand(district.usedLandM2)}</td>
               <td className="text-[#5f665d]">{formatLand(district.freeLandM2)}</td>
+              <td className="text-[#5f665d]">
+                <div className="flex min-w-[150px] items-center gap-3">
+                  <div className="h-2 w-24 rounded-full bg-[#e8ece6]">
+                    <div
+                      className="h-2 rounded-full bg-[#183f35]"
+                      style={{ width: `${district.usagePercentage}%` }}
+                    />
+                  </div>
+                  <span>{district.usagePercentage}%</span>
+                </div>
+              </td>
+              <td className="text-[#5f665d]">{formatNumber(district.buildingCount)}</td>
+              <td>
+                <span
+                  className={`inline-flex rounded-full border px-2 py-1 text-xs font-semibold ${getDistrictLandStatusClass(
+                    district.status,
+                  )}`}
+                >
+                  {district.statusLabel}
+                </span>
+              </td>
             </tr>
           ))}
         </tbody>
       </TableCard>
+      <p className="text-sm text-[#5f665d]">District reassignment will be added later.</p>
     </Section>
   );
 }
@@ -577,7 +643,10 @@ export default async function DashboardPage() {
           <TrainingProgressPanel trainingQueues={dashboardData.trainingQueues} />
         </section>
 
-        <DistrictPanel districts={dashboardData.districts} />
+        <DistrictPanel
+          districts={dashboardData.districts}
+          landTotals={dashboardData.landTotals}
+        />
         <BuildingPanel buildings={dashboardData.buildings} />
         <ArmyPanel army={dashboardData.army} />
         <LatestTickPanel ticks={dashboardData.latestTicks} />

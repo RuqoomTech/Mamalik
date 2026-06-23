@@ -10,17 +10,22 @@ All notable Mamalik project changes are recorded here.
 - Added land purchase display helpers for cooldown duration, remaining cooldown, disabled reason labels, and user-facing action result messages.
 - Added dashboard read-model support for server-computed land purchase options.
 - Added focused tests for dashboard land purchase option shaping and land purchase display helpers.
+- Added a read-only dashboard `District land` section with kingdom-level usable, allocated, used, free, and unallocated land totals.
+- Added per-district dashboard rows for allocated land, used land, free land, usage percentage, building count, and land status.
+- Added focused dashboard read-model tests for district free land clamping, usage percentage, overused status, unallocated land totals, and building counts.
 
 ### Changed
 
 - Refined `AGENTS.md` into a repository contributor guide with project structure, commands, style, testing, documentation workflow, commit/PR guidance, security notes, and anti-drift rules.
 - Preserved the mandatory Mamalik v0.1 preflight, canonical documentation sources, documentation update loop, and no-v0.2 scope guard.
 - Marked S3-006 complete in the active Sprint 3 docs and task trackers.
+- Marked S3-007 complete in the active Sprint 3 docs and task trackers.
 - Updated the dashboard status note so land buying is no longer listed as future work.
+- Documented `District.usedLandM2` as the dashboard source for district used/free land, with buildings used only for counts and detail display.
 
 ### Deferred
 
-- District allocated/used/free land view and unused-land reassignment remain pending Sprint 3 tasks.
+- Unused-land reassignment remains a pending Sprint 3 task.
 - Real visible-border expansion and polygon recalculation remain Sprint 4 work.
 
 ## 2026-06-23

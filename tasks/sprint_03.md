@@ -12,7 +12,7 @@ Players can buy land packages and reassign unused land between districts.
 - [x] S3-004: Add land purchase API.
 - [x] S3-005: Add land purchase report.
 - [x] S3-006: Add land package dashboard UI.
-- [ ] S3-007: Add district allocated/used/free land view.
+- [x] S3-007: Add district allocated/used/free land view.
 - [ ] S3-008: Add unused land reassignment flow.
 
 ## Acceptance Criteria
@@ -21,6 +21,7 @@ Players can buy land packages and reassign unused land between districts.
 - [x] Prices depend on package size, kingdom size, and area type in shared game helpers.
 - [x] Land purchase changes Money and usable land correctly.
 - [x] Land purchase reports are created.
+- [x] Dashboard shows allocated, used, free, and unallocated district land.
 - [ ] Unused land can move between districts.
 - [ ] Used building land cannot be moved.
 
@@ -32,4 +33,5 @@ Players can buy land packages and reassign unused land between districts.
 - S3-004 adds the authenticated land purchase Server Action and transaction helper.
 - S3-005 is complete because the purchase transaction creates `LAND_PURCHASE` reports.
 - S3-006 adds the dashboard land purchase panel using server-computed options and the existing purchase Server Action.
-- District land view and district reassignment remain pending.
+- S3-007 adds the read-only dashboard district land view. It uses `District.usedLandM2` for used/free land and `BuildingInstance` rows for building counts only.
+- District reassignment remains pending.

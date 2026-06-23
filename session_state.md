@@ -2,46 +2,39 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-24 00:21:10 +03:00
+- Current date/time: 2026-06-24 00:47:09 +03:00
 - Current sprint: Sprint 3 - Land Buying + District Management
 - Current sprint file: `docs/sprints/SPRINT_03_LAND_DISTRICTS.md`
-- Current task: S3-006 - Add land package dashboard UI
+- Current task: S3-007 - Add district allocated/used/free land view
 
 ## Last Completed Task
 
-- Completed S3-006 land package dashboard UI.
-- Added dashboard land purchase options to the server-side dashboard read model.
-- Added a dashboard `Buy land` section that displays all four locked land packages with server-computed price, cooldown duration, cooldown state, affordability, availability, disabled reason, and action result state.
-- Wired the panel to the existing authenticated Server Action. The form submits only `packageKey`; price, land size, cooldown, current land, Money, and area type remain server-derived.
-- Added land purchase display helpers and tests for cooldown display, disabled reason labels, and purchase result messages.
-- Marked S3-006 complete in active Sprint 3 docs and task trackers.
-- Did not implement district management, real visible-border expansion, Sprint 4 map validation/border recalculation, combat, scouting, alliances, rankings, or scheduler work.
+- Completed S3-007 district allocated/used/free land view.
+- Added a read-only `/dashboard` `District land` section with kingdom-level usable, allocated, used, free, and unallocated land totals.
+- Added per-district dashboard rows for allocated land, used land, clamped free land, usage percentage, building count, and Healthy/Nearly full/Full status labels.
+- Added dashboard read-model helpers for clamped district free land, usage percentage, status labels, kingdom land totals, and building counts by district type.
+- Chose `District.usedLandM2` as the canonical dashboard source for district used/free land; `BuildingInstance` rows are used only for per-district building counts and building details.
+- Marked S3-007 complete in active Sprint 3 docs and task trackers.
+- Did not implement district reassignment, start-construction/start-upgrade UI, visible-border expansion, Sprint 4 map validation/border recalculation, combat, scouting, alliances, rankings, or scheduler work.
 
 ## Files Changed Recently
 
-Changed for documentation maintenance:
-
-- `AGENTS.md`
-
-Changed for Sprint 3 S3-006:
+Changed for Sprint 3 S3-007:
 
 - `CHANGELOG.md`
 - `context.md`
-- `docs/03_TECH_ARCHITECTURE.md`
 - `docs/04_DATA_MODEL.md`
 - `docs/DECISIONS_LOG.md`
 - `docs/TESTING_STRATEGY.md`
 - `docs/sprints/SPRINT_03_LAND_DISTRICTS.md`
-- `apps/web/src/app/dashboard/actions.ts`
 - `apps/web/src/app/dashboard/page.tsx`
-- `apps/web/src/components/kingdom/LandPurchasePanel.tsx`
 - `apps/web/src/lib/kingdom/dashboard-data.test.ts`
 - `apps/web/src/lib/kingdom/dashboard-data.ts`
-- `apps/web/src/lib/kingdom/land-purchase-display.ts`
-- `apps/web/src/lib/kingdom/land-purchase.test.ts`
 - `session_state.md`
 - `tasks/backlog.md`
 - `tasks/sprint_03.md`
+
+`AGENTS.md` status: clean/committed before S3-007; no S3-007 edits were needed.
 
 ## Commands Run
 
@@ -58,28 +51,21 @@ Changed for Sprint 3 S3-006:
 - `Get-Content tasks/backlog.md`
 - `Get-Content CHANGELOG.md`
 - `git status --short`
-- `rg -n "dashboard|Dashboard|Resource|Report|landPurchase|purchase" apps/web/src packages/game/src -g "*.ts" -g "*.tsx"`
-- `Get-ChildItem apps/web/src/app/dashboard -Recurse`
-- `Get-ChildItem apps/web/src/components -Recurse | Select-Object -ExpandProperty FullName`
-- `Get-ChildItem apps/web/src/lib/kingdom -Recurse | Select-Object -ExpandProperty FullName`
 - `Get-Content apps/web/src/app/dashboard/page.tsx`
-- `Get-Content apps/web/src/app/dashboard/actions.ts`
-- `Get-Content apps/web/src/lib/kingdom/land-purchase-options.ts`
-- `Get-Content apps/web/src/lib/kingdom/land-purchase.ts`
 - `Get-Content apps/web/src/lib/kingdom/dashboard-data.ts`
-- `Get-Content apps/web/src/components/admin/AdminTickControls.tsx`
-- `Get-Content apps/web/src/app/admin/actions.ts`
 - `Get-Content apps/web/src/lib/kingdom/dashboard-data.test.ts`
-- `Get-Content apps/web/src/lib/kingdom/land-purchase.test.ts`
-- `npm run typecheck`
+- `Get-Content packages/game/src/constants.ts`
 - `npm run test`
 - `Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`
+- `Get-Content docs/TESTING_STRATEGY.md`
+- `Get-Content docs/DECISIONS_LOG.md`
+- `npm run typecheck`
 - `npm run lint`
 - `npm run db:typecheck`
 - `npm run game:typecheck`
 - `npm run tick:typecheck`
-- `npm run db:validate`
 - `npm run build`
+- `npm run db:validate`
 - `npm run game:test`
 - `npm run tick:test`
 - `git diff --check`
@@ -88,27 +74,27 @@ Changed for Sprint 3 S3-006:
 
 ## Test Status
 
-- `npm run test`: passed outside the sandbox; 65 web tests, 48 game tests, and 8 worker tests passed.
+- `npm run test`: first sandbox run failed with `spawn EPERM`; rerun outside the sandbox passed with 68 web tests, 48 game tests, and 8 worker tests.
 - `npm run typecheck`: passed.
 - `npm run lint`: passed.
-- `npm run build`: passed outside the sandbox. It still emits the existing Node v26.1.0 deprecation warning for `module.register()`.
-- `npm run db:validate`: passed outside the sandbox.
 - `npm run db:typecheck`: passed.
-- `npm run game:test`: passed outside the sandbox; 48 tests passed.
 - `npm run game:typecheck`: passed.
-- `npm run tick:test`: passed outside the sandbox; 8 tests passed.
 - `npm run tick:typecheck`: passed.
+- `npm run build`: first sandbox run compiled but failed at a sandbox-blocked `spawn EPERM` step; rerun outside the sandbox passed and still emits the existing Node deprecation warning for `module.register()`.
+- `npm run db:validate`: first sandbox run failed because Prisma binary access was blocked by the sandbox proxy; rerun outside the sandbox passed.
+- `npm run game:test`: first sandbox run failed with `spawn EPERM`; rerun outside the sandbox passed with 48 tests.
+- `npm run tick:test`: first sandbox run failed with `spawn EPERM`; rerun outside the sandbox passed with 8 tests.
 - `git diff --check`: passed; Git reported CRLF normalization warnings only.
-- `git status --short`: completed and shows modified/new files for the uncommitted docs maintenance and S3-006 work.
+- `git status --short`: completed and shows modified files for S3-007.
 
 ## Manual Smoke Status
 
 - Browser smoke was not run in this turn because no browser connector was invoked/available here.
-- Live DB mutation smoke for S3-004 previously verified purchase behavior with rollback-only test data; S3-006 still needs browser confirmation if a browser session is available.
+- S3-007 was verified with server-side dashboard read-model tests. Browser confirmation that `/dashboard` visually renders the district land section still remains useful when a browser session is available.
 
 ## Known Issues
 
-- District allocated/used/free land view and unused-land reassignment are not implemented yet.
+- Unused-land reassignment is not implemented yet.
 - Real map-driven area classification is not implemented; current pricing defaults unknown/current persisted area values to `STANDARD`.
 - Land purchases currently increase gameplay usable land credit only; real visible-border expansion and polygon recalculation remain Sprint 4 work.
 - Tick worker currently runs only by manual `tick:once` or admin-triggered one-tick action; automatic scheduler behavior remains deferred.
@@ -117,8 +103,8 @@ Changed for Sprint 3 S3-006:
 
 ## Open Questions
 
-- None for S3-006.
+- None for S3-007.
 
 ## Next Recommended Task
 
-- S3-007: Add district allocated/used/free land view.
+- S3-008: Add unused land reassignment flow.

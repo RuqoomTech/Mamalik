@@ -61,6 +61,7 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Land purchase mutation tests should verify unauthenticated access, missing kingdom, invalid package, missing stockpile, insufficient Money, active cooldown, Money changes, usable land changes, cooldown updates, report creation, and duplicate cooldown rejection paths.
 - Land purchase DB smoke should use rollback-only fixtures when possible: buy `LAND_500`, buy `LAND_1000`, retry `LAND_1000`, verify Money/land/report/cooldown behavior, then roll back test data.
 - Land purchase dashboard tests should verify server-side option shaping, disabled reason mapping, cooldown display helpers, and purchase result messages. Browser smoke should verify the dashboard renders all four packages and updates Money, usable land, cooldowns, and reports after purchases when a live account is available.
+- District land dashboard tests should verify clamped district free land, usage percentage, overused status, kingdom-level unallocated land, per-district building counts, and dashboard data shaping. Browser smoke should verify all five starter districts render and no reassignment actions appear before S3-008.
 
 ## Documentation Requirement
 

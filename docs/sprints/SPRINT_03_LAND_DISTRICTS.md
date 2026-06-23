@@ -52,6 +52,7 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - [x] Player cannot buy if cooldown is active.
 - [x] Player cannot buy if Money is insufficient.
 - [x] Player can view land package options and buy available packages from the dashboard.
+- [x] Player can view allocated, used, free, and unallocated land from the dashboard.
 - [ ] Player can move unused land between districts.
 - [ ] Used building land cannot be moved.
 
@@ -63,7 +64,7 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - [x] S3-004: Land purchase API.
 - [x] S3-005: Land purchase report.
 - [x] S3-006: Land package dashboard UI.
-- [ ] S3-007: District allocated/used/free land view.
+- [x] S3-007: District allocated/used/free land view.
 - [ ] S3-008: Unused land reassignment flow.
 
 ## Implementation Notes
@@ -93,3 +94,6 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - S3-006 adds a dashboard `Buy land` section. The dashboard read model computes all package prices, cooldown states, affordability, and disabled reasons server-side through `createLandPurchaseOptions`.
 - The S3-006 client component submits only `packageKey` to the existing Server Action and displays success/failure state from the action result.
 - After a successful purchase, `/dashboard` is revalidated so Money, usable land, cooldowns, and latest `LAND_PURCHASE` report display update on refresh/re-render.
+- S3-007 adds a read-only dashboard `District land` section with kingdom-level usable, allocated, used, free, and unallocated land totals.
+- S3-007 uses `District.usedLandM2` as the canonical source for district used/free land and uses `BuildingInstance` rows only for per-district building counts and building detail display.
+- District reassignment remains S3-008 and is not exposed from the S3-007 dashboard view.

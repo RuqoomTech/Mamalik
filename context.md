@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 3 - Land Buying + District Management
-- Active task sequence: Sprint 1 and Sprint 2 are complete. Sprint 3 has completed land purchase package constants, hybrid pricing, cooldown helpers, validation helpers, the land purchase Server Action, land purchase reports, and the dashboard land purchase UI. Next active task is the district allocated/used/free land view.
+- Active task sequence: Sprint 1 and Sprint 2 are complete. Sprint 3 has completed land purchase package constants, hybrid pricing, cooldown helpers, validation helpers, the land purchase Server Action, land purchase reports, the dashboard land purchase UI, and the read-only district allocated/used/free land view. Next active task is unused land reassignment.
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -217,6 +217,7 @@ v0.1 must include:
 - Sprint 3 land purchases use a Next.js Server Action backed by `apps/web/src/lib/kingdom/land-purchase.ts`. The action accepts only a package key, then reloads kingdom, stockpile, and cooldown state server-side before recalculating price/cooldown and mutating Money, usable land, cooldown rows, and `LAND_PURCHASE` reports in a transaction.
 - The dashboard land purchase UI uses server-computed options from `apps/web/src/lib/kingdom/land-purchase-options.ts`; the client panel submits only package keys to the Server Action and never submits prices, cooldowns, resource values, land values, or area type.
 - Land purchases currently increase gameplay usable land credit only. Real visible-border expansion and polygon recalculation remain Sprint 4 spatial work.
+- The dashboard district land view uses `District.usedLandM2` as the canonical source for district used/free land and uses `BuildingInstance` rows only for per-district building counts and building detail display.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - Next.js `outputFileTracingRoot` is configured to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.

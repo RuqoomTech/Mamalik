@@ -1,9 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  calculateClampedFreeLandM2,
+  calculateDistrictUsagePercentage,
   calculateFreeLandM2,
+  calculateKingdomLandTotals,
   calculateNetFoodPerTick,
   calculateTicksUntilFoodEmpty,
+  countBuildingsByDistrictType,
+  getDistrictLandStatus,
   getFoodStatus,
   getProtectionRemainingText,
   shapeKingdomDashboardData,
@@ -34,6 +39,7 @@ const sourceKingdom: DashboardSourceKingdom = {
     { id: "district_2", type: "ECONOMIC", allocatedLandM2: 15_000, usedLandM2: 2_000 },
     { id: "district_3", type: "RESEARCH", allocatedLandM2: 7_000, usedLandM2: 1_000 },
     { id: "district_4", type: "DEFENSIVE", allocatedLandM2: 8_000, usedLandM2: 1_000 },
+    { id: "district_5", type: "MILITARY", allocatedLandM2: 8_000, usedLandM2: 1_000 },
   ],
   buildings: [
     {
@@ -80,6 +86,15 @@ const sourceKingdom: DashboardSourceKingdom = {
       landUsedM2: 1_000,
       constructionRemainingTicks: 0,
       district: { type: "RESEARCH" },
+    },
+    {
+      id: "building_barracks",
+      type: "BARRACKS",
+      level: 1,
+      status: "ACTIVE",
+      landUsedM2: 1_000,
+      constructionRemainingTicks: 0,
+      district: { type: "MILITARY" },
     },
     {
       id: "building_watchtower",
@@ -141,6 +156,55 @@ const latestTickLogs: DashboardSourceTickLog[] = [
 test("calculates free land from stored total and used land", () => {
   assert.equal(calculateFreeLandM2(50_000, 7_000), 43_000);
   assert.equal(calculateFreeLandM2(1_000, 1_200), -200);
+  assert.equal(calculateClampedFreeLandM2(1_000, 1_200), 0);
+});
+
+test("calculates district land usage and status labels", () => {
+  assert.equal(calculateDistrictUsagePercentage(10_000, 2_500), 25);
+  assert.equal(calculateDistrictUsagePercentage(0, 0), 0);
+  assert.equal(calculateDistrictUsagePercentage(0, 250), 100);
+  assert.equal(calculateDistrictUsagePercentage(1_000, 1_200), 100);
+  assert.deepEqual(getDistrictLandStatus(10_000, 8_900), {
+    status: "healthy",
+    label: "Healthy",
+  });
+  assert.deepEqual(getDistrictLandStatus(10_000, 9_000), {
+    status: "nearly-full",
+    label: "Nearly full",
+  });
+  assert.deepEqual(getDistrictLandStatus(1_000, 1_200), {
+    status: "full",
+    label: "Full/overused",
+  });
+});
+
+test("calculates kingdom land totals without allowing negative free land", () => {
+  assert.deepEqual(
+    calculateKingdomLandTotals({
+      totalUsableLandM2: 52_000,
+      districts: [
+        { allocatedLandM2: 10_000, usedLandM2: 1_000 },
+        { allocatedLandM2: 5_000, usedLandM2: 5_500 },
+      ],
+    }),
+    {
+      totalUsableLandM2: 52_000,
+      totalDistrictAllocatedLandM2: 15_000,
+      totalDistrictUsedLandM2: 6_500,
+      totalDistrictFreeLandM2: 9_000,
+      unallocatedUsableLandM2: 37_000,
+    },
+  );
+});
+
+test("counts buildings by district type", () => {
+  assert.deepEqual(countBuildingsByDistrictType(sourceKingdom.buildings), {
+    RESIDENTIAL: 2,
+    ECONOMIC: 2,
+    RESEARCH: 1,
+    MILITARY: 1,
+    DEFENSIVE: 1,
+  });
 });
 
 test("formats beginner protection remaining time", () => {
@@ -187,14 +251,25 @@ test("shapes dashboard data with economy and tick read models", () => {
     dashboardData.districts.map((district) => [
       district.label,
       district.freeLandM2,
+      district.usagePercentage,
+      district.buildingCount,
+      district.statusLabel,
     ]),
     [
-      ["Economic", 13_000],
-      ["Residential", 10_000],
-      ["Defensive", 7_000],
-      ["Research", 6_000],
+      ["Economic", 13_000, 13, 2, "Healthy"],
+      ["Residential", 10_000, 17, 2, "Healthy"],
+      ["Military", 7_000, 13, 1, "Healthy"],
+      ["Defensive", 7_000, 13, 1, "Healthy"],
+      ["Research", 6_000, 14, 1, "Healthy"],
     ],
   );
+  assert.deepEqual(dashboardData.landTotals, {
+    totalUsableLandM2: 50_000,
+    totalDistrictAllocatedLandM2: 50_000,
+    totalDistrictUsedLandM2: 7_000,
+    totalDistrictFreeLandM2: 43_000,
+    unallocatedUsableLandM2: 0,
+  });
   assert.deepEqual(dashboardData.economyEstimate.money, {
     populationTax: 50,
     marketBonus: 40,

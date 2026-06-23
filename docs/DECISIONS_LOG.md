@@ -217,3 +217,10 @@
 - Decision: The dashboard read model shapes package options server-side with `createLandPurchaseOptions`, including prices, affordability, cooldown state, and disabled reasons.
 - Decision: The client land purchase panel submits only `packageKey` to the existing Server Action and displays the action result. It does not submit price, land size, cooldown, current land, Money, or area type.
 - Decision: Successful purchases rely on the existing Server Action revalidation of `/dashboard` so Money, usable land, cooldowns, and latest reports refresh from database state.
+
+## 2026-06-24 - Sprint 3 District Land Dashboard View
+
+- Decision: S3-007 keeps the district land dashboard view read-only and does not add reassignment, construction, upgrade, or placement actions.
+- Decision: The dashboard read model uses `District.usedLandM2` as the canonical source for district used/free land and does not recalculate usage from `BuildingInstance` rows.
+- Decision: `BuildingInstance` rows are used for per-district building counts and building detail display only, avoiding double-counting when `District.usedLandM2` is already maintained.
+- Decision: District free land is displayed as `max(allocatedLandM2 - usedLandM2, 0)`, while unallocated usable land is `max(Kingdom.usableLandM2 - sum(District.allocatedLandM2), 0)`.

@@ -91,6 +91,7 @@ Notes:
 - District type is unique per kingdom.
 - Starting district allocations remain locked in `docs/01_LOCKED_DECISIONS.md`.
 - Sprint 1 Task 14 seeds all five districts and sets each district `usedLandM2` from the starter buildings assigned to that district.
+- Sprint 3 Task S3-007 uses `District.usedLandM2` as the canonical dashboard source for district used/free land. `BuildingInstance` rows are used for per-district building counts and building detail display, not for recalculating or double-counting district used land.
 
 ### ResourceStockpile
 
@@ -270,6 +271,8 @@ The read model derives display-only values such as free land, district free land
 Sprint 2 Task S2-008 expands the dashboard read model so per-tick Money, Food, Manpower, Knowledge, and Food consumption estimates reuse `packages/game` formulas. The dashboard does not store these estimates as new database columns.
 
 Sprint 3 Task S3-006 expands the dashboard read model with server-computed land purchase options. Package prices, affordability, cooldown state, and disabled reasons are derived from `Kingdom`, `ResourceStockpile`, `LandPurchaseCooldown`, and `packages/game` helpers; the client UI does not compute or submit those values.
+
+Sprint 3 Task S3-007 expands the dashboard read model with kingdom-level land totals and per-district allocated/used/free land. District free land is displayed as `max(allocatedLandM2 - usedLandM2, 0)`, usage percentage is derived from district allocation and used land, and unallocated usable land is `max(Kingdom.usableLandM2 - sum(District.allocatedLandM2), 0)`.
 
 ## Admin Read Model
 

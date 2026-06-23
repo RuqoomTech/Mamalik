@@ -96,6 +96,15 @@ export type DashboardSourceKingdom = {
 };
 
 export type FoodStatusLevel = "healthy" | "warning" | "shortage";
+export type DistrictLandStatus = "healthy" | "nearly-full" | "full";
+
+export type KingdomLandTotals = {
+  totalUsableLandM2: number;
+  totalDistrictAllocatedLandM2: number;
+  totalDistrictUsedLandM2: number;
+  totalDistrictFreeLandM2: number;
+  unallocatedUsableLandM2: number;
+};
 
 export type KingdomDashboardData = {
   kingdom: {
@@ -151,6 +160,7 @@ export type KingdomDashboardData = {
     ticksUntilEmpty: number | null;
     estimatedTimeUntilEmpty: string | null;
   };
+  landTotals: KingdomLandTotals;
   districts: Array<{
     id: string;
     type: string;
@@ -158,6 +168,10 @@ export type KingdomDashboardData = {
     allocatedLandM2: number;
     usedLandM2: number;
     freeLandM2: number;
+    usagePercentage: number;
+    buildingCount: number;
+    status: DistrictLandStatus;
+    statusLabel: string;
   }>;
   buildings: Array<{
     id: string;
@@ -234,6 +248,81 @@ const unitLabels = new Map<string, string>(
 
 export function calculateFreeLandM2(totalLandM2: number, usedLandM2: number): number {
   return totalLandM2 - usedLandM2;
+}
+
+export function calculateClampedFreeLandM2(totalLandM2: number, usedLandM2: number): number {
+  return Math.max(calculateFreeLandM2(totalLandM2, usedLandM2), 0);
+}
+
+export function calculateDistrictUsagePercentage(
+  allocatedLandM2: number,
+  usedLandM2: number,
+): number {
+  if (allocatedLandM2 <= 0) {
+    return usedLandM2 > 0 ? 100 : 0;
+  }
+
+  return Math.min(100, Math.round((Math.max(usedLandM2, 0) / allocatedLandM2) * 100));
+}
+
+export function getDistrictLandStatus(
+  allocatedLandM2: number,
+  usedLandM2: number,
+): { status: DistrictLandStatus; label: string } {
+  if (usedLandM2 > 0 && (allocatedLandM2 <= 0 || usedLandM2 >= allocatedLandM2)) {
+    return { status: "full", label: "Full/overused" };
+  }
+
+  const usagePercentage = calculateDistrictUsagePercentage(allocatedLandM2, usedLandM2);
+
+  if (usagePercentage >= 90) {
+    return { status: "nearly-full", label: "Nearly full" };
+  }
+
+  return { status: "healthy", label: "Healthy" };
+}
+
+export function calculateKingdomLandTotals({
+  totalUsableLandM2,
+  districts,
+}: {
+  totalUsableLandM2: number;
+  districts: Array<{
+    allocatedLandM2: number;
+    usedLandM2: number;
+  }>;
+}): KingdomLandTotals {
+  const totalDistrictAllocatedLandM2 = districts.reduce(
+    (total, district) => total + district.allocatedLandM2,
+    0,
+  );
+  const totalDistrictUsedLandM2 = districts.reduce(
+    (total, district) => total + district.usedLandM2,
+    0,
+  );
+  const totalDistrictFreeLandM2 = districts.reduce(
+    (total, district) =>
+      total + calculateClampedFreeLandM2(district.allocatedLandM2, district.usedLandM2),
+    0,
+  );
+
+  return {
+    totalUsableLandM2,
+    totalDistrictAllocatedLandM2,
+    totalDistrictUsedLandM2,
+    totalDistrictFreeLandM2,
+    unallocatedUsableLandM2: Math.max(totalUsableLandM2 - totalDistrictAllocatedLandM2, 0),
+  };
+}
+
+export function countBuildingsByDistrictType(
+  buildings: Array<{ district: { type: string } }>,
+): Record<string, number> {
+  return buildings.reduce<Record<string, number>>((counts, building) => {
+    counts[building.district.type] = (counts[building.district.type] ?? 0) + 1;
+
+    return counts;
+  }, {});
 }
 
 export function calculateNetFoodPerTick(generatedFood: number, consumedFood: number): number {
@@ -442,6 +531,30 @@ export function shapeKingdomDashboardData(
     districtType: building.district.type,
     districtLabel: getDistrictLabel(building.district.type),
   }));
+  const buildingCountsByDistrictType = countBuildingsByDistrictType(source.buildings);
+  const shapedDistricts = sortedDistricts.map((district) => {
+    const status = getDistrictLandStatus(district.allocatedLandM2, district.usedLandM2);
+
+    return {
+      id: district.id,
+      type: district.type,
+      label: getDistrictLabel(district.type),
+      allocatedLandM2: district.allocatedLandM2,
+      usedLandM2: district.usedLandM2,
+      freeLandM2: calculateClampedFreeLandM2(district.allocatedLandM2, district.usedLandM2),
+      usagePercentage: calculateDistrictUsagePercentage(
+        district.allocatedLandM2,
+        district.usedLandM2,
+      ),
+      buildingCount: buildingCountsByDistrictType[district.type] ?? 0,
+      status: status.status,
+      statusLabel: status.label,
+    };
+  });
+  const landTotals = calculateKingdomLandTotals({
+    totalUsableLandM2: source.usableLandM2,
+    districts: sortedDistricts,
+  });
 
   return {
     kingdom: {
@@ -473,14 +586,8 @@ export function shapeKingdomDashboardData(
       knowledge: generationBreakdown.knowledge,
     },
     foodStatus: getFoodStatus(resources.food, netFoodPerTick),
-    districts: sortedDistricts.map((district) => ({
-      id: district.id,
-      type: district.type,
-      label: getDistrictLabel(district.type),
-      allocatedLandM2: district.allocatedLandM2,
-      usedLandM2: district.usedLandM2,
-      freeLandM2: calculateFreeLandM2(district.allocatedLandM2, district.usedLandM2),
-    })),
+    landTotals,
+    districts: shapedDistricts,
     buildings: shapedBuildings,
     activeConstruction: shapedBuildings
       .filter((building) => building.status === "CONSTRUCTING" || building.status === "UPGRADING")
