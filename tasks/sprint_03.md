@@ -11,7 +11,7 @@ Players can buy land packages and reassign unused land between districts.
 - [x] S3-003: Add land package cooldown persistence and validation.
 - [x] S3-004: Add land purchase API.
 - [x] S3-005: Add land purchase report.
-- [ ] S3-006: Add land package dashboard UI.
+- [x] S3-006: Add land package dashboard UI.
 - [ ] S3-007: Add district allocated/used/free land view.
 - [ ] S3-008: Add unused land reassignment flow.
 
@@ -31,4 +31,5 @@ Players can buy land packages and reassign unused land between districts.
 - Existing `LandPurchaseCooldown` persistence from Sprint 1 is reused; no duplicate cooldown model or migration was added.
 - S3-004 adds the authenticated land purchase Server Action and transaction helper.
 - S3-005 is complete because the purchase transaction creates `LAND_PURCHASE` reports.
-- The dashboard purchase UI and district reassignment remain pending.
+- S3-006 adds the dashboard land purchase panel using server-computed options and the existing purchase Server Action.
+- District land view and district reassignment remain pending.

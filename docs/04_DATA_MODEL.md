@@ -263,10 +263,13 @@ The dashboard reads:
 - `TrainingQueueItem`
 - `Report`
 - `TickLog`
+- `LandPurchaseCooldown`
 
 The read model derives display-only values such as free land, district free land, enum labels, beginner-protection remaining time, per-tick economy estimates, Food status, queue remaining time, report summaries, and latest tick activity. It does not mutate game state.
 
 Sprint 2 Task S2-008 expands the dashboard read model so per-tick Money, Food, Manpower, Knowledge, and Food consumption estimates reuse `packages/game` formulas. The dashboard does not store these estimates as new database columns.
+
+Sprint 3 Task S3-006 expands the dashboard read model with server-computed land purchase options. Package prices, affordability, cooldown state, and disabled reasons are derived from `Kingdom`, `ResourceStockpile`, `LandPurchaseCooldown`, and `packages/game` helpers; the client UI does not compute or submit those values.
 
 ## Admin Read Model
 

@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 3 - Land Buying + District Management
-- Active task sequence: Sprint 1 and Sprint 2 are complete. Sprint 3 has completed land purchase package constants, hybrid pricing, cooldown helpers, validation helpers, the land purchase Server Action, and land purchase reports. Next active task is the dashboard land purchase UI.
+- Active task sequence: Sprint 1 and Sprint 2 are complete. Sprint 3 has completed land purchase package constants, hybrid pricing, cooldown helpers, validation helpers, the land purchase Server Action, land purchase reports, and the dashboard land purchase UI. Next active task is the district allocated/used/free land view.
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -215,6 +215,7 @@ v0.1 must include:
 - The initial v0.1 land price formula is `ceil(packageSizeM2 * 2 * kingdomSizeMultiplier * areaMultiplier)`, with unknown area types defaulting to `STANDARD` until real area classification exists.
 - Existing `LandPurchaseCooldown` persistence is reused for Sprint 3; no duplicate cooldown model is added.
 - Sprint 3 land purchases use a Next.js Server Action backed by `apps/web/src/lib/kingdom/land-purchase.ts`. The action accepts only a package key, then reloads kingdom, stockpile, and cooldown state server-side before recalculating price/cooldown and mutating Money, usable land, cooldown rows, and `LAND_PURCHASE` reports in a transaction.
+- The dashboard land purchase UI uses server-computed options from `apps/web/src/lib/kingdom/land-purchase-options.ts`; the client panel submits only package keys to the Server Action and never submits prices, cooldowns, resource values, land values, or area type.
 - Land purchases currently increase gameplay usable land credit only. Real visible-border expansion and polygon recalculation remain Sprint 4 spatial work.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - Next.js `outputFileTracingRoot` is configured to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.

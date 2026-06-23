@@ -70,6 +70,8 @@ Sprint 2 dashboard data stays server-side and read-only. `apps/web/src/lib/kingd
 
 Sprint 3 land purchase mutations use a Next.js Server Action that calls a server-side helper in `apps/web/src/lib/kingdom/land-purchase.ts`. The action accepts only a package key, re-checks authentication/kingdom ownership inside the server path, and recalculates price, cooldown, and area type server-side before mutating the database.
 
+Sprint 3 dashboard land purchase UI keeps pricing/cooldown calculation server-side. `dashboard-data.ts` shapes package options with `createLandPurchaseOptions`, and the client panel submits only `packageKey` to the Server Action.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`

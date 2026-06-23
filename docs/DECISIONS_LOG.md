@@ -210,3 +210,10 @@
 - Decision: S3-004 uses transaction-local rechecks plus conditional stockpile/cooldown updates for v0.1 concurrency safety. Row-level locking is deferred unless production behavior shows a need for stronger hardening.
 - Decision: S3-005 is complete with S3-004 because the purchase transaction creates the land purchase report.
 - Decision: Real visible-border expansion and map polygon recalculation remain Sprint 4 work; land purchase currently changes gameplay usable land credit only.
+
+## 2026-06-24 - Sprint 3 Land Purchase Dashboard UI
+
+- Decision: S3-006 adds the dashboard land purchase panel without moving pricing or cooldown formulas into React components.
+- Decision: The dashboard read model shapes package options server-side with `createLandPurchaseOptions`, including prices, affordability, cooldown state, and disabled reasons.
+- Decision: The client land purchase panel submits only `packageKey` to the existing Server Action and displays the action result. It does not submit price, land size, cooldown, current land, Money, or area type.
+- Decision: Successful purchases rely on the existing Server Action revalidation of `/dashboard` so Money, usable land, cooldowns, and latest reports refresh from database state.

@@ -22,6 +22,7 @@ const sourceKingdom: DashboardSourceKingdom = {
   usedLandM2: 7_000,
   visibleAreaM2: 50_000,
   population: 1_000,
+  areaType: "STANDARD",
   resourceStockpile: {
     money: 10_000,
     food: 5_000,
@@ -116,6 +117,12 @@ const sourceKingdom: DashboardSourceKingdom = {
       },
       readAt: null,
       createdAt: new Date("2026-06-17T00:20:00.000Z"),
+    },
+  ],
+  landCooldowns: [
+    {
+      packageSizeM2: 1_000,
+      availableAt: new Date("2026-06-17T06:00:00.000Z"),
     },
   ],
 };
@@ -239,6 +246,45 @@ test("shapes dashboard data with economy and tick read models", () => {
   assert.equal(
     dashboardData.reports[0].bodySummary,
     "Unit Type: Infantry - Quantity: 10 - Completed Tick Key: 2026-06-17T00:10:00.000Z",
+  );
+  assert.deepEqual(
+    dashboardData.landPurchaseOptions.map((option) => ({
+      key: option.packageKey,
+      price: option.price.totalPrice,
+      canBuyNow: option.canBuyNow,
+      disabledReason: option.disabledReason,
+      cooldownRemainingMs: option.cooldownRemainingMs,
+    })),
+    [
+      {
+        key: "LAND_500",
+        price: 1_000,
+        canBuyNow: true,
+        disabledReason: null,
+        cooldownRemainingMs: 0,
+      },
+      {
+        key: "LAND_1000",
+        price: 2_000,
+        canBuyNow: false,
+        disabledReason: "COOLDOWN_ACTIVE",
+        cooldownRemainingMs: 6 * 60 * 60 * 1000,
+      },
+      {
+        key: "LAND_5000",
+        price: 10_000,
+        canBuyNow: true,
+        disabledReason: null,
+        cooldownRemainingMs: 0,
+      },
+      {
+        key: "LAND_10000",
+        price: 20_000,
+        canBuyNow: false,
+        disabledReason: "INSUFFICIENT_MONEY",
+        cooldownRemainingMs: 0,
+      },
+    ],
   );
 });
 

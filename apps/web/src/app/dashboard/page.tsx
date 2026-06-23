@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { LandPurchasePanel } from "@/components/kingdom/LandPurchasePanel";
 import { requireUserWithKingdom } from "@/lib/auth/guards";
 import { isAdminUser } from "@/lib/auth/route-destinations";
 import {
@@ -562,6 +563,10 @@ export default async function DashboardPage() {
           />
           <SummaryCard label="Account" value={user.displayName} detail={user.email} />
         </section>
+
+        <Section title="Buy land">
+          <LandPurchasePanel options={dashboardData.landPurchaseOptions} />
+        </Section>
 
         <ResourcePanel resources={dashboardData.resources} />
         <EconomyPanel economyEstimate={dashboardData.economyEstimate} />

@@ -2,6 +2,27 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-24
+
+### Added
+
+- Added a dashboard `Buy land` panel that displays all four locked land packages with server-computed price, cooldown, affordability, availability, disabled reason, and purchase action state.
+- Added land purchase display helpers for cooldown duration, remaining cooldown, disabled reason labels, and user-facing action result messages.
+- Added dashboard read-model support for server-computed land purchase options.
+- Added focused tests for dashboard land purchase option shaping and land purchase display helpers.
+
+### Changed
+
+- Refined `AGENTS.md` into a repository contributor guide with project structure, commands, style, testing, documentation workflow, commit/PR guidance, security notes, and anti-drift rules.
+- Preserved the mandatory Mamalik v0.1 preflight, canonical documentation sources, documentation update loop, and no-v0.2 scope guard.
+- Marked S3-006 complete in the active Sprint 3 docs and task trackers.
+- Updated the dashboard status note so land buying is no longer listed as future work.
+
+### Deferred
+
+- District allocated/used/free land view and unused-land reassignment remain pending Sprint 3 tasks.
+- Real visible-border expansion and polygon recalculation remain Sprint 4 work.
+
 ## 2026-06-23
 
 ### Added

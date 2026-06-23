@@ -11,9 +11,13 @@ import {
   type UnitTypeLike,
 } from "@mamalik/game";
 import { getPrismaClient } from "@/lib/db/client";
+import {
+  createLandPurchaseOptions,
+  type LandPurchaseOption,
+} from "@/lib/kingdom/land-purchase-options";
 
 export const DASHBOARD_STATUS_NOTE =
-  "Land buying, scouting, combat, alliances, rankings, and player-facing start actions are coming in later v0.1 work.";
+  "District reassignment, scouting, combat, alliances, rankings, and player-facing start actions are coming in later v0.1 work.";
 
 const LOW_FOOD_TICK_THRESHOLD = 6;
 
@@ -39,6 +43,7 @@ export type DashboardSourceKingdom = {
   usedLandM2: number;
   visibleAreaM2: number;
   population: number;
+  areaType: string;
   resourceStockpile: {
     money: number;
     food: number;
@@ -83,6 +88,10 @@ export type DashboardSourceKingdom = {
     bodyJson: unknown;
     readAt: Date | null;
     createdAt: Date;
+  }>;
+  landCooldowns?: Array<{
+    packageSizeM2: number;
+    availableAt: Date;
   }>;
 };
 
@@ -209,6 +218,7 @@ export type KingdomDashboardData = {
     read: boolean;
     createdAt: Date;
   }>;
+  landPurchaseOptions: LandPurchaseOption[];
 };
 
 const districtOrder: string[] = STARTING_DISTRICTS.map((district) => district.type);
@@ -521,6 +531,19 @@ export function shapeKingdomDashboardData(
       read: report.readAt !== null,
       createdAt: report.createdAt,
     })),
+    landPurchaseOptions: createLandPurchaseOptions({
+      kingdom: {
+        usableLandM2: source.usableLandM2,
+        areaType: source.areaType,
+      },
+      stockpile: source.resourceStockpile
+        ? {
+            money: source.resourceStockpile.money,
+          }
+        : null,
+      cooldowns: source.landCooldowns ?? [],
+      now,
+    }),
   };
 }
 
@@ -542,6 +565,7 @@ export async function getKingdomDashboardData(
         usedLandM2: true,
         visibleAreaM2: true,
         population: true,
+        areaType: true,
         resourceStockpile: {
           select: {
             money: true,
@@ -609,6 +633,12 @@ export async function getKingdomDashboardData(
             bodyJson: true,
             readAt: true,
             createdAt: true,
+          },
+        },
+        landCooldowns: {
+          select: {
+            packageSizeM2: true,
+            availableAt: true,
           },
         },
       },

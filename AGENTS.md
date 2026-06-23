@@ -1,105 +1,59 @@
-# AGENTS.md
+# Repository Guidelines
 
-Persistent operating instructions for Codex agents working on Mamalik / ممالك.
+## Project Structure & Module Organization
 
-## Project Rules
+Mamalik / ممالك is a v0.1 browser-based, tick-based grand strategy MMO. Stay inside v0.1 until it is complete and accepted; v0.2 material is future-only.
 
-- Work on Mamalik v0.1 until v0.1 is complete, tested, and accepted.
-- Do not change product direction unless the user explicitly approves the change.
-- Do not implement v0.2 features during v0.1.
-- Treat temporary shortcuts as temporary and document them in `session_state.md` and the relevant docs.
-- Prefer small, reviewable changes.
+- `apps/web/`: Next.js App Router app, pages, route handlers, UI, and app-local tests.
+- `packages/db/`: Prisma schema, generated client target, migrations, and DB package checks.
+- `packages/game/`: shared gameplay constants and formulas. Keep resource, land, unit, tick, and district logic here when reusable.
+- `workers/tick-worker/`: manual/admin tick process and worker tests.
+- `docs/`: locked scope, architecture, data model, sprint plans, testing, decisions, and environment docs.
+- `tasks/`: active sprint task trackers. CSV/JSON exports are reference only.
 
-## Required Reading Before Each Task
+Archived files under `docs/archive/` and `tasks/archive/` are read-only historical references.
 
-Before starting any task, read:
+## Required Preflight For Every Task
 
-1. `AGENTS.md`
-2. `context.md`
-3. `session_state.md`
-4. `docs/01_LOCKED_DECISIONS.md`
-5. `docs/02_V0_1_SCOPE.md`
-6. The current sprint file named in `session_state.md`
+Before editing, read `AGENTS.md`, `context.md`, `session_state.md`, `docs/01_LOCKED_DECISIONS.md`, `docs/02_V0_1_SCOPE.md`, and the current sprint file named in `session_state.md`. If a required file is missing, create it before coding.
 
-If a required file is missing, create it before coding.
+Canonical active sources include `context.md`, `session_state.md`, `CHANGELOG.md`, `docs/01_LOCKED_DECISIONS.md`, `docs/02_V0_1_SCOPE.md`, `docs/03_TECH_ARCHITECTURE.md`, `docs/04_DATA_MODEL.md`, `docs/05_SPRINT_PLAN.md`, `docs/DEFINITION_OF_DONE.md`, `docs/TESTING_STRATEGY.md`, `docs/DECISIONS_LOG.md`, `docs/AUTHENTICATION.md`, `docs/DATABASE.md`, `docs/ENVIRONMENT.md`, sprint docs `docs/sprints/SPRINT_01_*` through `SPRINT_06_*`, and task files `tasks/backlog.md` plus `tasks/sprint_01.md` through `tasks/sprint_06.md`.
 
-## Canonical Documentation Sources
+## Build, Test, And Development Commands
 
-Use these files as the active source of truth for v0.1 work:
+- `npm run dev`: run the web app locally.
+- `npm run build`: production build for `apps/web`.
+- `npm run lint`: ESLint for the web app.
+- `npm run typecheck`: web and shared game TypeScript checks.
+- `npm run test`: web, game, and worker tests.
+- `npm run db:validate`: validate Prisma schema.
+- `npm run db:typecheck`: typecheck the DB package.
+- `npm run game:test` / `npm run game:typecheck`: shared game logic checks.
+- `npm run tick:test` / `npm run tick:typecheck`: tick worker checks.
+- `npm run tick:once`: run one real tick against the configured database.
 
-- `AGENTS.md`
-- `context.md`
-- `session_state.md`
-- `CHANGELOG.md`
-- `docs/01_LOCKED_DECISIONS.md`
-- `docs/02_V0_1_SCOPE.md`
-- `docs/03_TECH_ARCHITECTURE.md`
-- `docs/04_DATA_MODEL.md`
-- `docs/05_SPRINT_PLAN.md`
-- `docs/DEFINITION_OF_DONE.md`
-- `docs/TESTING_STRATEGY.md`
-- `docs/DECISIONS_LOG.md`
-- `docs/AUTHENTICATION.md`
-- `docs/DATABASE.md`
-- `docs/ENVIRONMENT.md`
-- `docs/BRAND_ASSETS.md`
-- `docs/GOOGLE_OAUTH_PUBLICATION_CHECKLIST.md`
-- `docs/sprints/SPRINT_01_FOUNDATION.md`
-- `docs/sprints/SPRINT_02_TICK_ENGINE.md`
-- `docs/sprints/SPRINT_03_LAND_DISTRICTS.md`
-- `docs/sprints/SPRINT_04_MAP_VALIDATION.md`
-- `docs/sprints/SPRINT_05_COMBAT_SCOUTING.md`
-- `docs/sprints/SPRINT_06_ALLIANCES_REPORTS_RANKINGS.md`
-- `tasks/backlog.md`
-- `tasks/sprint_01.md`
-- `tasks/sprint_02.md`
-- `tasks/sprint_03.md`
-- `tasks/sprint_04.md`
-- `tasks/sprint_05.md`
-- `tasks/sprint_06.md`
+## Coding Style & Naming Conventions
 
-Archived documentation and task files under `docs/archive/` and `tasks/archive/` are read-only historical references. Do not use archived files to determine active scope, active tasks, or implementation details.
+Use TypeScript strictly. Prefer clear names over clever abstractions. Keep domain logic out of UI components and reuse `packages/game` for formulas. Validate all game actions server-side; never trust client-submitted resources, land, units, prices, cooldowns, or ownership. Keep gameplay usable land credit separate from visible map geometry.
 
-v0.2 files remain future-only references until v0.1 is complete and accepted. Do not implement v0.2 work during v0.1.
+Use existing naming patterns: stable package keys like `LAND_500`, uppercase Prisma enum values, focused helpers such as `getDashboardData`, and `*.test.ts` files beside the owning logic.
 
-Export/reference backlog files such as `tasks/full_v0_1_backlog.*` and `tasks/full_v0_2_backlog.*` are reference exports, not active task trackers.
+## Testing Guidelines
+
+Run checks relevant to the change and document anything skipped. For code changes, prefer `npm run test`, `npm run typecheck`, `npm run lint`, `npm run build`, `npm run db:validate`, and package-specific checks. For DB or gameplay mutations, add focused tests and record manual smoke results when a live DB is used.
 
 ## Documentation Update Loop
 
-After every completed task, update:
+After every completed task, update `session_state.md`, `CHANGELOG.md`, relevant `docs/` files, and relevant `tasks/` files. Update `context.md` only for permanent product, architecture, workflow, or convention changes. Temporary shortcuts must be documented as temporary.
 
-- `context.md` when a permanent product, architecture, or workflow decision changes.
-- `session_state.md` with current date/time, task completed, files changed, commands run, test status, known issues, and next recommended task.
-- Relevant files under `docs/`.
-- Relevant sprint/task files under `docs/sprints/` and `tasks/`.
-- `CHANGELOG.md` with Added, Changed, Fixed, Deferred, and Known issues entries where applicable.
+## Commit & Pull Request Guidelines
 
-## Testing Rules
+Keep commits small and reviewable. Use concise imperative messages, for example `Implement land purchase mutation`. PRs should include scope, files changed, checks run, manual smoke notes, known issues, and the next recommended task. Do not bundle unrelated sprint work.
 
-- Always run relevant checks for the work completed.
-- For code changes, prefer typecheck, lint, unit tests, Prisma validation, migration validation, and manual smoke notes as applicable.
-- If no automated checks exist yet, document why in `session_state.md`.
-- Never claim a check passed unless it was actually run.
+## Security & Configuration Tips
 
-## Engineering Rules
-
-- Use TypeScript strictly once application code exists.
-- Keep domain logic in reusable modules where possible.
-- Do not hide game calculations inside UI components.
-- Use clear names over clever abstractions.
-- Validate all game actions server-side.
-- Never trust client-submitted resource, land, unit, or price values.
-- Keep gameplay land credit separate from visible map geometry.
-- Use simple v0.1-compatible implementations that can evolve.
+Commit environment templates only. Real secrets belong in ignored files such as `apps/web/.env.local`. Public variables must use `NEXT_PUBLIC_`; server secrets such as `DATABASE_URL`, `SESSION_SECRET`, OAuth credentials, and `ADMIN_EMAILS` must remain server-side.
 
 ## Anti-Drift Checklist
 
-Before every response, verify:
-
-- Work is inside v0.1.
-- Work is inside the current sprint.
-- `context.md` and `session_state.md` have been considered.
-- v0.2-only features are deferred.
-- Relevant docs were updated.
-- Relevant checks were run or explicitly documented as unavailable.
-- The next task is clear.
+Before responding, verify: work stayed inside v0.1 and the current sprint; v0.2 features were deferred; relevant docs and task files were updated; checks were run or explicitly documented; and the next task is clear.

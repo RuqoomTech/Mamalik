@@ -51,6 +51,7 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - [x] A land purchase report is created.
 - [x] Player cannot buy if cooldown is active.
 - [x] Player cannot buy if Money is insufficient.
+- [x] Player can view land package options and buy available packages from the dashboard.
 - [ ] Player can move unused land between districts.
 - [ ] Used building land cannot be moved.
 
@@ -61,7 +62,7 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - [x] S3-003: Land package cooldown and validation helpers.
 - [x] S3-004: Land purchase API.
 - [x] S3-005: Land purchase report.
-- [ ] S3-006: Land package dashboard UI.
+- [x] S3-006: Land package dashboard UI.
 - [ ] S3-007: District allocated/used/free land view.
 - [ ] S3-008: Unused land reassignment flow.
 
@@ -89,3 +90,6 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - S3-004 also adds a read-only purchase-options helper for the future dashboard UI. The helper derives price, affordability, cooldown state, and disabled reasons from database state plus `packages/game` formulas.
 - S3-004 does not recalculate real map borders or visible polygons; Sprint 4 still owns real spatial validation and border expansion.
 - S3-005 is complete because the S3-004 transaction creates the land purchase report with package key, package size, price paid, area type, previous/new usable land, cooldown, and price breakdown.
+- S3-006 adds a dashboard `Buy land` section. The dashboard read model computes all package prices, cooldown states, affordability, and disabled reasons server-side through `createLandPurchaseOptions`.
+- The S3-006 client component submits only `packageKey` to the existing Server Action and displays success/failure state from the action result.
+- After a successful purchase, `/dashboard` is revalidated so Money, usable land, cooldowns, and latest `LAND_PURCHASE` report display update on refresh/re-render.

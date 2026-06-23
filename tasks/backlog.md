@@ -53,7 +53,7 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S3-003: Add land package cooldown persistence and validation.
 - [x] S3-004: Add land purchase API.
 - [x] S3-005: Add land purchase report.
-- [ ] S3-006: Add land package dashboard UI.
+- [x] S3-006: Add land package dashboard UI.
 - [ ] S3-007: Add district allocated/used/free land view.
 - [ ] S3-008: Add unused land reassignment flow.
 

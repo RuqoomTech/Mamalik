@@ -1,5 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {
+  formatCooldownAvailableAt,
+  formatCooldownRemaining,
+  formatLandPurchaseCooldown,
+  getLandPurchaseDisabledReasonLabel,
+  getPurchaseLandResultMessage,
+} from "./land-purchase-display";
 import { createLandPurchaseOptions } from "./land-purchase-options";
 import {
   purchaseLandForUser,
@@ -217,6 +224,37 @@ test("land purchase options expose affordability and cooldown state", () => {
     ],
   );
   assert.equal(options[1].cooldownRemainingMs, 60 * 60 * 1000);
+});
+
+test("land purchase display helpers format cooldown and disabled states", () => {
+  assert.equal(formatLandPurchaseCooldown(0), "No cooldown");
+  assert.equal(formatLandPurchaseCooldown(6), "6 hours");
+  assert.equal(formatCooldownRemaining(90 * 60 * 1000), "~1 hour, 30 minutes");
+  assert.equal(formatCooldownAvailableAt("2026-06-23T18:00:00.000Z"), "Jun 23, 2026, 6:00 PM UTC");
+  assert.equal(getLandPurchaseDisabledReasonLabel(null), "Available");
+  assert.equal(getLandPurchaseDisabledReasonLabel("INSUFFICIENT_MONEY"), "Not enough Money");
+  assert.equal(getLandPurchaseDisabledReasonLabel("COOLDOWN_ACTIVE"), "Cooldown active");
+});
+
+test("land purchase result messages are user-facing and stable", () => {
+  assert.equal(
+    getPurchaseLandResultMessage({
+      ok: true,
+      packageKey: "LAND_500",
+      packageSizeM2: 500,
+      pricePaid: 1_000,
+      newUsableLandM2: 50_500,
+    }),
+    "Purchased 500 m2 for 1,000 Money. Usable land is now 50,500 m2.",
+  );
+  assert.equal(
+    getPurchaseLandResultMessage({
+      ok: false,
+      reason: "INVALID_PACKAGE",
+      message: "Choose a valid land package.",
+    }),
+    "Choose a valid land package.",
+  );
 });
 
 function createFakeState(overrides: Partial<FakeState> = {}): FakeState {
