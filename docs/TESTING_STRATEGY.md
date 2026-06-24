@@ -66,6 +66,14 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Sprint 3 closure checks should include the full root test/typecheck/lint/build suite, database validation/typecheck, migration deploy verification against the configured database, game and worker tests/typechecks, and `git diff --check`.
 - Browser smoke for land purchase and district allocation remains recommended when a browser session is available, but helper/action tests plus migration verification are the baseline for Sprint 3 closure.
 
+## Sprint 4 Testing Priorities
+
+- Map coordinate tests should verify latitude/longitude validation, radius approximation, visible-area tolerance classification, and fallback behavior without requiring a live database.
+- PostGIS helper smoke should use the configured database when available to confirm generated GeoJSON, measured area near 50,000 m2, and overlap detection against existing kingdom borders.
+- Route/API smoke for `/api/kingdom/validate-location` requires a signed-in no-kingdom user because the endpoint enforces authentication and one-kingdom-per-user behavior.
+- Kingdom creation smoke should confirm the server reruns PostGIS validation and stores the server-generated `visibleBorderGeojson`; client-submitted preview polygons remain untrusted.
+- Water and restricted-zone checks must not be marked complete until their datasets/checks exist.
+
 ## Documentation Requirement
 
 Every task must record:

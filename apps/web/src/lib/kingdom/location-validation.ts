@@ -35,14 +35,24 @@ export type LocationValidationReason =
   | "longitude-out-of-range"
   | "user-already-has-kingdom"
   | "too-close-to-existing-kingdom"
-  | "unauthenticated";
+  | "unauthenticated"
+  | "border-generation-failed";
 
 export type LocationValidationResponse = {
+  ok?: boolean;
   valid: boolean;
   reason: LocationValidationReason | null;
+  center?: LocationCoordinates | null;
   usableLandM2: number;
   visibleAreaM2: number | null;
   previewPolygon: PreviewPolygon | null;
+  toleranceStatus?: "STRICT" | "LOOSE" | "FALLBACK" | null;
+  overlap?: {
+    overlaps: boolean;
+    overlappingKingdomCount: number;
+  } | null;
+  waterCheck?: "NOT_IMPLEMENTED";
+  restrictedZoneCheck?: "NOT_IMPLEMENTED";
   suggestions: LocationSuggestion[];
 };
 
@@ -203,11 +213,17 @@ export function createInvalidLocationResponse(
   suggestions: LocationSuggestion[] = [],
 ): LocationValidationResponse {
   return {
+    ok: false,
     valid: false,
     reason,
+    center: null,
     usableLandM2: STARTING_USABLE_LAND_M2,
     visibleAreaM2: null,
     previewPolygon: null,
+    toleranceStatus: null,
+    overlap: null,
+    waterCheck: "NOT_IMPLEMENTED",
+    restrictedZoneCheck: "NOT_IMPLEMENTED",
     suggestions,
   };
 }
@@ -224,11 +240,20 @@ export function validateTemporaryKingdomLocation(
   }
 
   return {
+    ok: true,
     valid: true,
     reason: null,
+    center: coordinates,
     usableLandM2: STARTING_USABLE_LAND_M2,
     visibleAreaM2: TEMPORARY_VISIBLE_AREA_M2,
     previewPolygon: createTemporaryPreviewPolygon(coordinates),
+    toleranceStatus: "STRICT",
+    overlap: {
+      overlaps: false,
+      overlappingKingdomCount: 0,
+    },
+    waterCheck: "NOT_IMPLEMENTED",
+    restrictedZoneCheck: "NOT_IMPLEMENTED",
     suggestions: [],
   };
 }

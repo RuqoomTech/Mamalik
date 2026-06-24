@@ -41,6 +41,8 @@ function formatReason(reason: string | null): string {
       return "Longitude must be between -180 and 180.";
     case "unauthenticated":
       return "Sign in before validating a kingdom location.";
+    case "border-generation-failed":
+      return "The selected point could not generate a valid border preview.";
     default:
       return "Location validation failed.";
   }
@@ -240,10 +242,13 @@ export function KingdomLocationMap({
 
           {validationResult?.valid ? (
             <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-              <p className="font-medium">Location is valid for the Sprint 1 stub.</p>
+              <p className="font-medium">Location has a valid border preview.</p>
               <p className="mt-1">
                 Usable land: {validationResult.usableLandM2.toLocaleString()} m2
               </p>
+              {validationResult.toleranceStatus ? (
+                <p className="mt-1">Border tolerance: {validationResult.toleranceStatus}</p>
+              ) : null}
             </div>
           ) : null}
 
@@ -288,7 +293,7 @@ export function KingdomLocationMap({
           <ul className="mt-3 space-y-2 text-sm text-[#5f665d]">
             <li>Kingdoms start with 50,000 m2 usable land.</li>
             <li>The selected location must be valid land.</li>
-            <li>Final visible borders and real land validation arrive in Sprint 4.</li>
+            <li>Visible borders are generated separately from gameplay usable land.</li>
           </ul>
         </section>
       </aside>

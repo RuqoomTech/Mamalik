@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test src/lib/auth/*.test.ts src/lib/kingdom/*.test.ts src/lib/admin/*.test.ts",
+    "test": "tsx --test src/lib/auth/*.test.ts src/lib/kingdom/*.test.ts src/lib/admin/*.test.ts src/lib/map/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -241,3 +241,12 @@
 - Decision: Row-level locking is deferred. Sprint 3 keeps transactions, server-side rechecks, conditional stockpile/cooldown updates, and a serializable allocation transaction as the v0.1 safety baseline.
 - Decision: Browser smoke for the latest dashboard land UI remains recommended but is not a Sprint 4 blocker when helper/action tests, build checks, and migration deploy verification pass.
 - Decision: Visible-border expansion, polygon recalculation, real area classification, water rejection, restricted-zone checks, overlap checks, and PostGIS spatial helpers remain Sprint 4 work.
+
+## 2026-06-24 - Sprint 4 Map Validation Foundation
+
+- Decision: The canonical Sprint 4 doc was moved from `docs/sprints/SPRINT_04_MAP_VALIDATION.md` to `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md` to match the active task naming without leaving duplicate active sprint docs.
+- Decision: S4-001 keeps `Kingdom.visibleBorderGeojson` as GeoJSON storage and does not add a native geometry column or duplicate border field.
+- Decision: S4-001 uses parameterized Prisma raw SQL with PostGIS for geodesic buffer preview generation, area measurement, GeoJSON output, and overlap checks against existing kingdom visible borders.
+- Decision: The first v0.1 visible-border generator uses a circular buffer radius of `sqrt(area / pi)` for the locked 50,000 m2 target. Later Sprint 4 tasks may improve shape quality without changing gameplay usable land credit.
+- Decision: Validation and kingdom creation both rerun server-side PostGIS validation; client-submitted polygon, area, overlap, or tolerance values are not trusted.
+- Decision: Water and restricted-zone checks remain explicit `NOT_IMPLEMENTED` placeholders until their owning Sprint 4 tasks add datasets/checks.

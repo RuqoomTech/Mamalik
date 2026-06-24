@@ -2,16 +2,18 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getPrismaClient } from "@/lib/db/client";
 import {
-  createInvalidLocationResponse,
   parseLocationCoordinates,
-  validateTemporaryKingdomLocation,
   type LocationValidationReason,
 } from "@/lib/kingdom/location-validation";
+import {
+  invalidSpatialResponse,
+  validateKingdomLocationWithPostgis,
+} from "@/lib/map/location-validation";
 
 export const runtime = "nodejs";
 
 function invalidResponse(reason: LocationValidationReason, status: number): NextResponse {
-  return NextResponse.json(createInvalidLocationResponse(reason), { status });
+  return NextResponse.json(invalidSpatialResponse(reason), { status });
 }
 
 export async function POST(request: Request) {
@@ -45,17 +47,14 @@ export async function POST(request: Request) {
     return invalidResponse(parsedCoordinates.reason, 400);
   }
 
-  const existingKingdoms = await getPrismaClient().kingdom.findMany({
-    select: {
-      centerLat: true,
-      centerLng: true,
-    },
-  });
+  try {
+    const validation = await validateKingdomLocationWithPostgis(getPrismaClient(), {
+      lat: parsedCoordinates.coordinates.lat,
+      lng: parsedCoordinates.coordinates.lng,
+    });
 
-  const validation = validateTemporaryKingdomLocation(
-    parsedCoordinates.coordinates,
-    existingKingdoms,
-  );
-
-  return NextResponse.json(validation);
+    return NextResponse.json(validation);
+  } catch {
+    return invalidResponse("border-generation-failed", 500);
+  }
 }

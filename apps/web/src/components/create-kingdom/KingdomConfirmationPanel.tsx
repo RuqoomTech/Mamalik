@@ -171,6 +171,12 @@ export function KingdomConfirmationPanel({
                 : "Pending"}
             </dd>
           </div>
+          <div>
+            <dt className="text-[#5f665d]">Tolerance</dt>
+            <dd className="font-semibold text-[#10140f]">
+              {validationResult.toleranceStatus ?? "Pending"}
+            </dd>
+          </div>
         </dl>
 
         <section className="rounded-md border border-[#dfe5dc] bg-[#f7f8f4] p-3">

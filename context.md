@@ -11,8 +11,8 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 ## Active Release
 
 - Active milestone: v0.1
-- Active sprint: Sprint 3 - Land Buying + District Management
-- Active task sequence: Sprint 1, Sprint 2, and Sprint 3 are complete from the documented feature and automated-check standpoint. Sprint 3 closed with land purchase package constants, hybrid pricing, cooldown helpers, validation helpers, the land purchase Server Action, land purchase reports, the dashboard land purchase UI, the read-only district allocated/used/free land view, allocation-only unused land flow, and closure review. Next recommended task is to start Sprint 4 Map Validation + Borders when explicitly requested.
+- Active sprint: Sprint 4 - Map Validation + Borders
+- Active task sequence: Sprint 1, Sprint 2, and Sprint 3 are complete from the documented feature and automated-check standpoint. Sprint 4 has started with S4-001, replacing the temporary border preview/proximity foundation with PostGIS-backed preview polygon generation, area measurement, and overlap checks while keeping water/restricted-zone datasets staged.
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -222,6 +222,9 @@ v0.1 must include:
 - District allocation creates `DISTRICT_ALLOCATION` reports. Migration `000005_district_allocation_report_type` adds the report enum value.
 - Sprint 3 closes with reports as the v0.1 land purchase and district allocation history surface. A dedicated `LandPurchase` table remains deferred until reporting/query needs require it.
 - Sprint 3 closes with transaction-local rechecks and conditional updates as the v0.1 land mutation concurrency baseline. Stronger row-level locking remains deferred unless production contention appears.
+- Sprint 4 spatial validation stores visible borders as GeoJSON in `Kingdom.visibleBorderGeojson` for now and uses parameterized PostGIS raw SQL to generate buffer previews, measure visible area, and test overlap against stored GeoJSON. No duplicate geometry column is added in S4-001.
+- Sprint 4 S4-001 uses a geodesic circular buffer with radius `sqrt(area / pi)` as the first v0.1 visible-border foundation. The generated visible area is classified as `STRICT`, `LOOSE`, or `FALLBACK` against the locked tolerance bands while gameplay usable land remains exact.
+- Water and restricted-zone checks remain explicit `NOT_IMPLEMENTED` placeholders until their owning Sprint 4 tasks add datasets/checks.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - Next.js `outputFileTracingRoot` is configured to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.

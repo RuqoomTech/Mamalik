@@ -8,7 +8,6 @@ import {
   STARTING_POPULATION,
   STARTING_RESOURCES,
   STARTING_USABLE_LAND_M2,
-  TEMPORARY_VISIBLE_AREA_M2,
 } from "@mamalik/game/constants";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getPrismaClient } from "@/lib/db/client";
@@ -21,9 +20,9 @@ import {
 import { validateKingdomName } from "@/lib/kingdom/kingdom-name";
 import {
   parseLocationCoordinates,
-  validateTemporaryKingdomLocation,
   type LocationValidationReason,
 } from "@/lib/kingdom/location-validation";
+import { validateKingdomLocationWithPostgis } from "@/lib/map/location-validation";
 
 export const runtime = "nodejs";
 
@@ -83,6 +82,8 @@ function coordinateErrorMessage(reason: LocationValidationReason): string {
       return "Longitude must be between -180 and 180.";
     case "too-close-to-existing-kingdom":
       return "That location is too close to an existing kingdom.";
+    case "border-generation-failed":
+      return "The selected location could not generate a valid border.";
     default:
       return "The selected location is not valid.";
   }
@@ -162,16 +163,10 @@ export async function POST(request: Request) {
         throw new Error("create-kingdom-already-owned");
       }
 
-      const existingKingdoms = await tx.kingdom.findMany({
-        select: {
-          centerLat: true,
-          centerLng: true,
-        },
+      const locationValidation = await validateKingdomLocationWithPostgis(tx, {
+        lat: coordinatesValidation.coordinates.lat,
+        lng: coordinatesValidation.coordinates.lng,
       });
-      const locationValidation = validateTemporaryKingdomLocation(
-        coordinatesValidation.coordinates,
-        existingKingdoms,
-      );
 
       if (
         !locationValidation.valid ||
@@ -205,7 +200,7 @@ export async function POST(request: Request) {
           centerLat: coordinatesValidation.coordinates.lat,
           centerLng: coordinatesValidation.coordinates.lng,
           visibleBorderGeojson: locationValidation.previewPolygon as Prisma.InputJsonValue,
-          visibleAreaM2: locationValidation.visibleAreaM2 ?? TEMPORARY_VISIBLE_AREA_M2,
+          visibleAreaM2: locationValidation.visibleAreaM2,
           usableLandM2: STARTING_USABLE_LAND_M2,
           usedLandM2: getStarterUsedLandM2(),
           population: STARTING_POPULATION,

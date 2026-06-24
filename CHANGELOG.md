@@ -6,6 +6,9 @@ All notable Mamalik project changes are recorded here.
 
 ### Added
 
+- Added Sprint 4 PostGIS map-validation foundation helpers for coordinate validation, circular border radius calculation, tolerance classification, preview polygon generation, area measurement, and overlap checks.
+- Added server-side Sprint 4 validation composition for PostGIS-generated border previews with explicit water/restricted-zone placeholder statuses.
+- Added focused map helper tests for coordinate validation, 50,000 m2 radius approximation, and tolerance classification.
 - Added `docs/sprints/SPRINT_03_REVIEW.md` with Sprint 3 closure status, acceptance criteria, checks, deferred items, migration status, and Sprint 4 readiness.
 - Added a dashboard `Buy land` panel that displays all four locked land packages with server-computed price, cooldown, affordability, availability, disabled reason, and purchase action state.
 - Added land purchase display helpers for cooldown duration, remaining cooldown, disabled reason labels, and user-facing action result messages.
@@ -22,6 +25,11 @@ All notable Mamalik project changes are recorded here.
 
 ### Changed
 
+- Started Sprint 4 and marked S4-001 complete in the active Sprint 4 docs and task trackers.
+- Moved the canonical Sprint 4 doc to `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md` to match the active task naming.
+- Updated `/api/kingdom/validate-location` to use PostGIS-backed border preview generation and overlap checks.
+- Updated `POST /api/kingdom/create` to rerun the same server-side PostGIS validation and store the server-generated preview polygon and measured visible area.
+- Updated the kingdom creation map UI wording to remove stale Sprint 1 stub language and display border tolerance status.
 - Refined `AGENTS.md` into a repository contributor guide with project structure, commands, style, testing, documentation workflow, commit/PR guidance, security notes, and anti-drift rules.
 - Preserved the mandatory Mamalik v0.1 preflight, canonical documentation sources, documentation update loop, and no-v0.2 scope guard.
 - Marked S3-006 complete in the active Sprint 3 docs and task trackers.
@@ -36,6 +44,9 @@ All notable Mamalik project changes are recorded here.
 
 ### Deferred
 
+- Real water rejection datasets/checks remain deferred to S4-002.
+- Real restricted-zone datasets/checks remain deferred to S4-003.
+- Dynamic area-type buffers, nearby suggestions, and land-purchase visible-border expansion remain pending Sprint 4+ work.
 - Moving allocated land out of a district or between districts remains deferred.
 - Real visible-border expansion and polygon recalculation remain Sprint 4 work.
 - Real map-driven area classification remains Sprint 4 work.

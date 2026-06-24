@@ -6,7 +6,7 @@ Map validation and border generation are v0.1-ready.
 
 ## Tasks
 
-- [ ] S4-001: Add PostGIS spatial helpers.
+- [x] S4-001: Add PostGIS spatial helpers.
 - [ ] S4-002: Implement water rejection.
 - [ ] S4-003: Add restricted-zone placeholder model and checks.
 - [ ] S4-004: Implement overlap checks.
@@ -23,3 +23,9 @@ Map validation and border generation are v0.1-ready.
 - [ ] Valid locations return visible polygon preview.
 - [ ] Usable land credit remains exact.
 - [ ] Nearby suggestions return for invalid clicks where possible.
+
+## Notes
+
+- S4-001 adds PostGIS-backed preview polygon generation, area measurement, and overlap checks while keeping visible border storage in `Kingdom.visibleBorderGeojson`.
+- S4-001 updates `/api/kingdom/validate-location` and `POST /api/kingdom/create` to rerun server-side PostGIS validation.
+- Water rejection, real restricted-zone checks, dynamic area-type buffers, and nearby suggestions remain pending follow-up Sprint 4 tasks.

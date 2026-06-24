@@ -71,6 +71,8 @@ Notes:
 - `centerLat` and `centerLng` are indexed for Sprint 1 temporary proximity checks.
 - Sprint 1 Task 12 reads `centerLat` and `centerLng` for a temporary TypeScript distance check. Sprint 4 replaces this with dynamic buffer/PostGIS validation.
 - Sprint 1 Task 14 creates the kingdom inside a transaction and stores the temporary preview polygon as `visibleBorderGeojson`.
+- Sprint 4 Task S4-001 keeps `visibleBorderGeojson` as the storage source for the visible border and uses PostGIS raw SQL to generate new preview GeoJSON, measure visible area in m2, and check overlap by converting stored GeoJSON with `ST_GeomFromGeoJSON`.
+- S4-001 does not add a native geometry column or spatial index. That remains a future hardening option if overlap checks become slow.
 - `usedLandM2` starts as the sum of starter building footprints.
 - `AreaType.STANDARD` is the only initial area type. More area categories may be added when land pricing needs them; area-type bonuses remain post-v0.1.
 
@@ -409,4 +411,5 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Initial district unused-land allocation validation lives in `packages/game/src/land/district-reassignment.ts`.
 - Initial land purchase mutation logic lives in `apps/web/src/lib/kingdom/land-purchase.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes price/cooldown/area type from database state before mutating Money, usable land, cooldowns, and reports.
 - Initial district allocation mutation logic lives in `apps/web/src/lib/kingdom/district-allocation.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes unallocated usable land from database state before incrementing the target district allocation.
+- Initial PostGIS visible-border helpers live in `apps/web/src/lib/map`. They generate a geodesic buffer preview from selected coordinates, classify the measured area against locked tolerance bands, and reject overlap with existing kingdom visible borders.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

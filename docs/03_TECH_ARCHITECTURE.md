@@ -74,6 +74,8 @@ Sprint 3 dashboard land purchase UI keeps pricing/cooldown calculation server-si
 
 Sprint 3 district allocation uses the same Server Action pattern. The dashboard client panel submits only `districtId` and `amountM2`; `apps/web/src/lib/kingdom/district-allocation.ts` reloads kingdom and district state server-side, recomputes unallocated usable land, and updates the target district in a transaction. It does not move land out of districts.
 
+Sprint 4 map validation introduces server-only PostGIS helpers under `apps/web/src/lib/map`. Pure tolerance/radius helpers live in `border-generation.ts`; raw SQL helpers live in `postgis.ts`; route-level composition lives in `location-validation.ts`. These helpers use parameterized raw SQL and convert stored GeoJSON to geometry for overlap checks instead of adding duplicate geometry columns in S4-001.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`
@@ -120,6 +122,8 @@ Examples of PostGIS-heavy actions:
 - dynamic buffer checks
 - valid land/water/restricted checks later
 - nearby valid location suggestions
+
+S4-001 keeps visible border storage in `Kingdom.visibleBorderGeojson` as GeoJSON and uses PostGIS functions such as `ST_Buffer`, `ST_Area`, `ST_AsGeoJSON`, `ST_GeomFromGeoJSON`, and `ST_Intersects` through parameterized Prisma raw SQL. A native geometry column or spatial index can be added later if performance requires it.
 
 ## Prisma strategy
 

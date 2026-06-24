@@ -2,128 +2,149 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-24 21:48:10 +03:00
-- Current sprint: Sprint 3 - Land Buying + District Management
-- Current sprint file: `docs/sprints/SPRINT_03_LAND_DISTRICTS.md`
-- Current task: Sprint 3 QA, stabilization, and closure review
+- Current date/time: 2026-06-24 22:34:47 +03:00
+- Current sprint: Sprint 4 - Map Validation + Borders
+- Current sprint file: `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
+- Current task: S4-001 - Map validation and border foundation
 
 ## Last Completed Task
 
-- Completed Sprint 3 QA, stabilization, and closure review.
-- Created `docs/sprints/SPRINT_03_REVIEW.md`.
-- Confirmed Sprint 3 is complete for land purchase packages, pricing, cooldowns, validation, purchase mutation, purchase reports, dashboard purchase UI, district land overview, and allocation-only unused land assignment.
-- Corrected Sprint 3 wording from moving/reassigning land between districts to allocation-only unused land management.
-- Confirmed moving allocated land out of districts remains deferred.
-- Confirmed `LAND_PURCHASE` and `DISTRICT_ALLOCATION` reports are sufficient v0.1 land-change history; a dedicated `LandPurchase` table is deferred.
-- Confirmed row-level locking remains deferred; Sprint 3 uses transactions, server-side rechecks, conditional stockpile/cooldown updates, and serializable district allocation as the v0.1 safety baseline.
-- Confirmed real visible-border expansion, polygon recalculation, real area classification, water rejection, restricted-zone checks, overlap checks, and PostGIS spatial helpers remain Sprint 4 work.
+- Started Sprint 4 and completed S4-001.
+- Moved the canonical Sprint 4 doc from `docs/sprints/SPRINT_04_MAP_VALIDATION.md` to `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md` to match the active task naming without leaving duplicate active docs.
+- Added pure map border helpers for latitude/longitude validation, circular radius approximation, and visible-area tolerance classification.
+- Added PostGIS raw SQL helpers that generate a geodesic buffer preview polygon, measure visible area in m2, return GeoJSON, and detect overlap against existing `Kingdom.visibleBorderGeojson` records.
+- Updated `POST /api/kingdom/validate-location` to use the PostGIS validation helper while preserving the existing response fields used by the UI.
+- Updated `POST /api/kingdom/create` to rerun the same server-side PostGIS validation and store the server-generated preview polygon and measured visible area.
+- Kept gameplay usable land credit separate from visible border polygon area.
+- Kept water and restricted-zone validation as explicit `NOT_IMPLEMENTED` placeholders; no datasets or final checks were added in S4-001.
+- Preserved Sprint 3 land purchase and district allocation behavior.
 
 ## Files Changed Recently
 
-Changed for Sprint 3 closure:
+Changed for Sprint 4 S4-001:
 
 - `CHANGELOG.md`
+- `apps/web/package.json`
+- `apps/web/src/app/api/kingdom/create/route.ts`
+- `apps/web/src/app/api/kingdom/validate-location/route.ts`
+- `apps/web/src/components/create-kingdom/KingdomConfirmationPanel.tsx`
+- `apps/web/src/components/map/KingdomLocationMap.tsx`
+- `apps/web/src/lib/kingdom/location-validation.ts`
+- `apps/web/src/lib/map/border-generation.test.ts`
+- `apps/web/src/lib/map/border-generation.ts`
+- `apps/web/src/lib/map/location-validation.ts`
+- `apps/web/src/lib/map/postgis.ts`
 - `context.md`
+- `docs/03_TECH_ARCHITECTURE.md`
+- `docs/04_DATA_MODEL.md`
 - `docs/DECISIONS_LOG.md`
 - `docs/TESTING_STRATEGY.md`
-- `docs/sprints/SPRINT_03_LAND_DISTRICTS.md`
-- `docs/sprints/SPRINT_03_REVIEW.md`
+- `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
+- `docs/sprints/SPRINT_04_MAP_VALIDATION.md` moved to `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
+- `packages/game/src/constants.ts`
 - `session_state.md`
 - `tasks/backlog.md`
-- `tasks/sprint_03.md`
-
-No gameplay code was changed in this closure task.
+- `tasks/sprint_04.md`
 
 ## Commands Run
 
+- `Select-String -Path C:\Users\user\.codex\memories\MEMORY.md -Pattern "Mamalik" -Context 0,4`
 - `Get-Content AGENTS.md`
 - `Get-Content context.md`
 - `Get-Content session_state.md`
 - `Get-Content docs/01_LOCKED_DECISIONS.md`
 - `Get-Content docs/02_V0_1_SCOPE.md`
+- `Get-ChildItem docs/sprints | Select-Object -ExpandProperty Name`
 - `Get-Content docs/03_TECH_ARCHITECTURE.md`
 - `Get-Content docs/04_DATA_MODEL.md`
-- `Get-Content docs/sprints/SPRINT_03_LAND_DISTRICTS.md`
-- `Get-Content tasks/sprint_03.md`
+- `Get-Content docs/sprints/SPRINT_03_REVIEW.md`
+- `Get-Content docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md` if present, otherwise read `docs/sprints/SPRINT_04_MAP_VALIDATION.md`
+- `Get-Content tasks/sprint_04.md`
 - `Get-Content tasks/backlog.md`
 - `Get-Content CHANGELOG.md`
-- `Get-Content docs/DECISIONS_LOG.md`
-- `git status --short`
-- `Get-ChildItem packages/db/prisma/migrations | Select-Object -ExpandProperty Name`
-- `Get-Content packages/game/src/land/land-packages.ts`
-- `Get-Content packages/game/src/land/land-pricing.ts`
-- `Get-Content packages/game/src/land/land-cooldowns.ts`
-- `Get-Content packages/game/src/land/land-purchase-validation.ts`
-- `Get-Content packages/game/src/land/district-reassignment.ts`
-- `Get-Content apps/web/src/lib/kingdom/land-purchase.ts`
-- `Get-Content apps/web/src/lib/kingdom/land-purchase-options.ts`
-- `Get-Content apps/web/src/lib/kingdom/district-allocation.ts`
-- `Get-Content apps/web/src/app/dashboard/actions.ts`
-- `Get-Content apps/web/src/components/kingdom/LandPurchasePanel.tsx`
-- `Get-Content apps/web/src/components/kingdom/DistrictLandAllocationPanel.tsx`
-- `Get-Content packages/db/prisma/migrations/000005_district_allocation_report_type/migration.sql`
-- `Get-Content docs/TESTING_STRATEGY.md`
-- `Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`
-- `rg -n "Sprint 3|S3-|land purchase|district" docs/sprints/SPRINT_03_LAND_DISTRICTS.md tasks/sprint_03.md tasks/backlog.md docs/TESTING_STRATEGY.md`
-- `npm run test`
+- `git mv docs/sprints/SPRINT_04_MAP_VALIDATION.md docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
+- `rg -n "validate-location|kingdom/create|visibleBorderGeojson|centerLat|centerLng|PostGIS|ST_" apps packages workers docs tasks -g '!docs/archive/**' -g '!tasks/archive/**'`
+- `Get-Content packages/db/prisma/schema.prisma`
+- `Get-Content apps/web/src/lib/kingdom/location-validation.ts`
+- `Get-Content apps/web/src/app/api/kingdom/validate-location/route.ts`
+- `Get-Content apps/web/src/app/api/kingdom/create/route.ts`
+- `Get-Content apps/web/src/lib/kingdom/location-validation.test.ts`
+- `Get-Content apps/web/src/components/map/KingdomLocationMap.tsx`
+- `Get-Content apps/web/src/components/create-kingdom/KingdomConfirmationPanel.tsx`
+- `Get-Content packages/game/src/constants.ts`
+- `Get-Content apps/web/src/lib/db/client.ts`
+- `Get-Content apps/web/package.json`
+- `Get-Content apps/web/tsconfig.json`
+- `Get-Content packages/game/src/index.ts`
+- `Get-Content workers/tick-worker/src/load-worker-env.ts`
 - `npm run typecheck`
+- `npm run test`
+- `npm exec -- tsx --eval "<PostGIS Riyadh preview smoke>"`
+- `npm exec -- tsx --eval "<PostGIS existing-kingdom overlap smoke>"`
 - `npm run lint`
 - `npm run build`
 - `npm run db:validate`
 - `npm run db:typecheck`
-- `npm run db:migrate:deploy`
 - `npm run game:test`
 - `npm run game:typecheck`
 - `npm run tick:test`
 - `npm run tick:typecheck`
-- `git diff --check`
-- `git status --short`
 
 ## Test Status
 
-- `npm run test`: initial sandbox run failed with `spawn EPERM`; rerun outside the sandbox passed with 77 web tests, 55 game tests, and 8 worker tests.
 - `npm run typecheck`: passed.
+- `npm run test`: initial sandbox run failed with `spawn EPERM`; rerun outside the sandbox passed with 80 web tests, 55 game tests, and 8 worker tests.
 - `npm run lint`: passed.
 - `npm run build`: initial sandbox run compiled but failed with `spawn EPERM`; rerun outside the sandbox passed. Existing Node `module.register()` deprecation warning remains non-blocking.
 - `npm run db:validate`: initial sandbox run failed because Prisma could not access its engine binary through the sandbox proxy; rerun outside the sandbox passed.
 - `npm run db:typecheck`: passed.
-- `npm run db:migrate:deploy`: initial sandbox run failed because Prisma could not access its engine binary through the sandbox proxy; rerun outside the sandbox passed with 5 migrations found and no pending migrations.
 - `npm run game:test`: initial sandbox run failed with `spawn EPERM`; rerun outside the sandbox passed with 55 tests.
 - `npm run game:typecheck`: passed.
 - `npm run tick:test`: initial sandbox run failed with `spawn EPERM`; rerun outside the sandbox passed with 8 tests.
 - `npm run tick:typecheck`: passed.
+- `npm run db:migrate:deploy`: not run because S4-001 did not add a migration.
 - `git diff --check`: passed; Git reported CRLF normalization warnings only.
-- `git status --short`: completed and shows only Sprint 3 closure documentation/state changes.
+- `git status --short`: completed and shows the S4-001 code/docs changes plus the Sprint 4 doc rename.
+
+## Manual PostGIS Smoke Status
+
+- Direct helper smoke with Riyadh coordinates passed against the configured PostgreSQL/PostGIS database:
+  - `valid: true`
+  - `visibleAreaM2: 49,684`
+  - `toleranceStatus: STRICT`
+  - `overlaps: false`
+  - `overlapCount: 0`
+  - `pointCount: 33`
+  - `waterCheck: NOT_IMPLEMENTED`
+  - `restrictedZoneCheck: NOT_IMPLEMENTED`
+- Direct helper smoke at an existing kingdom center passed for overlap rejection:
+  - `valid: false`
+  - `reason: too-close-to-existing-kingdom`
+  - `overlaps: true`
+  - `overlapCount: 1`
+  - `toleranceStatus: STRICT`
+- Authenticated `/api/kingdom/validate-location` route smoke and full `/create-kingdom` browser smoke were not run in this task. The direct helper smoke covered PostGIS generation/area/overlap behavior without requiring a prepared no-kingdom browser session.
 
 ## Migration Status
 
-- Confirmed migration folders exist:
-  - `000003_tick_logs`
-  - `000004_training_queue_items`
-  - `000005_district_allocation_report_type`
-- `npm run db:migrate:deploy` reached the configured PostgreSQL database and reported 5 migrations with no pending migrations.
-
-## Manual Smoke Status
-
-- Full browser visual smoke for S3-006/S3-008 was not rerun during this closure task.
-- Sprint 3 closure accepts helper/action tests plus migration verification as the baseline.
-- Browser smoke for the dashboard land purchase and district allocation UI remains recommended before or during Sprint 4 environment validation.
+- No migration was added in S4-001.
+- Visible border storage remains `Kingdom.visibleBorderGeojson` JSON/JSONB.
+- No native geometry column or spatial index was added.
 
 ## Known Issues
 
-- Moving allocated land out of a district or between districts is not implemented; Sprint 3 only allocates unallocated usable land into a district.
-- Land purchase history is stored through `LAND_PURCHASE` reports rather than a dedicated history table.
-- Real map-driven area classification is not implemented; current pricing defaults unknown/current persisted area values to `STANDARD`.
-- Land purchases currently increase gameplay usable land credit only; real visible-border expansion and polygon recalculation remain Sprint 4 work.
-- Row-level locking is deferred unless production contention requires stronger hardening.
-- Tick worker currently runs only by manual `tick:once` or admin-triggered one-tick action; automatic scheduler behavior remains deferred.
+- Water rejection is not implemented yet; it remains S4-002.
+- Restricted-zone model/checks are not implemented yet; they remain S4-003.
+- Dynamic buffer checks by area type are not implemented yet; they remain S4-005.
+- Nearby valid point suggestions still need Sprint 4 follow-up work.
+- Land purchases still increase gameplay usable land credit only; visible-border expansion from land purchases remains future Sprint 4+ work.
+- The first PostGIS preview shape is a circular buffer, not final real parcel geometry.
 - `npm run build` passes but emits the existing Node v26.1.0 deprecation warning for `module.register()`.
-- Production Google OAuth publication still requires external Google Cloud Console OAuth consent/app branding configuration with the production domain, callback URI, support email, logo, `/privacy`, and `/terms`.
 
 ## Open Questions
 
-- None for Sprint 3 closure.
+- None for S4-001.
 
 ## Next Recommended Task
 
-- Start Sprint 4 - Map Validation + Borders when explicitly requested. Recommended first Sprint 4 task: valid-land/map validation foundation with water/restricted-zone placeholders and PostGIS spatial helper planning.
+- S4-002 - Implement water rejection, or if the team wants the schema placeholder first, S4-003 - Add restricted-zone placeholder model and checks.
