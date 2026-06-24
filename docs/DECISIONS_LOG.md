@@ -232,3 +232,12 @@
 - Decision: Overused districts may receive unallocated land because that operation can repair overuse without reducing any district allocation.
 - Decision: S3-008 uses a serializable transaction and conditional target-district update for v0.1 concurrency safety. Stronger row-locking can be revisited if production contention shows a need.
 - Decision: District allocation creates `DISTRICT_ALLOCATION` reports instead of reusing `LAND_PURCHASE`, so report history distinguishes purchased land from district allocation. Migration `000005_district_allocation_report_type` adds the enum value.
+
+## 2026-06-24 - Sprint 3 Closure
+
+- Decision: Sprint 3 is complete for land package constants, deterministic pricing, cooldown validation, authenticated purchase mutation, dashboard purchase UI, district land overview, and allocation-only unused land assignment.
+- Decision: Moving allocated land out of districts or between districts remains deferred because the v0.1 Sprint 3 scope only needs adding unallocated usable land into districts.
+- Decision: `LAND_PURCHASE` and `DISTRICT_ALLOCATION` reports are sufficient v0.1 history for land changes; a dedicated `LandPurchase` table is deferred until reporting/query needs justify it.
+- Decision: Row-level locking is deferred. Sprint 3 keeps transactions, server-side rechecks, conditional stockpile/cooldown updates, and a serializable allocation transaction as the v0.1 safety baseline.
+- Decision: Browser smoke for the latest dashboard land UI remains recommended but is not a Sprint 4 blocker when helper/action tests, build checks, and migration deploy verification pass.
+- Decision: Visible-border expansion, polygon recalculation, real area classification, water rejection, restricted-zone checks, overlap checks, and PostGIS spatial helpers remain Sprint 4 work.

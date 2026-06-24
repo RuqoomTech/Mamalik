@@ -6,6 +6,7 @@ All notable Mamalik project changes are recorded here.
 
 ### Added
 
+- Added `docs/sprints/SPRINT_03_REVIEW.md` with Sprint 3 closure status, acceptance criteria, checks, deferred items, migration status, and Sprint 4 readiness.
 - Added a dashboard `Buy land` panel that displays all four locked land packages with server-computed price, cooldown, affordability, availability, disabled reason, and purchase action state.
 - Added land purchase display helpers for cooldown duration, remaining cooldown, disabled reason labels, and user-facing action result messages.
 - Added dashboard read-model support for server-computed land purchase options.
@@ -29,11 +30,16 @@ All notable Mamalik project changes are recorded here.
 - Updated the dashboard status note so land buying is no longer listed as future work.
 - Documented `District.usedLandM2` as the dashboard source for district used/free land, with buildings used only for counts and detail display.
 - Documented Sprint 3 district management as allocation-only: unallocated usable land can be added to districts, but allocated land is not moved out of districts.
+- Closed Sprint 3 from the documentation and task-tracking standpoint after confirming land purchase, reports, dashboard land display, and unused-land allocation scope.
+- Documented that reports are sufficient v0.1 land-change history and that a dedicated land purchase history table remains deferred.
+- Documented Sprint 3 transaction-local rechecks and conditional updates as the v0.1 land mutation concurrency baseline.
 
 ### Deferred
 
 - Moving allocated land out of a district or between districts remains deferred.
 - Real visible-border expansion and polygon recalculation remain Sprint 4 work.
+- Real map-driven area classification remains Sprint 4 work.
+- Stronger row-level locking is deferred unless production contention requires it.
 
 ## 2026-06-23
 

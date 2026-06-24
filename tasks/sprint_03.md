@@ -2,7 +2,7 @@
 
 ## Goal
 
-Players can buy land packages and reassign unused land between districts.
+Players can buy land packages and allocate unallocated usable land into districts.
 
 ## Tasks
 
@@ -14,6 +14,7 @@ Players can buy land packages and reassign unused land between districts.
 - [x] S3-006: Add land package dashboard UI.
 - [x] S3-007: Add district allocated/used/free land view.
 - [x] S3-008: Add unused land reassignment flow.
+- [x] Sprint 3 QA, stabilization, and closure review.
 
 ## Acceptance Criteria
 
@@ -36,3 +37,5 @@ Players can buy land packages and reassign unused land between districts.
 - S3-007 adds the read-only dashboard district land view. It uses `District.usedLandM2` for used/free land and `BuildingInstance` rows for building counts only.
 - S3-008 adds an allocation-only dashboard flow for assigning unallocated usable land into an existing district.
 - Moving allocated land out of districts or between districts remains deferred; S3-008 never reduces a district allocation.
+- Sprint 3 closure review is recorded in `docs/sprints/SPRINT_03_REVIEW.md`.
+- Reports remain the v0.1 land purchase and district allocation history surface; a dedicated land purchase history table is deferred.

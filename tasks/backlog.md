@@ -57,6 +57,10 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S3-007: Add district allocated/used/free land view.
 - [x] S3-008: Add unused land reassignment flow.
 
+## Sprint 3 Maintenance
+
+- [x] 2026-06-24: Complete Sprint 3 QA, stabilization, and closure review.
+
 ## Sprint 4 - Map Validation + Borders
 
 - [ ] See `tasks/sprint_04.md`.

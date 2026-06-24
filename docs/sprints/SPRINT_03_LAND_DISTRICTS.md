@@ -2,7 +2,7 @@
 
 ## Goal
 
-A player can buy virtual land packages using Money, obey package cooldowns, update usable land credit, and reassign unused land between districts.
+A player can buy virtual land packages using Money, obey package cooldowns, update usable land credit, and allocate unallocated usable land into districts.
 
 ## Scope
 
@@ -66,6 +66,7 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - [x] S3-006: Land package dashboard UI.
 - [x] S3-007: District allocated/used/free land view.
 - [x] S3-008: Unused land reassignment flow.
+- [x] Sprint 3 QA, stabilization, and closure review.
 
 ## Implementation Notes
 
@@ -100,3 +101,6 @@ Sprint 3 may use a placeholder area type from the kingdom record. Full map-drive
 - The S3-008 Server Action accepts only `districtId` and `amountM2`, reloads kingdom and district state server-side, recomputes unallocated land from `Kingdom.usableLandM2 - sum(District.allocatedLandM2)`, and updates the target district inside a transaction.
 - S3-008 does not move allocated land out of a district, does not reduce district allocations, and does not add construction or building placement actions.
 - S3-008 creates `DISTRICT_ALLOCATION` reports with the allocated amount, district type, previous/new allocation, and unallocated land before/after. Migration `000005_district_allocation_report_type` adds that report enum value.
+- Sprint 3 closure accepts reports as the v0.1 land purchase history surface. A dedicated `LandPurchase` table is deferred until reporting/query needs require it.
+- Sprint 3 closure keeps transaction-local rechecks and conditional updates as the v0.1 concurrency baseline. Stronger row-level locking is deferred until production contention shows a need.
+- Sprint 3 is ready for Sprint 4 once closure checks pass; real map validation, visible-border expansion, polygon recalculation, and real area classification remain Sprint 4 work.
