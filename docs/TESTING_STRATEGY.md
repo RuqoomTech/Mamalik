@@ -70,8 +70,10 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 
 - Map coordinate tests should verify latitude/longitude validation, radius approximation, visible-area tolerance classification, and fallback behavior without requiring a live database.
 - Land-mask helper tests should verify land hits, water misses, missing table/data behavior, and the `ALLOW_MISSING_LAND_MASK` development fallback.
+- Restricted-zone helper tests should verify missing table behavior, empty-table clear behavior, restricted hit shaping, and point/preview-polygon query result handling.
 - PostGIS helper smoke should use the configured database when available to confirm generated GeoJSON, measured area near 50,000 m2, and overlap detection against existing kingdom borders.
 - Water rejection smoke should seed the land mask, validate a known land point such as Riyadh, validate an obvious ocean point such as `lat: 0`, `lng: -30`, and confirm kingdom creation rejects water server-side.
+- Restricted-zone smoke should apply migration `000007_restricted_zones`, run `npm run db:seed-restricted-zones`, validate a coordinate inside the artificial fixture, confirm `restricted-zone` rejection, then re-check a known land point and an ocean point for regressions.
 - Route/API smoke for `/api/kingdom/validate-location` requires a signed-in no-kingdom user because the endpoint enforces authentication and one-kingdom-per-user behavior.
 - Kingdom creation smoke should confirm the server reruns PostGIS validation and stores the server-generated `visibleBorderGeojson`; client-submitted preview polygons remain untrusted.
 - Water and restricted-zone checks must not be marked complete until their datasets/checks exist.

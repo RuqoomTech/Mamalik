@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 4 - Map Validation + Borders
-- Active task sequence: Sprint 1, Sprint 2, and Sprint 3 are complete from the documented feature and automated-check standpoint. Sprint 4 has completed S4-001 and S4-002: PostGIS-backed preview polygon generation, area measurement, overlap checks, and a coarse land-mask water rejection foundation are in place. Restricted-zone datasets/checks, dynamic buffers, area classification placeholders, nearby suggestions, and map preview polish remain Sprint 4 follow-ups.
+- Active task sequence: Sprint 1, Sprint 2, and Sprint 3 are complete from the documented feature and automated-check standpoint. Sprint 4 has completed S4-001 through S4-003: PostGIS-backed preview polygon generation, area measurement, overlap checks, coarse land-mask water rejection, and placeholder restricted-zone no-start validation are in place. Dynamic buffers, area classification placeholders, nearby suggestions, and map preview polish remain Sprint 4 follow-ups.
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -227,7 +227,9 @@ v0.1 must include:
 - Sprint 4 S4-002 adds a raw SQL `LandMaskPolygon` PostGIS table with `geometry(MultiPolygon, 4326)`, a GiST spatial index, and a coarse `MAMALIK_COARSE_V0_1` seed loaded by `npm run db:seed-land-mask`.
 - The first land mask rejects obvious open-ocean starts but is not coastline-accurate. Production should import Natural Earth 1:50m/1:110m or an equivalent licensed global land mask from local files; validation endpoints must not fetch remote map data at runtime.
 - Missing land-mask data blocks kingdom validation and creation by default. `ALLOW_MISSING_LAND_MASK=true` is a local-development-only fallback.
-- Restricted-zone checks remain explicit `NOT_IMPLEMENTED` placeholders until their owning Sprint 4 task adds datasets/checks.
+- Sprint 4 S4-003 adds a raw SQL `RestrictedZone` PostGIS table with `geometry(MultiPolygon, 4326)`, a GiST spatial index, and artificial `MAMALIK_RESTRICTED_V0_1` no-start fixtures loaded by `npm run db:seed-restricted-zones`.
+- Restricted-zone validation rejects a start if the selected point is inside an enabled zone or the generated preview polygon intersects one. Missing restricted-zone table data blocks kingdom validation and creation, while an existing table with zero active rows is treated as clear.
+- The current restricted-zone seed is placeholder-only and not a production global dataset. Future sensitive datasets should keep user-facing rejection messages generic.
 - Turbopack is configured with the repository root so `apps/web` can consume `packages/db` source during builds.
 - Next.js `outputFileTracingRoot` is configured to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.

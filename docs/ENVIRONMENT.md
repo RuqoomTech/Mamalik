@@ -51,6 +51,7 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 - If the variable is missing, the page shows a configuration error instead of using an implicit fallback provider.
 - Production deployments should replace the demo style with the chosen production map style.
 - Sprint 4 water rejection reads the local `LandMaskPolygon` PostGIS table. Apply migrations and seed the coarse v0.1 mask with `npm run db:seed-land-mask`.
+- Sprint 4 restricted-zone validation reads the local `RestrictedZone` PostGIS table. Apply migrations and seed the artificial v0.1 fixtures with `npm run db:seed-restricted-zones` for local smoke checks.
 - `ALLOW_MISSING_LAND_MASK=true` allows local validation to continue when the land mask is missing. Do not enable it in production.
 
 ## Google OAuth Setup

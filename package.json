@@ -11,6 +11,7 @@
     "db:validate": "npm --prefix packages/db run db:validate",
     "db:generate": "npm --prefix packages/db run db:generate",
     "db:seed-land-mask": "npm --prefix packages/db run db:seed-land-mask",
+    "db:seed-restricted-zones": "npm --prefix packages/db run db:seed-restricted-zones",
     "db:migrate:dev": "npm --prefix packages/db run db:migrate:dev",
     "db:migrate:deploy": "npm --prefix packages/db run db:migrate:deploy",
     "db:studio": "npm --prefix packages/db run db:studio",

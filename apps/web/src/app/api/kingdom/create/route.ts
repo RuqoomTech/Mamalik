@@ -35,6 +35,8 @@ type CreateKingdomErrorCode =
   | "too-close-to-existing-kingdom"
   | "water"
   | "land-mask-data-missing"
+  | "restricted-zone"
+  | "restricted-zone-data-missing"
   | "create-kingdom-failed";
 
 type CreateKingdomInput = {
@@ -68,6 +70,14 @@ function coordinateErrorCode(reason: LocationValidationReason): CreateKingdomErr
     return "land-mask-data-missing";
   }
 
+  if (reason === "restricted-zone") {
+    return "restricted-zone";
+  }
+
+  if (reason === "restricted-zone-data-missing") {
+    return "restricted-zone-data-missing";
+  }
+
   if (
     reason === "missing-coordinates" ||
     reason === "invalid-coordinates" ||
@@ -96,6 +106,10 @@ function coordinateErrorMessage(reason: LocationValidationReason): string {
       return "That location is water. Choose a location on land.";
     case "land-mask-data-missing":
       return "Land validation data is not loaded. Try again later.";
+    case "restricted-zone":
+      return "That location is inside a restricted no-start zone.";
+    case "restricted-zone-data-missing":
+      return "Restricted-zone validation data is not loaded. Try again later.";
     case "border-generation-failed":
       return "The selected location could not generate a valid border.";
     default:
@@ -325,6 +339,22 @@ export async function POST(request: Request) {
           "land-mask-data-missing",
           "Land validation data is not loaded. Try again later.",
           503,
+        );
+      }
+
+      if (error.message.startsWith("create-kingdom-location-restricted-zone-data-missing")) {
+        return errorResponse(
+          "restricted-zone-data-missing",
+          "Restricted-zone validation data is not loaded. Try again later.",
+          503,
+        );
+      }
+
+      if (error.message.startsWith("create-kingdom-location-restricted-zone")) {
+        return errorResponse(
+          "restricted-zone",
+          "That location is inside a restricted no-start zone.",
+          400,
         );
       }
 

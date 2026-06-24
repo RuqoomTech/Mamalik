@@ -3,6 +3,7 @@ import {
   createInvalidLocationResponse,
   type LocationCoordinates,
   type LocationValidationResponse,
+  type RestrictedZoneCheckResponse,
 } from "@/lib/kingdom/location-validation";
 import {
   validatePointAgainstLandMask,
@@ -17,8 +18,10 @@ import {
   generateVisibleBorderPreview,
   type BorderOverlapResult,
 } from "@/lib/map/postgis";
-
-export type SpatialCheckStatus = "NOT_IMPLEMENTED";
+import {
+  validatePointAndPreviewAgainstRestrictedZones,
+  type RestrictedZoneValidationResult,
+} from "@/lib/map/restricted-zones";
 
 export type SpatialLocationValidationResponse = LocationValidationResponse & {
   ok: boolean;
@@ -27,7 +30,7 @@ export type SpatialLocationValidationResponse = LocationValidationResponse & {
   overlap: BorderOverlapResult | null;
   landCheck: LocationValidationResponse["landCheck"];
   waterCheck: NonNullable<LocationValidationResponse["waterCheck"]>;
-  restrictedZoneCheck: SpatialCheckStatus;
+  restrictedZoneCheck: RestrictedZoneCheckResponse;
 };
 
 type PostgisValidationClient = Parameters<typeof generateVisibleBorderPreview>[0];
@@ -64,6 +67,27 @@ export async function validateKingdomLocationWithPostgis(
     ...center,
     targetAreaM2: STARTING_USABLE_LAND_M2,
   });
+  const restrictedZoneCheck = await validatePointAndPreviewAgainstRestrictedZones(db, {
+    coordinates: center,
+    previewPolygon: borderPreview.previewPolygon,
+  });
+
+  if (restrictedZoneCheck.status === "RESTRICTED") {
+    return invalidSpatialResponse("restricted-zone", {
+      center,
+      landCheck,
+      restrictedZoneCheck,
+    });
+  }
+
+  if (restrictedZoneCheck.status === "DATA_MISSING") {
+    return invalidSpatialResponse("restricted-zone-data-missing", {
+      center,
+      landCheck,
+      restrictedZoneCheck,
+    });
+  }
+
   const overlap = await doesBorderOverlapExistingKingdoms(db, {
     previewPolygon: borderPreview.previewPolygon,
     excludeKingdomId: input.excludeKingdomId,
@@ -78,7 +102,7 @@ export async function validateKingdomLocationWithPostgis(
       overlap,
       landCheck: createLandCheckResponse(landCheck),
       waterCheck: landCheck.status,
-      restrictedZoneCheck: "NOT_IMPLEMENTED",
+      restrictedZoneCheck: createRestrictedZoneCheckResponse(restrictedZoneCheck),
     };
   }
 
@@ -94,17 +118,27 @@ export async function validateKingdomLocationWithPostgis(
     overlap,
     landCheck: createLandCheckResponse(landCheck),
     waterCheck: landCheck.status,
-    restrictedZoneCheck: "NOT_IMPLEMENTED",
+    restrictedZoneCheck: createRestrictedZoneCheckResponse(restrictedZoneCheck),
     suggestions: [],
   };
 }
 
 export function invalidSpatialResponse(
   reason: Parameters<typeof createInvalidLocationResponse>[0],
-  options: { center?: LocationCoordinates | null; landCheck?: LandMaskValidationResult } = {},
+  options: {
+    center?: LocationCoordinates | null;
+    landCheck?: LandMaskValidationResult;
+    restrictedZoneCheck?: RestrictedZoneValidationResult;
+  } = {},
 ): SpatialLocationValidationResponse {
   const landCheck = options.landCheck
     ? createLandCheckResponse(options.landCheck)
+    : {
+        status: "NOT_IMPLEMENTED" as const,
+        source: "NOT_IMPLEMENTED",
+      };
+  const restrictedZoneCheck = options.restrictedZoneCheck
+    ? createRestrictedZoneCheckResponse(options.restrictedZoneCheck)
     : {
         status: "NOT_IMPLEMENTED" as const,
         source: "NOT_IMPLEMENTED",
@@ -118,7 +152,7 @@ export function invalidSpatialResponse(
     overlap: null,
     landCheck,
     waterCheck: landCheck.status,
-    restrictedZoneCheck: "NOT_IMPLEMENTED",
+    restrictedZoneCheck,
   };
 }
 
@@ -130,5 +164,23 @@ function createLandCheckResponse(
     source: landCheck.source,
     allowMissingData:
       landCheck.status === "DATA_MISSING" ? landCheck.allowMissingData : undefined,
+  };
+}
+
+function createRestrictedZoneCheckResponse(
+  restrictedZoneCheck: RestrictedZoneValidationResult,
+): RestrictedZoneCheckResponse {
+  return {
+    status: restrictedZoneCheck.status,
+    source: restrictedZoneCheck.source,
+    zones:
+      restrictedZoneCheck.status === "RESTRICTED"
+        ? restrictedZoneCheck.zones.map((zone) => ({
+            code: zone.code,
+            name: zone.name,
+            category: zone.category,
+            reason: zone.reason,
+          }))
+        : undefined,
   };
 }

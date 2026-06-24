@@ -274,6 +274,32 @@ Notes:
 - The coarse seed rejects obvious open ocean but is not coastline-accurate and should be replaced by a Natural Earth or equivalent licensed global land-mask import for production precision.
 - Missing land-mask table or rows blocks kingdom validation by default. Local development can set `ALLOW_MISSING_LAND_MASK=true` to continue while seed data is unavailable.
 
+### RestrictedZone
+
+- `id`
+- `source`
+- `code`
+- `name`
+- `category`
+- `reason`
+- `blockMode`
+- `enabled`
+- `geom`
+- `createdAt`
+- `updatedAt`
+
+Notes:
+
+- Added in Sprint 4 Task S4-003 with migration `000007_restricted_zones`.
+- `geom` is a PostGIS `geometry(MultiPolygon, 4326)` column with a GiST spatial index.
+- Prisma does not model this table directly because geometry columns are handled through raw SQL helpers.
+- The first v0.1 source is `MAMALIK_RESTRICTED_V0_1`, loaded by `npm run db:seed-restricted-zones`.
+- The checked-in seed contains artificial no-start fixtures only. It is a validation foundation, not a production global restricted-zone dataset.
+- `apps/web/src/lib/map/restricted-zones.ts` rejects a start if the selected point is inside an enabled zone or if the generated preview polygon intersects an enabled zone.
+- If the table exists with zero active rows, validation treats restricted zones as clear. If the table is missing, validation returns `restricted-zone-data-missing` and blocks kingdom creation.
+- Current categories are `AIRPORT`, `MILITARY`, `PROTECTED_AREA`, `ADMIN_BLOCK`, and `TEST_FIXTURE`.
+- User-facing errors should stay generic so future sensitive restricted datasets do not leak detailed public information.
+
 ## Dashboard Read Model
 
 Sprint 1 Task 16 adds a server-side dashboard read model in `apps/web/src/lib/kingdom/dashboard-data.ts`.

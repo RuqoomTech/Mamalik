@@ -44,6 +44,9 @@ test("validates a land point with land mask, preview polygon, and overlap checks
       },
     ],
     [{ geojson: previewPolygon, visibleAreaM2: 49_684 }],
+    [{ tableExists: true }],
+    [{ zoneCount: 2 }],
+    [],
     [{ overlapCount: 0 }],
   ]);
 
@@ -58,8 +61,9 @@ test("validates a land point with land mask, preview polygon, and overlap checks
   assert.equal(response.waterCheck, "LAND");
   assert.equal(response.visibleAreaM2, 49_684);
   assert.equal(response.toleranceStatus, "STRICT");
+  assert.equal(response.restrictedZoneCheck.status, "CLEAR");
   assert.equal(response.overlap?.overlaps, false);
-  assert.equal(db.calls, 4);
+  assert.equal(db.calls, 7);
 });
 
 test("rejects water before generating a border preview", async () => {
@@ -96,4 +100,67 @@ test("rejects missing land-mask data when fallback is not enabled", async () => 
   assert.equal(response.landCheck?.status, "DATA_MISSING");
   assert.equal(response.waterCheck, "DATA_MISSING");
   assert.equal(db.calls, 1);
+});
+
+test("rejects restricted zones before overlap checks", async () => {
+  const db = createFakeDb([
+    [{ tableExists: true }],
+    [
+      {
+        maskCount: 9,
+        matchedSource: "MAMALIK_COARSE_V0_1",
+        matchedName: "Arabian Peninsula coarse land mask",
+      },
+    ],
+    [{ geojson: previewPolygon, visibleAreaM2: 49_684 }],
+    [{ tableExists: true }],
+    [{ zoneCount: 2 }],
+    [
+      {
+        source: "MAMALIK_RESTRICTED_V0_1",
+        code: "S4_TEST_NO_START_RIYADH_EAST",
+        name: "S4 Test No-Start Zone East of Riyadh",
+        category: "TEST_FIXTURE",
+        reason: "Artificial Sprint 4 fixture.",
+      },
+    ],
+  ]);
+
+  const response = await validateKingdomLocationWithPostgis(db, {
+    lat: 24.95,
+    lng: 46.9,
+  });
+
+  assert.equal(response.valid, false);
+  assert.equal(response.reason, "restricted-zone");
+  assert.equal(response.restrictedZoneCheck.status, "RESTRICTED");
+  assert.equal(response.restrictedZoneCheck.zones?.[0]?.code, "S4_TEST_NO_START_RIYADH_EAST");
+  assert.equal(response.overlap, null);
+  assert.equal(db.calls, 6);
+});
+
+test("rejects missing restricted-zone table before overlap checks", async () => {
+  const db = createFakeDb([
+    [{ tableExists: true }],
+    [
+      {
+        maskCount: 9,
+        matchedSource: "MAMALIK_COARSE_V0_1",
+        matchedName: "Arabian Peninsula coarse land mask",
+      },
+    ],
+    [{ geojson: previewPolygon, visibleAreaM2: 49_684 }],
+    [{ tableExists: false }],
+  ]);
+
+  const response = await validateKingdomLocationWithPostgis(db, {
+    lat: 24.7136,
+    lng: 46.6753,
+  });
+
+  assert.equal(response.valid, false);
+  assert.equal(response.reason, "restricted-zone-data-missing");
+  assert.equal(response.restrictedZoneCheck.status, "DATA_MISSING");
+  assert.equal(response.overlap, null);
+  assert.equal(db.calls, 4);
 });

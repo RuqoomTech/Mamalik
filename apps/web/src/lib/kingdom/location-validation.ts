@@ -34,6 +34,17 @@ export type LandCheckResponse = {
   allowMissingData?: boolean;
 };
 
+export type RestrictedZoneCheckResponse = {
+  status: "CLEAR" | "RESTRICTED" | "DATA_MISSING" | "NOT_IMPLEMENTED";
+  source: string;
+  zones?: Array<{
+    code: string;
+    name: string;
+    category: string;
+    reason: string;
+  }>;
+};
+
 export type LocationValidationReason =
   | "missing-coordinates"
   | "invalid-coordinates"
@@ -43,6 +54,8 @@ export type LocationValidationReason =
   | "too-close-to-existing-kingdom"
   | "water"
   | "land-mask-data-missing"
+  | "restricted-zone"
+  | "restricted-zone-data-missing"
   | "unauthenticated"
   | "border-generation-failed";
 
@@ -61,7 +74,7 @@ export type LocationValidationResponse = {
   } | null;
   landCheck?: LandCheckResponse;
   waterCheck?: "LAND" | "WATER" | "DATA_MISSING" | "NOT_IMPLEMENTED";
-  restrictedZoneCheck?: "NOT_IMPLEMENTED";
+  restrictedZoneCheck?: RestrictedZoneCheckResponse;
   suggestions: LocationSuggestion[];
 };
 
@@ -236,7 +249,10 @@ export function createInvalidLocationResponse(
       source: "NOT_IMPLEMENTED",
     },
     waterCheck: "NOT_IMPLEMENTED",
-    restrictedZoneCheck: "NOT_IMPLEMENTED",
+    restrictedZoneCheck: {
+      status: "NOT_IMPLEMENTED",
+      source: "NOT_IMPLEMENTED",
+    },
     suggestions,
   };
 }
@@ -270,7 +286,10 @@ export function validateTemporaryKingdomLocation(
       source: "NOT_IMPLEMENTED",
     },
     waterCheck: "NOT_IMPLEMENTED",
-    restrictedZoneCheck: "NOT_IMPLEMENTED",
+    restrictedZoneCheck: {
+      status: "NOT_IMPLEMENTED",
+      source: "NOT_IMPLEMENTED",
+    },
     suggestions: [],
   };
 }

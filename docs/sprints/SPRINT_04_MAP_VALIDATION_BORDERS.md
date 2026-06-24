@@ -62,7 +62,7 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 
 - [x] S4-001: Map validation and border foundation.
 - [x] S4-002: Implement water rejection.
-- [ ] S4-003: Add restricted-zone placeholder model and checks.
+- [x] S4-003: Add restricted-zone placeholder model and checks.
 - [ ] S4-004: Implement overlap checks.
 - [ ] S4-005: Implement dynamic buffer checks.
 - [ ] S4-006: Implement area type classification placeholder.
@@ -85,5 +85,9 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - S4-002 rejects points outside the seeded land mask as `water` before border preview generation and kingdom creation.
 - If the land-mask table or rows are missing, validation returns `land-mask-data-missing` and blocks kingdom creation unless the local-development-only `ALLOW_MISSING_LAND_MASK=true` fallback is enabled.
 - The current land mask rejects obvious open ocean but is not coastline-accurate; Natural Earth or an equivalent licensed global land mask remains the intended production import path.
-- Restricted-zone checks still return explicit `NOT_IMPLEMENTED` placeholders until their owning task adds real checks.
+- S4-003 adds a raw SQL `RestrictedZone` table with `geometry(MultiPolygon, 4326)`, enabled/source/category indexes, and a GiST spatial index.
+- S4-003 adds `npm run db:seed-restricted-zones`, which seeds a small artificial `MAMALIK_RESTRICTED_V0_1` no-start fixture dataset. This is a validation foundation, not a production restricted-zone dataset.
+- Restricted-zone validation runs after land/water checks and preview polygon generation, then before existing kingdom overlap checks.
+- Validation rejects starts when either the selected point is inside a restricted zone or the generated preview polygon intersects one.
+- Missing restricted-zone table data returns `restricted-zone-data-missing`; an existing table with zero active rows returns clear.
 - Land purchases still increase gameplay usable land credit only; visible-border expansion from purchases remains future Sprint 4+ work.

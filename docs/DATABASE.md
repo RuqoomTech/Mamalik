@@ -12,7 +12,7 @@ Current contents:
 - `prisma/schema.prisma`
 - `prisma/migrations/000001_enable_postgis/migration.sql`
 - `prisma/migrations/000002_initial_v0_1_models/migration.sql`
-- later migrations for TickLog, training queues, report enum additions, and land-mask polygons
+- later migrations for TickLog, training queues, report enum additions, land-mask polygons, and restricted-zone polygons
 - `.env.example`
 - package-local npm dependencies and lockfile
 
@@ -54,6 +54,12 @@ Sprint 4 adds a raw SQL `LandMaskPolygon` table with `geometry(MultiPolygon, 432
 
 ```bash
 npm run db:seed-land-mask
+```
+
+Sprint 4 also adds a raw SQL `RestrictedZone` table with `geometry(MultiPolygon, 4326)` and a GiST spatial index. Prisma does not model this table directly. Seed the artificial v0.1 restricted-zone fixtures with:
+
+```bash
+npm run db:seed-restricted-zones
 ```
 
 ## Initial v0.1 Models

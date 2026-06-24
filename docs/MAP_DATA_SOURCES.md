@@ -38,6 +38,42 @@ Future production source:
 
 ## Restricted Zones
 
-Status: not implemented.
+Status: Sprint 4 placeholder foundation.
 
-Restricted-zone datasets and checks remain assigned to Sprint 4 follow-up work.
+Current source: `MAMALIK_RESTRICTED_V0_1`, a small checked-in artificial no-start fixture set seeded by `npm run db:seed-restricted-zones`.
+
+Storage:
+
+- Table: `RestrictedZone`
+- Geometry: `geometry(MultiPolygon, 4326)`
+- Indexes: GiST on `geom`, plus source/category and enabled indexes
+- Migration: `packages/db/prisma/migrations/000007_restricted_zones/migration.sql`
+
+Current categories:
+
+- `AIRPORT`
+- `MILITARY`
+- `PROTECTED_AREA`
+- `ADMIN_BLOCK`
+- `TEST_FIXTURE`
+
+Operational rule:
+
+- Production should run `npm run db:migrate:deploy` before restricted-zone validation is considered available.
+- The v0.1 seed command is `npm run db:seed-restricted-zones`.
+- The checked-in seed contains artificial validation fixtures only; it is not a production global no-start dataset.
+- If the `RestrictedZone` table exists with zero active rows, validation treats restricted zones as clear.
+- If the `RestrictedZone` table is missing, validation returns `restricted-zone-data-missing` and blocks kingdom creation.
+- Validation endpoints do not fetch restricted-zone data from remote services at runtime.
+
+Validation behavior:
+
+- A start is rejected if the selected point is inside an enabled restricted zone.
+- A start is also rejected if the generated preview polygon intersects an enabled restricted zone.
+- User-facing errors stay generic. Fixture names can be exposed during v0.1 development, but future sensitive datasets should avoid detailed public disclosure.
+
+Precision limits:
+
+- The current dataset is intentionally tiny and artificial.
+- It only verifies the storage, seed, and validation path.
+- Production restricted zones require a reviewed, licensed, versioned import source before launch hardening.

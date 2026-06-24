@@ -78,6 +78,8 @@ Sprint 4 map validation introduces server-only PostGIS helpers under `apps/web/s
 
 S4-002 adds `apps/web/src/lib/map/land-mask.ts` for land/water checks against the raw SQL `LandMaskPolygon` PostGIS table. The helper checks the table exists, detects missing seed data explicitly, uses `ST_Covers` for point-in-land checks, and blocks water before border preview generation unless the local-development-only missing-data fallback is enabled.
 
+S4-003 adds `apps/web/src/lib/map/restricted-zones.ts` for configured no-start zones against the raw SQL `RestrictedZone` PostGIS table. The helper treats a missing table as explicit data missing, treats an existing empty table as clear, and rejects locations when either the selected point is covered by a zone or the generated preview polygon intersects a zone.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`
@@ -129,6 +131,8 @@ S4-001 keeps visible border storage in `Kingdom.visibleBorderGeojson` as GeoJSON
 
 S4-002 stores the coarse land mask in `LandMaskPolygon.geom` as `geometry(MultiPolygon, 4326)` with a GiST index. Prisma does not model this geometry table directly; migrations and seed scripts manage it, and app helpers query it with parameterized raw SQL.
 
+S4-003 stores configured no-start fixtures in `RestrictedZone.geom` as `geometry(MultiPolygon, 4326)` with a GiST index. Prisma does not model this geometry table directly; migrations and seed scripts manage it, and app helpers query it with parameterized raw SQL.
+
 ## Prisma strategy
 
 - Prisma tooling lives in `packages/db`.
@@ -140,6 +144,7 @@ S4-002 stores the coarse land mask in `LandMaskPolygon.geom` as `geometry(MultiP
 - The fourth migration creates `TrainingQueueStatus` and `TrainingQueueItem`.
 - The fifth migration adds the `DISTRICT_ALLOCATION` report type for district-land allocation reports.
 - The sixth migration creates the raw SQL `LandMaskPolygon` PostGIS table and spatial index for water rejection.
+- The seventh migration creates the raw SQL `RestrictedZone` PostGIS table and spatial index for no-start zone validation.
 - Applying migrations requires a reachable PostgreSQL database with permission to create PostGIS extensions.
 
 ## Auth Strategy

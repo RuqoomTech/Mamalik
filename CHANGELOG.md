@@ -6,6 +6,10 @@ All notable Mamalik project changes are recorded here.
 
 ### Added
 
+- Added a raw SQL `RestrictedZone` PostGIS table migration with `geometry(MultiPolygon, 4326)`, enabled/source/category indexes, and a GiST spatial index for Sprint 4 restricted-zone validation.
+- Added an artificial `MAMALIK_RESTRICTED_V0_1` restricted-zone seed script and root `npm run db:seed-restricted-zones` command.
+- Added restricted-zone validation helpers and tests for missing table, empty table, restricted hits, and point/preview-polygon query behavior.
+- Added composed location-validation tests for restricted-zone rejection and missing restricted-zone table behavior.
 - Added a raw SQL `LandMaskPolygon` PostGIS table migration with `geometry(MultiPolygon, 4326)` and a GiST spatial index for Sprint 4 water rejection.
 - Added a coarse `MAMALIK_COARSE_V0_1` land-mask seed script and root `npm run db:seed-land-mask` command.
 - Added `docs/MAP_DATA_SOURCES.md` documenting land-mask source, storage, precision limits, seed flow, and future Natural Earth import direction.
@@ -30,6 +34,11 @@ All notable Mamalik project changes are recorded here.
 
 ### Changed
 
+- Marked S4-003 complete in the active Sprint 4 docs and task trackers.
+- Updated `/api/kingdom/validate-location` to reject configured restricted no-start zones after preview polygon generation and before existing kingdom overlap checks.
+- Updated `POST /api/kingdom/create` to reject restricted zones and missing restricted-zone validation data when rerunning server-side validation.
+- Updated the create-kingdom map UI to show restricted-zone validation reasons.
+- Documented the placeholder restricted-zone source, seed flow, validation order, and sensitive-details display policy.
 - Marked S4-002 complete in the active Sprint 4 docs and task trackers.
 - Updated `/api/kingdom/validate-location` to reject obvious water starts before border preview generation.
 - Updated `POST /api/kingdom/create` to reject water and missing land-mask data when rerunning server-side validation.
@@ -54,9 +63,9 @@ All notable Mamalik project changes are recorded here.
 
 ### Deferred
 
+- Production-grade global restricted-zone datasets remain deferred; the current seed is artificial and only validates the no-start-zone foundation.
 - Coastline-accurate production land-mask import remains deferred; the current seed is coarse and intended as a foundation.
 - Full coastline-accurate water rejection remains deferred until a production land-mask dataset is imported.
-- Real restricted-zone datasets/checks remain deferred to S4-003.
 - Dynamic area-type buffers, nearby suggestions, and land-purchase visible-border expansion remain pending Sprint 4+ work.
 - Moving allocated land out of a district or between districts remains deferred.
 - Real visible-border expansion and polygon recalculation remain Sprint 4 work.

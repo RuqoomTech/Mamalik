@@ -258,3 +258,12 @@
 - Decision: Production should replace or augment the coarse seed with Natural Earth 1:50m/1:110m or an equivalent licensed land-mask import from local files, never runtime web fetches from validation endpoints.
 - Decision: Missing land-mask data blocks validation and kingdom creation by default; `ALLOW_MISSING_LAND_MASK=true` exists only as a local-development fallback.
 - Decision: Water rejection runs before border preview generation and existing-border overlap checks, and kingdom creation reruns the same server-side validation.
+
+## 2026-06-24 - Sprint 4 Restricted-Zone Foundation
+
+- Decision: S4-003 adds a raw SQL `RestrictedZone` table with PostGIS `geometry(MultiPolygon, 4326)` and a GiST index instead of forcing Prisma to model geometry columns.
+- Decision: The first restricted-zone source is `MAMALIK_RESTRICTED_V0_1`, a small checked-in artificial fixture seed for validation tests and smoke checks only.
+- Decision: The v0.1 validation order is coordinate range, land/water, preview polygon generation, restricted-zone point/polygon checks, then existing kingdom overlap checks.
+- Decision: Restricted-zone validation rejects a start when the selected point is inside an enabled zone or when the generated preview polygon intersects an enabled zone.
+- Decision: An existing restricted-zone table with zero active rows is clear; a missing restricted-zone table returns `restricted-zone-data-missing` and blocks kingdom creation.
+- Decision: User-facing restricted-zone errors stay generic so future sensitive restricted datasets do not leak detailed public information.

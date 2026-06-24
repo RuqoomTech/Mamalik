@@ -33,6 +33,10 @@ function formatReason(reason: string | null): string {
       return "That point is water. Choose a location on land.";
     case "land-mask-data-missing":
       return "Land validation data is not loaded yet.";
+    case "restricted-zone":
+      return "That point is inside a restricted no-start zone.";
+    case "restricted-zone-data-missing":
+      return "Restricted-zone validation data is not loaded yet.";
     case "user-already-has-kingdom":
       return "This account already has a kingdom.";
     case "missing-coordinates":
