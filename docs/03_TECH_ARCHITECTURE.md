@@ -76,6 +76,8 @@ Sprint 3 district allocation uses the same Server Action pattern. The dashboard 
 
 Sprint 4 map validation introduces server-only PostGIS helpers under `apps/web/src/lib/map`. Pure tolerance/radius helpers live in `border-generation.ts`; raw SQL helpers live in `postgis.ts`; route-level composition lives in `location-validation.ts`. These helpers use parameterized raw SQL and convert stored GeoJSON to geometry for overlap checks instead of adding duplicate geometry columns in S4-001.
 
+S4-002 adds `apps/web/src/lib/map/land-mask.ts` for land/water checks against the raw SQL `LandMaskPolygon` PostGIS table. The helper checks the table exists, detects missing seed data explicitly, uses `ST_Covers` for point-in-land checks, and blocks water before border preview generation unless the local-development-only missing-data fallback is enabled.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`
@@ -125,6 +127,8 @@ Examples of PostGIS-heavy actions:
 
 S4-001 keeps visible border storage in `Kingdom.visibleBorderGeojson` as GeoJSON and uses PostGIS functions such as `ST_Buffer`, `ST_Area`, `ST_AsGeoJSON`, `ST_GeomFromGeoJSON`, and `ST_Intersects` through parameterized Prisma raw SQL. A native geometry column or spatial index can be added later if performance requires it.
 
+S4-002 stores the coarse land mask in `LandMaskPolygon.geom` as `geometry(MultiPolygon, 4326)` with a GiST index. Prisma does not model this geometry table directly; migrations and seed scripts manage it, and app helpers query it with parameterized raw SQL.
+
 ## Prisma strategy
 
 - Prisma tooling lives in `packages/db`.
@@ -135,6 +139,7 @@ S4-001 keeps visible border storage in `Kingdom.visibleBorderGeojson` as GeoJSON
 - The third migration creates `TickLogStatus` and `TickLog`.
 - The fourth migration creates `TrainingQueueStatus` and `TrainingQueueItem`.
 - The fifth migration adds the `DISTRICT_ALLOCATION` report type for district-land allocation reports.
+- The sixth migration creates the raw SQL `LandMaskPolygon` PostGIS table and spatial index for water rejection.
 - Applying migrations requires a reachable PostgreSQL database with permission to create PostGIS extensions.
 
 ## Auth Strategy

@@ -47,7 +47,7 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 
 ## Acceptance Criteria
 
-- [ ] Clicking water is rejected.
+- [x] Clicking water is rejected.
 - [ ] Clicking too close to another kingdom is rejected.
 - [ ] Dynamic buffer uses area type.
 - [x] Existing kingdom overlap is rejected.
@@ -61,7 +61,7 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 ## Task Status
 
 - [x] S4-001: Map validation and border foundation.
-- [ ] S4-002: Implement water rejection.
+- [x] S4-002: Implement water rejection.
 - [ ] S4-003: Add restricted-zone placeholder model and checks.
 - [ ] S4-004: Implement overlap checks.
 - [ ] S4-005: Implement dynamic buffer checks.
@@ -80,5 +80,10 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - Existing kingdom overlap is checked by converting stored `Kingdom.visibleBorderGeojson` to geometry with PostGIS and comparing it to the generated preview polygon.
 - `/api/kingdom/validate-location` now uses the PostGIS validation helper and preserves the existing response fields for the current UI.
 - `POST /api/kingdom/create` reruns the same server-side validation and stores the server-generated preview polygon and measured area. It still does not trust client geometry.
-- Water and restricted-zone checks return explicit `NOT_IMPLEMENTED` placeholders in the validation response until their owning tasks add real checks.
+- S4-002 adds a raw SQL `LandMaskPolygon` table with `geometry(MultiPolygon, 4326)` and a GiST index for coarse land/water validation.
+- S4-002 adds `npm run db:seed-land-mask`, which seeds a small `MAMALIK_COARSE_V0_1` land-mask dataset from local checked-in code. Validation endpoints do not fetch remote map data at runtime.
+- S4-002 rejects points outside the seeded land mask as `water` before border preview generation and kingdom creation.
+- If the land-mask table or rows are missing, validation returns `land-mask-data-missing` and blocks kingdom creation unless the local-development-only `ALLOW_MISSING_LAND_MASK=true` fallback is enabled.
+- The current land mask rejects obvious open ocean but is not coastline-accurate; Natural Earth or an equivalent licensed global land mask remains the intended production import path.
+- Restricted-zone checks still return explicit `NOT_IMPLEMENTED` placeholders until their owning task adds real checks.
 - Land purchases still increase gameplay usable land credit only; visible-border expansion from purchases remains future Sprint 4+ work.

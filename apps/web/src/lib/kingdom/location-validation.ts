@@ -28,6 +28,12 @@ export type PreviewPolygon = {
   coordinates: number[][][];
 };
 
+export type LandCheckResponse = {
+  status: "LAND" | "WATER" | "DATA_MISSING" | "NOT_IMPLEMENTED";
+  source: string;
+  allowMissingData?: boolean;
+};
+
 export type LocationValidationReason =
   | "missing-coordinates"
   | "invalid-coordinates"
@@ -35,6 +41,8 @@ export type LocationValidationReason =
   | "longitude-out-of-range"
   | "user-already-has-kingdom"
   | "too-close-to-existing-kingdom"
+  | "water"
+  | "land-mask-data-missing"
   | "unauthenticated"
   | "border-generation-failed";
 
@@ -51,7 +59,8 @@ export type LocationValidationResponse = {
     overlaps: boolean;
     overlappingKingdomCount: number;
   } | null;
-  waterCheck?: "NOT_IMPLEMENTED";
+  landCheck?: LandCheckResponse;
+  waterCheck?: "LAND" | "WATER" | "DATA_MISSING" | "NOT_IMPLEMENTED";
   restrictedZoneCheck?: "NOT_IMPLEMENTED";
   suggestions: LocationSuggestion[];
 };
@@ -222,6 +231,10 @@ export function createInvalidLocationResponse(
     previewPolygon: null,
     toleranceStatus: null,
     overlap: null,
+    landCheck: {
+      status: "NOT_IMPLEMENTED",
+      source: "NOT_IMPLEMENTED",
+    },
     waterCheck: "NOT_IMPLEMENTED",
     restrictedZoneCheck: "NOT_IMPLEMENTED",
     suggestions,
@@ -251,6 +264,10 @@ export function validateTemporaryKingdomLocation(
     overlap: {
       overlaps: false,
       overlappingKingdomCount: 0,
+    },
+    landCheck: {
+      status: "NOT_IMPLEMENTED",
+      source: "NOT_IMPLEMENTED",
     },
     waterCheck: "NOT_IMPLEMENTED",
     restrictedZoneCheck: "NOT_IMPLEMENTED",

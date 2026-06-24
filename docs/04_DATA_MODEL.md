@@ -254,6 +254,26 @@ Notes:
 - Sprint 2 closure keeps failed TickLog rows as audit/debug records. Cleanup tooling is deferred unless the volume becomes operationally noisy.
 - Population count growth is a future v0.1 or balancing task.
 
+## Raw SQL Spatial Tables
+
+### LandMaskPolygon
+
+- `id`
+- `source`
+- `name`
+- `geom`
+- `createdAt`
+
+Notes:
+
+- Added in Sprint 4 Task S4-002 with migration `000006_land_mask_polygons`.
+- `geom` is a PostGIS `geometry(MultiPolygon, 4326)` column with a GiST spatial index.
+- Prisma does not model this table directly because geometry columns are handled through raw SQL helpers.
+- `apps/web/src/lib/map/land-mask.ts` checks selected kingdom coordinates against this table with `ST_Covers`.
+- The first v0.1 seed source is `MAMALIK_COARSE_V0_1`, loaded by `npm run db:seed-land-mask`.
+- The coarse seed rejects obvious open ocean but is not coastline-accurate and should be replaced by a Natural Earth or equivalent licensed global land-mask import for production precision.
+- Missing land-mask table or rows blocks kingdom validation by default. Local development can set `ALLOW_MISSING_LAND_MASK=true` to continue while seed data is unavailable.
+
 ## Dashboard Read Model
 
 Sprint 1 Task 16 adds a server-side dashboard read model in `apps/web/src/lib/kingdom/dashboard-data.ts`.
@@ -412,4 +432,5 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Initial land purchase mutation logic lives in `apps/web/src/lib/kingdom/land-purchase.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes price/cooldown/area type from database state before mutating Money, usable land, cooldowns, and reports.
 - Initial district allocation mutation logic lives in `apps/web/src/lib/kingdom/district-allocation.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes unallocated usable land from database state before incrementing the target district allocation.
 - Initial PostGIS visible-border helpers live in `apps/web/src/lib/map`. They generate a geodesic buffer preview from selected coordinates, classify the measured area against locked tolerance bands, and reject overlap with existing kingdom visible borders.
+- Initial land/water validation helpers live in `apps/web/src/lib/map/land-mask.ts` and query the raw SQL `LandMaskPolygon` table before border preview generation.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.

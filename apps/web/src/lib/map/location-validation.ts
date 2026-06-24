@@ -5,6 +5,10 @@ import {
   type LocationValidationResponse,
 } from "@/lib/kingdom/location-validation";
 import {
+  validatePointAgainstLandMask,
+  type LandMaskValidationResult,
+} from "@/lib/map/land-mask";
+import {
   validateLatitudeLongitude,
   type VisibleBorderToleranceStatus,
 } from "@/lib/map/border-generation";
@@ -21,7 +25,8 @@ export type SpatialLocationValidationResponse = LocationValidationResponse & {
   center: LocationCoordinates | null;
   toleranceStatus: VisibleBorderToleranceStatus | null;
   overlap: BorderOverlapResult | null;
-  waterCheck: SpatialCheckStatus;
+  landCheck: LocationValidationResponse["landCheck"];
+  waterCheck: NonNullable<LocationValidationResponse["waterCheck"]>;
   restrictedZoneCheck: SpatialCheckStatus;
 };
 
@@ -45,6 +50,16 @@ export async function validateKingdomLocationWithPostgis(
     lat: coordinatesValidation.lat,
     lng: coordinatesValidation.lng,
   };
+  const landCheck = await validatePointAgainstLandMask(db, center);
+
+  if (landCheck.status === "WATER") {
+    return invalidSpatialResponse("water", { center, landCheck });
+  }
+
+  if (landCheck.status === "DATA_MISSING" && !landCheck.allowMissingData) {
+    return invalidSpatialResponse("land-mask-data-missing", { center, landCheck });
+  }
+
   const borderPreview = await generateVisibleBorderPreview(db, {
     ...center,
     targetAreaM2: STARTING_USABLE_LAND_M2,
@@ -61,7 +76,8 @@ export async function validateKingdomLocationWithPostgis(
       center,
       toleranceStatus: borderPreview.toleranceStatus,
       overlap,
-      waterCheck: "NOT_IMPLEMENTED",
+      landCheck: createLandCheckResponse(landCheck),
+      waterCheck: landCheck.status,
       restrictedZoneCheck: "NOT_IMPLEMENTED",
     };
   }
@@ -76,7 +92,8 @@ export async function validateKingdomLocationWithPostgis(
     previewPolygon: borderPreview.previewPolygon,
     toleranceStatus: borderPreview.toleranceStatus,
     overlap,
-    waterCheck: "NOT_IMPLEMENTED",
+    landCheck: createLandCheckResponse(landCheck),
+    waterCheck: landCheck.status,
     restrictedZoneCheck: "NOT_IMPLEMENTED",
     suggestions: [],
   };
@@ -84,14 +101,34 @@ export async function validateKingdomLocationWithPostgis(
 
 export function invalidSpatialResponse(
   reason: Parameters<typeof createInvalidLocationResponse>[0],
+  options: { center?: LocationCoordinates | null; landCheck?: LandMaskValidationResult } = {},
 ): SpatialLocationValidationResponse {
+  const landCheck = options.landCheck
+    ? createLandCheckResponse(options.landCheck)
+    : {
+        status: "NOT_IMPLEMENTED" as const,
+        source: "NOT_IMPLEMENTED",
+      };
+
   return {
     ...createInvalidLocationResponse(reason),
     ok: false,
-    center: null,
+    center: options.center ?? null,
     toleranceStatus: null,
     overlap: null,
-    waterCheck: "NOT_IMPLEMENTED",
+    landCheck,
+    waterCheck: landCheck.status,
     restrictedZoneCheck: "NOT_IMPLEMENTED",
+  };
+}
+
+function createLandCheckResponse(
+  landCheck: LandMaskValidationResult,
+): NonNullable<LocationValidationResponse["landCheck"]> {
+  return {
+    status: landCheck.status,
+    source: landCheck.source,
+    allowMissingData:
+      landCheck.status === "DATA_MISSING" ? landCheck.allowMissingData : undefined,
   };
 }

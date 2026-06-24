@@ -17,7 +17,7 @@ Archived files under `docs/archive/` and `tasks/archive/` are read-only historic
 
 Before editing, read `AGENTS.md`, `context.md`, `session_state.md`, `docs/01_LOCKED_DECISIONS.md`, `docs/02_V0_1_SCOPE.md`, and the current sprint file named in `session_state.md`. If a required file is missing, create it before coding.
 
-Canonical active sources include `context.md`, `session_state.md`, `CHANGELOG.md`, `docs/01_LOCKED_DECISIONS.md`, `docs/02_V0_1_SCOPE.md`, `docs/03_TECH_ARCHITECTURE.md`, `docs/04_DATA_MODEL.md`, `docs/05_SPRINT_PLAN.md`, `docs/DEFINITION_OF_DONE.md`, `docs/TESTING_STRATEGY.md`, `docs/DECISIONS_LOG.md`, `docs/AUTHENTICATION.md`, `docs/DATABASE.md`, `docs/ENVIRONMENT.md`, sprint docs `docs/sprints/SPRINT_01_*` through `SPRINT_06_*`, and task files `tasks/backlog.md` plus `tasks/sprint_01.md` through `tasks/sprint_06.md`.
+Canonical active sources include `context.md`, `session_state.md`, `CHANGELOG.md`, `docs/01_LOCKED_DECISIONS.md`, `docs/02_V0_1_SCOPE.md`, `docs/03_TECH_ARCHITECTURE.md`, `docs/04_DATA_MODEL.md`, `docs/05_SPRINT_PLAN.md`, `docs/DEFINITION_OF_DONE.md`, `docs/TESTING_STRATEGY.md`, `docs/DECISIONS_LOG.md`, `docs/AUTHENTICATION.md`, `docs/DATABASE.md`, `docs/ENVIRONMENT.md`, `docs/MAP_DATA_SOURCES.md`, sprint docs `docs/sprints/SPRINT_01_*` through `SPRINT_06_*`, and task files `tasks/backlog.md` plus `tasks/sprint_01.md` through `tasks/sprint_06.md`.
 
 ## Build, Test, And Development Commands
 

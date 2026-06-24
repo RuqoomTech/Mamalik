@@ -6,6 +6,7 @@
   "scripts": {
     "db:validate": "prisma validate",
     "db:generate": "prisma generate",
+    "db:seed-land-mask": "tsx src/seed-land-mask.ts",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",

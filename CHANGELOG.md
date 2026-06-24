@@ -6,6 +6,11 @@ All notable Mamalik project changes are recorded here.
 
 ### Added
 
+- Added a raw SQL `LandMaskPolygon` PostGIS table migration with `geometry(MultiPolygon, 4326)` and a GiST spatial index for Sprint 4 water rejection.
+- Added a coarse `MAMALIK_COARSE_V0_1` land-mask seed script and root `npm run db:seed-land-mask` command.
+- Added `docs/MAP_DATA_SOURCES.md` documenting land-mask source, storage, precision limits, seed flow, and future Natural Earth import direction.
+- Added land-mask validation helpers and tests for land hits, water misses, missing data, and local missing-data fallback parsing.
+- Added composed location-validation tests for land, water, and missing land-mask data behavior.
 - Added Sprint 4 PostGIS map-validation foundation helpers for coordinate validation, circular border radius calculation, tolerance classification, preview polygon generation, area measurement, and overlap checks.
 - Added server-side Sprint 4 validation composition for PostGIS-generated border previews with explicit water/restricted-zone placeholder statuses.
 - Added focused map helper tests for coordinate validation, 50,000 m2 radius approximation, and tolerance classification.
@@ -25,6 +30,11 @@ All notable Mamalik project changes are recorded here.
 
 ### Changed
 
+- Marked S4-002 complete in the active Sprint 4 docs and task trackers.
+- Updated `/api/kingdom/validate-location` to reject obvious water starts before border preview generation.
+- Updated `POST /api/kingdom/create` to reject water and missing land-mask data when rerunning server-side validation.
+- Updated the create-kingdom map UI to show water and missing-land-mask validation reasons.
+- Documented `ALLOW_MISSING_LAND_MASK` as a local-development-only fallback; production should leave it false/empty.
 - Started Sprint 4 and marked S4-001 complete in the active Sprint 4 docs and task trackers.
 - Moved the canonical Sprint 4 doc to `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md` to match the active task naming.
 - Updated `/api/kingdom/validate-location` to use PostGIS-backed border preview generation and overlap checks.
@@ -44,7 +54,8 @@ All notable Mamalik project changes are recorded here.
 
 ### Deferred
 
-- Real water rejection datasets/checks remain deferred to S4-002.
+- Coastline-accurate production land-mask import remains deferred; the current seed is coarse and intended as a foundation.
+- Full coastline-accurate water rejection remains deferred until a production land-mask dataset is imported.
 - Real restricted-zone datasets/checks remain deferred to S4-003.
 - Dynamic area-type buffers, nearby suggestions, and land-purchase visible-border expansion remain pending Sprint 4+ work.
 - Moving allocated land out of a district or between districts remains deferred.

@@ -12,6 +12,7 @@ Current contents:
 - `prisma/schema.prisma`
 - `prisma/migrations/000001_enable_postgis/migration.sql`
 - `prisma/migrations/000002_initial_v0_1_models/migration.sql`
+- later migrations for TickLog, training queues, report enum additions, and land-mask polygons
 - `.env.example`
 - package-local npm dependencies and lockfile
 
@@ -48,6 +49,12 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 ```
 
 Applying this migration requires database permissions to create extensions.
+
+Sprint 4 adds a raw SQL `LandMaskPolygon` table with `geometry(MultiPolygon, 4326)` and a GiST spatial index. Prisma does not model this table directly because the geometry column is queried through PostGIS raw SQL helpers. Seed the coarse v0.1 land mask with:
+
+```bash
+npm run db:seed-land-mask
+```
 
 ## Initial v0.1 Models
 

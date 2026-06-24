@@ -1,0 +1,99 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { validateKingdomLocationWithPostgis } from "./location-validation";
+
+type QueryResult = unknown[];
+
+function createFakeDb(responses: QueryResult[]) {
+  let calls = 0;
+
+  return {
+    get calls() {
+      return calls;
+    },
+    async $queryRaw<T = unknown>(): Promise<T> {
+      const response = responses[calls];
+      calls += 1;
+
+      return response as T;
+    },
+  };
+}
+
+const previewPolygon = {
+  type: "Polygon" as const,
+  coordinates: [
+    [
+      [46.674, 24.713],
+      [46.676, 24.713],
+      [46.676, 24.715],
+      [46.674, 24.715],
+      [46.674, 24.713],
+    ],
+  ],
+};
+
+test("validates a land point with land mask, preview polygon, and overlap checks", async () => {
+  const db = createFakeDb([
+    [{ tableExists: true }],
+    [
+      {
+        maskCount: 9,
+        matchedSource: "MAMALIK_COARSE_V0_1",
+        matchedName: "Arabian Peninsula coarse land mask",
+      },
+    ],
+    [{ geojson: previewPolygon, visibleAreaM2: 49_684 }],
+    [{ overlapCount: 0 }],
+  ]);
+
+  const response = await validateKingdomLocationWithPostgis(db, {
+    lat: 24.7136,
+    lng: 46.6753,
+  });
+
+  assert.equal(response.valid, true);
+  assert.equal(response.reason, null);
+  assert.equal(response.landCheck?.status, "LAND");
+  assert.equal(response.waterCheck, "LAND");
+  assert.equal(response.visibleAreaM2, 49_684);
+  assert.equal(response.toleranceStatus, "STRICT");
+  assert.equal(response.overlap?.overlaps, false);
+  assert.equal(db.calls, 4);
+});
+
+test("rejects water before generating a border preview", async () => {
+  const db = createFakeDb([
+    [{ tableExists: true }],
+    [{ maskCount: 9, matchedSource: null, matchedName: null }],
+  ]);
+
+  const response = await validateKingdomLocationWithPostgis(db, {
+    lat: 0,
+    lng: -30,
+  });
+
+  assert.equal(response.valid, false);
+  assert.equal(response.reason, "water");
+  assert.deepEqual(response.center, { lat: 0, lng: -30 });
+  assert.equal(response.landCheck?.status, "WATER");
+  assert.equal(response.waterCheck, "WATER");
+  assert.equal(response.previewPolygon, null);
+  assert.equal(db.calls, 2);
+});
+
+test("rejects missing land-mask data when fallback is not enabled", async () => {
+  const db = createFakeDb([[{ tableExists: false }]]);
+
+  const response = await validateKingdomLocationWithPostgis(db, {
+    lat: 24.7136,
+    lng: 46.6753,
+  });
+
+  assert.equal(response.valid, false);
+  assert.equal(response.reason, "land-mask-data-missing");
+  assert.deepEqual(response.center, { lat: 24.7136, lng: 46.6753 });
+  assert.equal(response.landCheck?.status, "DATA_MISSING");
+  assert.equal(response.waterCheck, "DATA_MISSING");
+  assert.equal(db.calls, 1);
+});

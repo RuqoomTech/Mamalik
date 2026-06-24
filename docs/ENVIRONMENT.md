@@ -18,6 +18,7 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 | `GOOGLE_CLIENT_ID` | Server/auth | Google OAuth client id for Google login. |
 | `GOOGLE_CLIENT_SECRET` | Server/auth | Google OAuth client secret for Google login. |
 | `NEXT_PUBLIC_MAP_STYLE_URL` | Public map | MapLibre style URL used by the `/create-kingdom` map-selection page. |
+| `ALLOW_MISSING_LAND_MASK` | Server/map validation | Optional local-development fallback. Set to `true` only when land-mask seed data is missing and local map work must continue. Leave false/empty in production. |
 | `ADMIN_EMAILS` | Server/admin | Optional comma-separated email allowlist for v0.1 `/admin` access. `User.role === "ADMIN"` is checked first. |
 | `TICK_WORKER_SECRET` | Server/worker | Reserved for future protected external tick calls. The current Sprint 2 admin Server Action does not require a public tick secret. |
 
@@ -49,6 +50,8 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 - The example value uses the public MapLibre demo style for local development.
 - If the variable is missing, the page shows a configuration error instead of using an implicit fallback provider.
 - Production deployments should replace the demo style with the chosen production map style.
+- Sprint 4 water rejection reads the local `LandMaskPolygon` PostGIS table. Apply migrations and seed the coarse v0.1 mask with `npm run db:seed-land-mask`.
+- `ALLOW_MISSING_LAND_MASK=true` allows local validation to continue when the land mask is missing. Do not enable it in production.
 
 ## Google OAuth Setup
 

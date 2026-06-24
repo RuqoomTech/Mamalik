@@ -250,3 +250,11 @@
 - Decision: The first v0.1 visible-border generator uses a circular buffer radius of `sqrt(area / pi)` for the locked 50,000 m2 target. Later Sprint 4 tasks may improve shape quality without changing gameplay usable land credit.
 - Decision: Validation and kingdom creation both rerun server-side PostGIS validation; client-submitted polygon, area, overlap, or tolerance values are not trusted.
 - Decision: Water and restricted-zone checks remain explicit `NOT_IMPLEMENTED` placeholders until their owning Sprint 4 tasks add datasets/checks.
+
+## 2026-06-24 - Sprint 4 Water Rejection Foundation
+
+- Decision: S4-002 adds a raw SQL `LandMaskPolygon` table with PostGIS `geometry(MultiPolygon, 4326)` and a GiST index instead of forcing Prisma to model geometry columns.
+- Decision: The first land-mask source is `MAMALIK_COARSE_V0_1`, a small checked-in seed that rejects obvious open-ocean starts but is not coastline-accurate.
+- Decision: Production should replace or augment the coarse seed with Natural Earth 1:50m/1:110m or an equivalent licensed land-mask import from local files, never runtime web fetches from validation endpoints.
+- Decision: Missing land-mask data blocks validation and kingdom creation by default; `ALLOW_MISSING_LAND_MASK=true` exists only as a local-development fallback.
+- Decision: Water rejection runs before border preview generation and existing-border overlap checks, and kingdom creation reruns the same server-side validation.

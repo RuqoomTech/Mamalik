@@ -69,7 +69,9 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 ## Sprint 4 Testing Priorities
 
 - Map coordinate tests should verify latitude/longitude validation, radius approximation, visible-area tolerance classification, and fallback behavior without requiring a live database.
+- Land-mask helper tests should verify land hits, water misses, missing table/data behavior, and the `ALLOW_MISSING_LAND_MASK` development fallback.
 - PostGIS helper smoke should use the configured database when available to confirm generated GeoJSON, measured area near 50,000 m2, and overlap detection against existing kingdom borders.
+- Water rejection smoke should seed the land mask, validate a known land point such as Riyadh, validate an obvious ocean point such as `lat: 0`, `lng: -30`, and confirm kingdom creation rejects water server-side.
 - Route/API smoke for `/api/kingdom/validate-location` requires a signed-in no-kingdom user because the endpoint enforces authentication and one-kingdom-per-user behavior.
 - Kingdom creation smoke should confirm the server reruns PostGIS validation and stores the server-generated `visibleBorderGeojson`; client-submitted preview polygons remain untrusted.
 - Water and restricted-zone checks must not be marked complete until their datasets/checks exist.

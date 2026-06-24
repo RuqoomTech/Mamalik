@@ -33,6 +33,8 @@ type CreateKingdomErrorCode =
   | "invalid-coordinates"
   | "invalid-location"
   | "too-close-to-existing-kingdom"
+  | "water"
+  | "land-mask-data-missing"
   | "create-kingdom-failed";
 
 type CreateKingdomInput = {
@@ -56,6 +58,14 @@ function errorResponse(code: CreateKingdomErrorCode, message: string, status: nu
 function coordinateErrorCode(reason: LocationValidationReason): CreateKingdomErrorCode {
   if (reason === "too-close-to-existing-kingdom") {
     return "too-close-to-existing-kingdom";
+  }
+
+  if (reason === "water") {
+    return "water";
+  }
+
+  if (reason === "land-mask-data-missing") {
+    return "land-mask-data-missing";
   }
 
   if (
@@ -82,6 +92,10 @@ function coordinateErrorMessage(reason: LocationValidationReason): string {
       return "Longitude must be between -180 and 180.";
     case "too-close-to-existing-kingdom":
       return "That location is too close to an existing kingdom.";
+    case "water":
+      return "That location is water. Choose a location on land.";
+    case "land-mask-data-missing":
+      return "Land validation data is not loaded. Try again later.";
     case "border-generation-failed":
       return "The selected location could not generate a valid border.";
     default:
@@ -299,6 +313,18 @@ export async function POST(request: Request) {
           "too-close-to-existing-kingdom",
           "That location is too close to an existing kingdom.",
           409,
+        );
+      }
+
+      if (error.message.startsWith("create-kingdom-location-water")) {
+        return errorResponse("water", "That location is water. Choose a location on land.", 400);
+      }
+
+      if (error.message.startsWith("create-kingdom-location-land-mask-data-missing")) {
+        return errorResponse(
+          "land-mask-data-missing",
+          "Land validation data is not loaded. Try again later.",
+          503,
         );
       }
 

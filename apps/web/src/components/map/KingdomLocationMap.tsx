@@ -29,6 +29,10 @@ function formatReason(reason: string | null): string {
   switch (reason) {
     case "too-close-to-existing-kingdom":
       return "That point is too close to an existing kingdom.";
+    case "water":
+      return "That point is water. Choose a location on land.";
+    case "land-mask-data-missing":
+      return "Land validation data is not loaded yet.";
     case "user-already-has-kingdom":
       return "This account already has a kingdom.";
     case "missing-coordinates":

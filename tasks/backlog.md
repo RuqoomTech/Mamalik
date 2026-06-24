@@ -64,7 +64,7 @@ Canonical Markdown backlog for active v0.1 work.
 ## Sprint 4 - Map Validation + Borders
 
 - [x] S4-001: Add PostGIS spatial helpers.
-- [ ] S4-002: Implement water rejection.
+- [x] S4-002: Implement water rejection.
 - [ ] S4-003: Add restricted-zone placeholder model and checks.
 - [ ] S4-004: Implement overlap checks.
 - [ ] S4-005: Implement dynamic buffer checks.
