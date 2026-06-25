@@ -63,7 +63,7 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - [x] S4-001: Map validation and border foundation.
 - [x] S4-002: Implement water rejection.
 - [x] S4-003: Add restricted-zone placeholder model and checks.
-- [ ] S4-004: Implement overlap checks.
+- [x] S4-004: Reconcile overlap validation and tracker state.
 - [ ] S4-005: Implement dynamic buffer checks.
 - [ ] S4-006: Implement area type classification placeholder.
 - [ ] S4-007: Implement visible polygon generation with dynamic tolerance.
@@ -78,6 +78,9 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - The first border preview uses a geodesic circular buffer around the selected point. The radius is approximated with `sqrt(area / pi)`, targeting 50,000 m2.
 - Generated visible area is measured with PostGIS and classified as `STRICT`, `LOOSE`, or `FALLBACK` against the locked tolerance bands.
 - Existing kingdom overlap is checked by converting stored `Kingdom.visibleBorderGeojson` to geometry with PostGIS and comparing it to the generated preview polygon.
+- S4-004 verifies the existing overlap foundation and marks overlap complete without rewriting the helper.
+- No-overlap is based on `ST_Intersects` between the generated preview polygon and existing `Kingdom.visibleBorderGeojson` values converted with `ST_GeomFromGeoJSON`.
+- Overlap rejection currently returns the stable `too-close-to-existing-kingdom` no-start reason. S4-005 still owns dynamic buffer distance checks beyond direct border intersection.
 - `/api/kingdom/validate-location` now uses the PostGIS validation helper and preserves the existing response fields for the current UI.
 - `POST /api/kingdom/create` reruns the same server-side validation and stores the server-generated preview polygon and measured area. It still does not trust client geometry.
 - S4-002 adds a raw SQL `LandMaskPolygon` table with `geometry(MultiPolygon, 4326)` and a GiST index for coarse land/water validation.

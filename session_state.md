@@ -2,68 +2,58 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-24 23:45:33 +03:00
+- Current date/time: 2026-06-25 21:17:34 +03:00
 - Current sprint: Sprint 4 - Map Validation + Borders
 - Current sprint file: `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
-- Current task: S4-003 - Restricted-zone placeholder model and validation foundation
+- Current task: None; S4-004 is complete.
 
 ## Last Completed Task
 
-- Completed S4-003 - Restricted-zone placeholder model and validation foundation.
-- Added raw SQL `RestrictedZone` PostGIS storage with `geometry(MultiPolygon, 4326)`, enabled/source/category indexes, and a GiST spatial index.
-- Added `npm run db:seed-restricted-zones` and an idempotent seed script for artificial `MAMALIK_RESTRICTED_V0_1` no-start fixtures.
-- Added server-only restricted-zone validation helpers that distinguish `CLEAR`, `RESTRICTED`, and `DATA_MISSING`.
-- Updated PostGIS location validation to reject restricted zones after land/water checks and preview polygon generation, before existing kingdom overlap checks.
-- Updated kingdom creation to rerun the same server-side restricted-zone validation and reject restricted zones or missing restricted-zone table data before writing kingdom records.
-- Updated the create-kingdom map UI reason text for restricted-zone failures.
-- Kept the restricted-zone dataset placeholder-only; no final global restricted-zone dataset was added.
+- Completed S4-004 - Overlap validation reconciliation and tracker cleanup.
+- Verified that production overlap validation was already implemented in S4-001 and still runs in the composed server-side validation path.
+- Kept overlap production code unchanged because no behavior bug was found.
+- Added a focused overlap regression test for the composed PostGIS validation helper.
+- Clarified that direct visible-border overlap returns the stable v0.1 no-start reason `too-close-to-existing-kingdom`.
+- Confirmed that dynamic buffer spacing beyond direct border intersection remains S4-005.
+- Updated Sprint 4 docs, task trackers, testing notes, decisions, changelog, and long-term context.
 
 ## Files Changed Recently
 
-Changed for Sprint 4 S4-003:
+Changed for Sprint 4 S4-004:
 
 - `CHANGELOG.md`
-- `apps/web/src/app/api/kingdom/create/route.ts`
-- `apps/web/src/components/map/KingdomLocationMap.tsx`
-- `apps/web/src/lib/kingdom/location-validation.ts`
 - `apps/web/src/lib/map/location-validation.test.ts`
-- `apps/web/src/lib/map/location-validation.ts`
-- `apps/web/src/lib/map/restricted-zones.test.ts`
-- `apps/web/src/lib/map/restricted-zones.ts`
 - `context.md`
 - `docs/03_TECH_ARCHITECTURE.md`
-- `docs/04_DATA_MODEL.md`
-- `docs/DATABASE.md`
 - `docs/DECISIONS_LOG.md`
-- `docs/ENVIRONMENT.md`
-- `docs/MAP_DATA_SOURCES.md`
 - `docs/TESTING_STRATEGY.md`
 - `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
-- `package.json`
-- `packages/db/package.json`
-- `packages/db/prisma/migrations/000007_restricted_zones/migration.sql`
-- `packages/db/src/seed-restricted-zones.ts`
+- `session_state.md`
 - `tasks/backlog.md`
 - `tasks/sprint_04.md`
 
 ## Commands Run
 
 - `git status --short`
-- `rg -n "LandMaskPolygon|validatePointAgainstLandMask|restrictedZoneCheck|LocationValidationReason|ReportType|model Kingdom|visibleBorder|LandMask" packages apps docs tasks -S`
-- `Get-ChildItem packages/db/prisma/migrations`
-- `Get-Content apps/web/src/lib/map/location-validation.ts`
-- `Get-Content apps/web/src/lib/kingdom/location-validation.ts`
-- `Get-Content apps/web/src/lib/map/land-mask.ts`
-- `Get-Content packages/db/src/seed-land-mask.ts`
-- `Get-Content package.json`
-- `Get-Content packages/db/package.json`
-- `Get-Content apps/web/src/lib/map/location-validation.test.ts`
-- `Get-Content apps/web/src/app/api/kingdom/create/route.ts`
-- `Get-Content apps/web/src/components/map/KingdomLocationMap.tsx`
-- `Get-Content apps/web/src/app/api/kingdom/validate-location/route.ts`
-- `New-Item -ItemType Directory -Force packages/db/prisma/migrations/000007_restricted_zones`
-- `npm run typecheck`
+- `Get-Content -Path AGENTS.md`
+- `Get-Content -Path context.md`
+- `Get-Content -Path session_state.md`
+- `Get-Content -Path docs/01_LOCKED_DECISIONS.md`
+- `Get-Content -Path docs/02_V0_1_SCOPE.md`
+- `Get-Content -Path docs/03_TECH_ARCHITECTURE.md`
+- `Get-Content -Path docs/04_DATA_MODEL.md`
+- `Get-Content -Path docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
+- `Get-Content -Path tasks/sprint_04.md`
+- `Get-Content -Path tasks/backlog.md`
+- `Get-Content -Path CHANGELOG.md`
+- `Get-Content -Path docs/MAP_DATA_SOURCES.md`
+- `Get-Content -Path apps/web/src/lib/db/client.ts`
+- `Get-Content -Path apps/web/src/lib/map/location-validation.ts`
+- `Get-Content -Path apps/web/package.json`
+- `rg -n "model Kingdom|centerLat|centerLng|visibleBorder" packages/db/prisma/schema.prisma apps/web/src -g"*.ts"`
+- `rg -n "S4-005|dynamic buffer|suggestions" docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md tasks/sprint_04.md tasks/backlog.md`
 - `npm run test`
+- `npm run typecheck`
 - `npm run lint`
 - `npm run build`
 - `npm run db:validate`
@@ -72,78 +62,77 @@ Changed for Sprint 4 S4-003:
 - `npm run game:typecheck`
 - `npm run tick:test`
 - `npm run tick:typecheck`
-- `npm run db:migrate:deploy`
-- `npm run db:seed-restricted-zones`
-- `npm exec -- tsx tmp-s4-003-smoke.ts`
+- `npm exec -- tsx tmp-s4-004-smoke.ts`
 - `Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`
+- `git diff --check`
+- `git status --short`
 
 ## Test Status
 
+- `npm run test`: passed outside the sandbox with 97 web tests, 55 game tests, and 8 worker tests. The new overlap regression is included in the 97 web tests.
 - `npm run typecheck`: passed.
-- `npm run test`: initial sandbox run failed with `spawn EPERM`; rerun outside the sandbox passed with 96 web tests, 55 game tests, and 8 worker tests.
 - `npm run lint`: passed.
 - `npm run build`: initial sandbox run compiled but failed with `spawn EPERM`; rerun outside the sandbox passed. Existing Node `module.register()` deprecation warning remains non-blocking.
-- `npm run db:validate`: initial sandbox run failed because Prisma could not access/download its schema engine through the sandbox proxy; rerun outside the sandbox passed.
+- `npm run db:validate`: initial sandbox run failed because Prisma could not access its schema engine through the sandbox proxy; rerun outside the sandbox passed.
 - `npm run db:typecheck`: passed.
-- `npm run game:test`: passed with 55 tests.
+- `npm run game:test`: initial sandbox run failed with `spawn EPERM`; rerun outside the sandbox passed with 55 tests.
 - `npm run game:typecheck`: passed.
-- `npm run tick:test`: passed with 8 tests.
+- `npm run tick:test`: initial sandbox run failed with `spawn EPERM`; rerun outside the sandbox passed with 8 tests.
 - `npm run tick:typecheck`: passed.
-- `npm run db:migrate:deploy`: applied migration `000007_restricted_zones` to the configured database.
-- `npm run db:seed-restricted-zones`: seeded 2 artificial restricted-zone fixtures from `MAMALIK_RESTRICTED_V0_1`.
+- `git diff --check`: passed; Git printed expected CRLF normalization warnings for modified text files.
+- `git status --short`: shows only the S4-004 source, docs, tracker, changelog, context, and session-state edits.
 
-## Manual Restricted-Zone Smoke Status
+## Manual PostGIS Smoke Status
 
-- Direct helper smoke with Riyadh coordinates passed against the configured PostgreSQL/PostGIS database:
+- Direct helper smoke against the configured PostgreSQL/PostGIS database passed for a known safe Riyadh coordinate:
   - `valid: true`
   - `reason: null`
-  - `landCheck.status: LAND`
-  - `restrictedZoneCheck.status: CLEAR`
+  - `landStatus: LAND`
+  - `restrictedStatus: CLEAR`
+  - `overlaps: false`
   - `visibleAreaM2: 49,684`
   - `toleranceStatus: STRICT`
-  - `overlap.overlaps: false`
-- Direct helper smoke with restricted fixture coordinates `lat: 24.95`, `lng: 46.9` passed:
-  - `valid: false`
-  - `reason: restricted-zone`
-  - `landCheck.status: LAND`
-  - `restrictedZoneCheck.status: RESTRICTED`
-  - `zones: S4_TEST_NO_START_RIYADH_EAST`
-  - `overlap: null`
-- Direct helper smoke with Atlantic coordinates `lat: 0`, `lng: -30` passed:
-  - `valid: false`
-  - `reason: water`
-  - `landCheck.status: WATER`
-  - `restrictedZoneCheck.status: NOT_IMPLEMENTED`
-  - `overlap: null`
-- Direct helper smoke with an existing kingdom center passed:
+- Direct helper smoke against an existing kingdom center passed:
   - `valid: false`
   - `reason: too-close-to-existing-kingdom`
-  - `landCheck.status: LAND`
-  - `restrictedZoneCheck.status: CLEAR`
-  - `overlap.overlaps: true`
-- Authenticated `/api/kingdom/validate-location` route smoke and full `/create-kingdom` browser smoke were not run in this task. Direct helper smoke covered the same validation function used by the route and creation endpoint without requiring a prepared signed-in no-kingdom account.
+  - `landStatus: LAND`
+  - `restrictedStatus: CLEAR`
+  - `overlaps: true`
+  - `overlappingKingdomCount: 1`
+- Direct helper smoke against Atlantic coordinates `lat: 0`, `lng: -30` passed:
+  - `valid: false`
+  - `reason: water`
+  - `landStatus: WATER`
+  - `overlaps: null`
+- Direct helper smoke against restricted fixture coordinates `lat: 24.95`, `lng: 46.9` passed:
+  - `valid: false`
+  - `reason: restricted-zone`
+  - `landStatus: LAND`
+  - `restrictedStatus: RESTRICTED`
+  - `zones: S4_TEST_NO_START_RIYADH_EAST`
+- Authenticated route/browser smoke was not run in this task. The live smoke covered the shared validation helper used by `POST /api/kingdom/validate-location` and rerun by `POST /api/kingdom/create`.
 
-## Migration Status
+## Tracker Updates
 
-- Added migration `000007_restricted_zones`.
-- Applied `000007_restricted_zones` to the configured database with `npm run db:migrate:deploy`.
-- Seeded 2 artificial restricted-zone fixtures with `npm run db:seed-restricted-zones`.
+- Marked S4-004 complete in `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`.
+- Marked S4-004 complete in `tasks/sprint_04.md`.
+- Marked S4-004 complete in `tasks/backlog.md`.
+- Left S4-005 dynamic buffer checks pending.
+- Left S4-008 nearby valid point suggestions pending.
 
 ## Known Issues
 
-- The current restricted-zone seed is artificial and only validates the no-start-zone foundation.
-- Production-grade global restricted-zone data remains deferred.
-- Future sensitive restricted-zone datasets should keep public rejection messages generic.
+- Dynamic buffer distance checks beyond direct visible-border intersection are not implemented yet; they remain S4-005.
+- Nearby valid point suggestions remain pending for S4-008.
+- Visible-border expansion after land purchases is still deferred to later Sprint 4 work.
 - The current `MAMALIK_COARSE_V0_1` land mask rejects obvious open ocean but is not coastline-accurate.
-- Dynamic buffer checks by area type are not implemented yet; they remain S4-005.
-- Nearby valid point suggestions still need Sprint 4 follow-up work.
-- Land purchases still increase gameplay usable land credit only; visible-border expansion from land purchases remains future Sprint 4+ work.
-- `npm run build` passes but emits the existing Node v26.1.0 deprecation warning for `module.register()`.
+- The current restricted-zone seed is artificial and not a production global restricted-zone dataset.
+- `npm run build` passes but emits the existing Node deprecation warning for `module.register()`.
 
 ## Open Questions
 
-- None for S4-003.
+- None for S4-004.
 
 ## Next Recommended Task
 
-- S4-004 - Implement overlap checks and reconcile the task tracker with the overlap foundation already introduced in S4-001.
+- S4-005 - Implement dynamic buffer checks.

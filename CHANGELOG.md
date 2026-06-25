@@ -2,6 +2,22 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-25
+
+### Added
+
+- Added a focused overlap regression test proving generated preview polygons with existing-border overlap return `too-close-to-existing-kingdom` and preserve overlap count metadata.
+
+### Changed
+
+- Marked S4-004 complete as overlap validation reconciliation because S4-001 already implemented direct visible-border overlap checks and S4-003 live smoke verified the behavior.
+- Documented that direct no-overlap validation uses `ST_Intersects` against stored `Kingdom.visibleBorderGeojson`, while dynamic buffer spacing remains S4-005.
+
+### Deferred
+
+- Dynamic buffer distance checks beyond direct visible-border overlap remain pending S4-005.
+- Visible-border expansion after land purchase and nearby valid point suggestions remain pending Sprint 4 follow-up work.
+
 ## 2026-06-24
 
 ### Added

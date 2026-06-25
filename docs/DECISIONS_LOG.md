@@ -267,3 +267,10 @@
 - Decision: Restricted-zone validation rejects a start when the selected point is inside an enabled zone or when the generated preview polygon intersects an enabled zone.
 - Decision: An existing restricted-zone table with zero active rows is clear; a missing restricted-zone table returns `restricted-zone-data-missing` and blocks kingdom creation.
 - Decision: User-facing restricted-zone errors stay generic so future sensitive restricted datasets do not leak detailed public information.
+
+## 2026-06-25 - Sprint 4 Overlap Reconciliation
+
+- Decision: S4-004 does not rewrite overlap logic because S4-001 already implemented it and S4-003 live smoke confirmed it.
+- Decision: v0.1 foundation overlap detection uses `ST_Intersects` between the generated preview polygon and existing `Kingdom.visibleBorderGeojson` converted with `ST_GeomFromGeoJSON`.
+- Decision: Direct visible-border overlap returns the existing `too-close-to-existing-kingdom` no-start reason. Dynamic buffer distance checks beyond direct overlap remain S4-005.
+- Decision: Kingdom creation remains protected because `POST /api/kingdom/create` reruns the shared server-side validation and does not accept client-submitted polygon, area, overlap, or tolerance values.

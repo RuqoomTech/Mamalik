@@ -80,6 +80,8 @@ S4-002 adds `apps/web/src/lib/map/land-mask.ts` for land/water checks against th
 
 S4-003 adds `apps/web/src/lib/map/restricted-zones.ts` for configured no-start zones against the raw SQL `RestrictedZone` PostGIS table. The helper treats a missing table as explicit data missing, treats an existing empty table as clear, and rejects locations when either the selected point is covered by a zone or the generated preview polygon intersects a zone.
 
+S4-004 reconciles overlap tracking without rewriting the helper. Direct visible-border overlap is complete for the v0.1 foundation and returns the existing `too-close-to-existing-kingdom` no-start reason. Dynamic buffer distance checks beyond direct overlap remain a separate Sprint 4 task.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`

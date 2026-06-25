@@ -139,6 +139,39 @@ test("rejects restricted zones before overlap checks", async () => {
   assert.equal(db.calls, 6);
 });
 
+test("rejects existing kingdom border overlap with a stable no-start reason", async () => {
+  const db = createFakeDb([
+    [{ tableExists: true }],
+    [
+      {
+        maskCount: 9,
+        matchedSource: "MAMALIK_COARSE_V0_1",
+        matchedName: "Arabian Peninsula coarse land mask",
+      },
+    ],
+    [{ geojson: previewPolygon, visibleAreaM2: 49_684 }],
+    [{ tableExists: true }],
+    [{ zoneCount: 2 }],
+    [],
+    [{ overlapCount: 2 }],
+  ]);
+
+  const response = await validateKingdomLocationWithPostgis(db, {
+    lat: 24.7136,
+    lng: 46.6753,
+  });
+
+  assert.equal(response.valid, false);
+  assert.equal(response.reason, "too-close-to-existing-kingdom");
+  assert.equal(response.landCheck?.status, "LAND");
+  assert.equal(response.restrictedZoneCheck.status, "CLEAR");
+  assert.equal(response.overlap?.overlaps, true);
+  assert.equal(response.overlap?.overlappingKingdomCount, 2);
+  assert.equal(response.previewPolygon, null);
+  assert.equal(response.toleranceStatus, "STRICT");
+  assert.equal(db.calls, 7);
+});
+
 test("rejects missing restricted-zone table before overlap checks", async () => {
   const db = createFakeDb([
     [{ tableExists: true }],

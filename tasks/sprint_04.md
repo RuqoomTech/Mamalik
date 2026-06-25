@@ -9,7 +9,7 @@ Map validation and border generation are v0.1-ready.
 - [x] S4-001: Add PostGIS spatial helpers.
 - [x] S4-002: Implement water rejection.
 - [x] S4-003: Add restricted-zone placeholder model and checks.
-- [ ] S4-004: Implement overlap checks.
+- [x] S4-004: Reconcile overlap validation and tracker state.
 - [ ] S4-005: Implement dynamic buffer checks.
 - [ ] S4-006: Implement area type classification placeholder.
 - [ ] S4-007: Implement visible polygon generation with dynamic tolerance.
@@ -30,4 +30,5 @@ Map validation and border generation are v0.1-ready.
 - S4-001 updates `/api/kingdom/validate-location` and `POST /api/kingdom/create` to rerun server-side PostGIS validation.
 - S4-002 adds coarse PostGIS land-mask storage, seed/import foundation, and water rejection for obvious ocean starts.
 - S4-003 adds raw SQL restricted-zone storage, artificial v0.1 no-start fixtures, and point/preview-polygon restricted-zone rejection.
+- S4-004 verifies overlap validation as already implemented: generated preview polygons are checked against existing `Kingdom.visibleBorderGeojson` geometry and return `too-close-to-existing-kingdom` on direct border intersection. Dynamic buffer spacing remains S4-005.
 - Dynamic area-type buffers and nearby suggestions remain pending follow-up Sprint 4 tasks.

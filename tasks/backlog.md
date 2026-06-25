@@ -66,7 +66,7 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S4-001: Add PostGIS spatial helpers.
 - [x] S4-002: Implement water rejection.
 - [x] S4-003: Add restricted-zone placeholder model and checks.
-- [ ] S4-004: Implement overlap checks.
+- [x] S4-004: Reconcile overlap validation and tracker state.
 - [ ] S4-005: Implement dynamic buffer checks.
 - [ ] S4-006: Implement area type classification placeholder.
 - [ ] S4-007: Implement visible polygon generation with dynamic tolerance.
