@@ -10,19 +10,19 @@ Map validation and border generation are v0.1-ready.
 - [x] S4-002: Implement water rejection.
 - [x] S4-003: Add restricted-zone placeholder model and checks.
 - [x] S4-004: Reconcile overlap validation and tracker state.
-- [ ] S4-005: Implement dynamic buffer checks.
+- [x] S4-005: Implement dynamic buffer checks and nearby valid suggestions.
 - [ ] S4-006: Implement area type classification placeholder.
 - [ ] S4-007: Implement visible polygon generation with dynamic tolerance.
-- [ ] S4-008: Implement nearby valid point suggestions.
+- [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
 - [ ] S4-009: Update map preview UI.
 
 ## Acceptance Criteria
 
-- [ ] Invalid locations return useful reasons.
+- [x] Invalid locations return useful reasons.
 - [x] Water, overlap, and restricted zones are rejected.
-- [ ] Valid locations return visible polygon preview.
-- [ ] Usable land credit remains exact.
-- [ ] Nearby suggestions return for invalid clicks where possible.
+- [x] Valid locations return visible polygon preview.
+- [x] Usable land credit remains exact.
+- [x] Nearby suggestions return for invalid clicks where possible.
 
 ## Notes
 
@@ -31,4 +31,5 @@ Map validation and border generation are v0.1-ready.
 - S4-002 adds coarse PostGIS land-mask storage, seed/import foundation, and water rejection for obvious ocean starts.
 - S4-003 adds raw SQL restricted-zone storage, artificial v0.1 no-start fixtures, and point/preview-polygon restricted-zone rejection.
 - S4-004 verifies overlap validation as already implemented: generated preview polygons are checked against existing `Kingdom.visibleBorderGeojson` geometry and return `too-close-to-existing-kingdom` on direct border intersection. Dynamic buffer spacing remains S4-005.
-- Dynamic area-type buffers and nearby suggestions remain pending follow-up Sprint 4 tasks.
+- S4-005 adds a 303m starting dynamic spacing rule derived from preview radius, uses PostGIS `ST_DWithin` for center-distance spacing, and returns up to 3 server-validated nearby suggestions for water, restricted-zone, overlap, and spacing failures.
+- Area-type buffer classification, visible-border expansion, and map preview polish remain pending follow-up Sprint 4 tasks.

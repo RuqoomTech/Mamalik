@@ -25,6 +25,26 @@ function formatCoordinate(value: number): string {
   return value.toFixed(6);
 }
 
+function formatDistanceMeters(value: number | undefined): string | null {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return null;
+  }
+
+  if (value >= 1_000) {
+    return `${(value / 1_000).toFixed(1)} km`;
+  }
+
+  return `${Math.round(value)} m`;
+}
+
+function formatBearing(value: number | undefined): string | null {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return null;
+  }
+
+  return `${Math.round(value)} deg`;
+}
+
 function formatReason(reason: string | null): string {
   switch (reason) {
     case "too-close-to-existing-kingdom":
@@ -266,23 +286,43 @@ export function KingdomLocationMap({
               {validationResult.suggestions.length > 0 ? (
                 <div className="mt-3 space-y-2">
                   <p className="text-xs font-medium uppercase tracking-wide">
-                    Suggestions
+                    Nearby valid suggestions
                   </p>
                   {validationResult.suggestions.map((suggestion) => (
                     <button
                       className="block w-full rounded-md border border-amber-300 bg-white px-3 py-2 text-left text-sm text-neutral-950 hover:bg-amber-100"
-                      key={`${suggestion.lat}-${suggestion.lng}`}
+                      key={`${suggestion.lat}-${suggestion.lng}-${suggestion.distanceM ?? 0}-${suggestion.bearingDeg ?? 0}`}
                       onClick={() => handleSuggestionClick(suggestion)}
                       type="button"
                     >
-                      <span className="font-medium">{suggestion.label}</span>
+                      <span className="font-medium">
+                        {suggestion.label ?? "Nearby valid location"}
+                      </span>
                       <span className="block text-xs text-neutral-600">
                         {formatCoordinate(suggestion.lat)}, {formatCoordinate(suggestion.lng)}
+                      </span>
+                      <span className="mt-1 block text-xs text-neutral-600">
+                        {[
+                          formatDistanceMeters(suggestion.distanceM),
+                          formatBearing(suggestion.bearingDeg),
+                          suggestion.toleranceStatus
+                            ? `border ${suggestion.toleranceStatus.toLowerCase()}`
+                            : null,
+                          suggestion.visibleAreaM2
+                            ? `${suggestion.visibleAreaM2.toLocaleString()} m2`
+                            : null,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
                       </span>
                     </button>
                   ))}
                 </div>
-              ) : null}
+              ) : (
+                <p className="mt-3 text-xs text-amber-900">
+                  No nearby valid suggestions were found. Choose another point and validate again.
+                </p>
+              )}
             </div>
           ) : null}
         </section>

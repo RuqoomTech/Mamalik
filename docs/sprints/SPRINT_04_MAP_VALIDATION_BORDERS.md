@@ -48,15 +48,15 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 ## Acceptance Criteria
 
 - [x] Clicking water is rejected.
-- [ ] Clicking too close to another kingdom is rejected.
+- [x] Clicking too close to another kingdom is rejected.
 - [ ] Dynamic buffer uses area type.
 - [x] Existing kingdom overlap is rejected.
 - [x] Restricted-zone placeholder check exists.
 - [x] A valid starting point returns a visible polygon preview.
 - [x] Visible polygon uses dynamic tolerance or fallback.
 - [x] Usable land remains exactly 50,000 m2.
-- [ ] Invalid clicks return useful reasons.
-- [ ] Invalid clicks can return nearby valid suggestions.
+- [x] Invalid clicks return useful reasons.
+- [x] Invalid clicks can return nearby valid suggestions.
 
 ## Task Status
 
@@ -64,10 +64,10 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - [x] S4-002: Implement water rejection.
 - [x] S4-003: Add restricted-zone placeholder model and checks.
 - [x] S4-004: Reconcile overlap validation and tracker state.
-- [ ] S4-005: Implement dynamic buffer checks.
+- [x] S4-005: Implement dynamic buffer checks and nearby valid suggestions.
 - [ ] S4-006: Implement area type classification placeholder.
 - [ ] S4-007: Implement visible polygon generation with dynamic tolerance.
-- [ ] S4-008: Implement nearby valid point suggestions.
+- [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
 - [ ] S4-009: Update map preview UI.
 
 ## Implementation Notes
@@ -81,6 +81,9 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - S4-004 verifies the existing overlap foundation and marks overlap complete without rewriting the helper.
 - No-overlap is based on `ST_Intersects` between the generated preview polygon and existing `Kingdom.visibleBorderGeojson` values converted with `ST_GeomFromGeoJSON`.
 - Overlap rejection currently returns the stable `too-close-to-existing-kingdom` no-start reason. S4-005 still owns dynamic buffer distance checks beyond direct border intersection.
+- S4-005 adds a v0.1 dynamic spacing rule: `minimumDistanceM = max(300, ceil(previewRadiusM * 2 + 50))`. For the starting 50,000 m2 preview this is 303 meters.
+- S4-005 checks spacing with PostGIS `ST_DWithin` against existing kingdom centers after direct border-overlap checks. Direct overlap and spacing failures both use `too-close-to-existing-kingdom`.
+- S4-005 adds server-generated nearby suggestions for water, restricted-zone, overlap, and spacing failures. Suggestions scan 300m, 600m, 1,000m, 1,500m, and 2,000m rings at 45-degree bearings, cap validation at the first 24 candidates, validate each candidate through the same pipeline with recursive suggestions disabled, and return up to 3 valid candidates.
 - `/api/kingdom/validate-location` now uses the PostGIS validation helper and preserves the existing response fields for the current UI.
 - `POST /api/kingdom/create` reruns the same server-side validation and stores the server-generated preview polygon and measured area. It still does not trust client geometry.
 - S4-002 adds a raw SQL `LandMaskPolygon` table with `geometry(MultiPolygon, 4326)` and a GiST index for coarse land/water validation.

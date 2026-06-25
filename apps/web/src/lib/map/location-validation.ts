@@ -2,6 +2,7 @@ import { STARTING_USABLE_LAND_M2 } from "@mamalik/game/constants";
 import {
   createInvalidLocationResponse,
   type LocationCoordinates,
+  type LocationSuggestion,
   type LocationValidationResponse,
   type RestrictedZoneCheckResponse,
 } from "@/lib/kingdom/location-validation";
@@ -19,6 +20,14 @@ import {
   type BorderOverlapResult,
 } from "@/lib/map/postgis";
 import {
+  calculateDynamicMinimumSpacingM,
+  createLocationSuggestionCandidates,
+  limitLocationSuggestions,
+  MAX_LOCATION_SUGGESTION_CANDIDATES,
+  validateDynamicSpacingFromExistingKingdoms,
+  type SpacingValidationResult,
+} from "@/lib/map/dynamic-spacing";
+import {
   validatePointAndPreviewAgainstRestrictedZones,
   type RestrictedZoneValidationResult,
 } from "@/lib/map/restricted-zones";
@@ -28,6 +37,7 @@ export type SpatialLocationValidationResponse = LocationValidationResponse & {
   center: LocationCoordinates | null;
   toleranceStatus: VisibleBorderToleranceStatus | null;
   overlap: BorderOverlapResult | null;
+  spacing: LocationValidationResponse["spacing"];
   landCheck: LocationValidationResponse["landCheck"];
   waterCheck: NonNullable<LocationValidationResponse["waterCheck"]>;
   restrictedZoneCheck: RestrictedZoneCheckResponse;
@@ -41,6 +51,7 @@ export async function validateKingdomLocationWithPostgis(
     lat: unknown;
     lng: unknown;
     excludeKingdomId?: string;
+    includeSuggestions?: boolean;
   },
 ): Promise<SpatialLocationValidationResponse> {
   const coordinatesValidation = validateLatitudeLongitude(input);
@@ -56,7 +67,13 @@ export async function validateKingdomLocationWithPostgis(
   const landCheck = await validatePointAgainstLandMask(db, center);
 
   if (landCheck.status === "WATER") {
-    return invalidSpatialResponse("water", { center, landCheck });
+    const suggestions = await createNearbyValidSuggestionsIfNeeded(db, {
+      center,
+      excludeKingdomId: input.excludeKingdomId,
+      includeSuggestions: input.includeSuggestions,
+    });
+
+    return invalidSpatialResponse("water", { center, landCheck, suggestions });
   }
 
   if (landCheck.status === "DATA_MISSING" && !landCheck.allowMissingData) {
@@ -73,10 +90,17 @@ export async function validateKingdomLocationWithPostgis(
   });
 
   if (restrictedZoneCheck.status === "RESTRICTED") {
+    const suggestions = await createNearbyValidSuggestionsIfNeeded(db, {
+      center,
+      excludeKingdomId: input.excludeKingdomId,
+      includeSuggestions: input.includeSuggestions,
+    });
+
     return invalidSpatialResponse("restricted-zone", {
       center,
       landCheck,
       restrictedZoneCheck,
+      suggestions,
     });
   }
 
@@ -94,12 +118,46 @@ export async function validateKingdomLocationWithPostgis(
   });
 
   if (overlap.overlaps) {
+    const suggestions = await createNearbyValidSuggestionsIfNeeded(db, {
+      center,
+      excludeKingdomId: input.excludeKingdomId,
+      includeSuggestions: input.includeSuggestions,
+    });
+
     return {
-      ...createInvalidLocationResponse("too-close-to-existing-kingdom"),
+      ...createInvalidLocationResponse("too-close-to-existing-kingdom", suggestions),
       ok: false,
       center,
       toleranceStatus: borderPreview.toleranceStatus,
       overlap,
+      spacing: null,
+      landCheck: createLandCheckResponse(landCheck),
+      waterCheck: landCheck.status,
+      restrictedZoneCheck: createRestrictedZoneCheckResponse(restrictedZoneCheck),
+    };
+  }
+
+  const minimumDistanceM = calculateDynamicMinimumSpacingM(borderPreview.radiusM);
+  const spacing = await validateDynamicSpacingFromExistingKingdoms(db, {
+    coordinates: center,
+    minimumDistanceM,
+    excludeKingdomId: input.excludeKingdomId,
+  });
+
+  if (spacing.status === "TOO_CLOSE") {
+    const suggestions = await createNearbyValidSuggestionsIfNeeded(db, {
+      center,
+      excludeKingdomId: input.excludeKingdomId,
+      includeSuggestions: input.includeSuggestions,
+    });
+
+    return {
+      ...createInvalidLocationResponse("too-close-to-existing-kingdom", suggestions),
+      ok: false,
+      center,
+      toleranceStatus: borderPreview.toleranceStatus,
+      overlap,
+      spacing: createSpacingCheckResponse(spacing),
       landCheck: createLandCheckResponse(landCheck),
       waterCheck: landCheck.status,
       restrictedZoneCheck: createRestrictedZoneCheckResponse(restrictedZoneCheck),
@@ -116,6 +174,7 @@ export async function validateKingdomLocationWithPostgis(
     previewPolygon: borderPreview.previewPolygon,
     toleranceStatus: borderPreview.toleranceStatus,
     overlap,
+    spacing: createSpacingCheckResponse(spacing),
     landCheck: createLandCheckResponse(landCheck),
     waterCheck: landCheck.status,
     restrictedZoneCheck: createRestrictedZoneCheckResponse(restrictedZoneCheck),
@@ -129,6 +188,7 @@ export function invalidSpatialResponse(
     center?: LocationCoordinates | null;
     landCheck?: LandMaskValidationResult;
     restrictedZoneCheck?: RestrictedZoneValidationResult;
+    suggestions?: LocationSuggestion[];
   } = {},
 ): SpatialLocationValidationResponse {
   const landCheck = options.landCheck
@@ -150,9 +210,92 @@ export function invalidSpatialResponse(
     center: options.center ?? null,
     toleranceStatus: null,
     overlap: null,
+    spacing: null,
     landCheck,
     waterCheck: landCheck.status,
     restrictedZoneCheck,
+    suggestions: options.suggestions ?? [],
+  };
+}
+
+async function createNearbyValidSuggestionsIfNeeded(
+  db: PostgisValidationClient,
+  input: {
+    center: LocationCoordinates;
+    excludeKingdomId?: string;
+    includeSuggestions?: boolean;
+  },
+): Promise<LocationSuggestion[]> {
+  if (!input.includeSuggestions) {
+    return [];
+  }
+
+  const suggestions: LocationSuggestion[] = [];
+  const candidates = createLocationSuggestionCandidates(input.center).slice(
+    0,
+    MAX_LOCATION_SUGGESTION_CANDIDATES,
+  );
+
+  for (let index = 0; index < candidates.length; index += 3) {
+    const batch = candidates.slice(index, index + 3);
+    const batchResults = await Promise.all(
+      batch.map(async (candidate) => {
+        const validation = await validateKingdomLocationWithPostgis(db, {
+          lat: candidate.lat,
+          lng: candidate.lng,
+          excludeKingdomId: input.excludeKingdomId,
+          includeSuggestions: false,
+        });
+
+        if (!validation.valid || validation.visibleAreaM2 === null || !validation.toleranceStatus) {
+          return null;
+        }
+
+        return {
+          lat: candidate.lat,
+          lng: candidate.lng,
+          label: "Nearby valid location",
+          reason: "nearby-valid-location" as const,
+          distanceM: candidate.distanceM,
+          bearingDeg: candidate.bearingDeg,
+          visibleAreaM2: validation.visibleAreaM2,
+          toleranceStatus: validation.toleranceStatus,
+        };
+      }),
+    );
+
+    for (const suggestion of batchResults) {
+      if (suggestion) {
+        suggestions.push(suggestion);
+      }
+
+      if (suggestions.length >= 3) {
+        break;
+      }
+    }
+
+    if (suggestions.length >= 3) {
+      break;
+    }
+  }
+
+  return limitLocationSuggestions(suggestions);
+}
+
+function createSpacingCheckResponse(
+  spacing: SpacingValidationResult,
+): NonNullable<LocationValidationResponse["spacing"]> {
+  if (spacing.status === "TOO_CLOSE") {
+    return {
+      status: "TOO_CLOSE",
+      minimumDistanceM: spacing.minimumDistanceM,
+      nearestDistanceM: spacing.nearestDistanceM,
+    };
+  }
+
+  return {
+    status: "CLEAR",
+    minimumDistanceM: spacing.minimumDistanceM,
   };
 }
 

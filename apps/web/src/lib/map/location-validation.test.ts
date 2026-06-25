@@ -48,6 +48,7 @@ test("validates a land point with land mask, preview polygon, and overlap checks
     [{ zoneCount: 2 }],
     [],
     [{ overlapCount: 0 }],
+    [],
   ]);
 
   const response = await validateKingdomLocationWithPostgis(db, {
@@ -63,7 +64,9 @@ test("validates a land point with land mask, preview polygon, and overlap checks
   assert.equal(response.toleranceStatus, "STRICT");
   assert.equal(response.restrictedZoneCheck.status, "CLEAR");
   assert.equal(response.overlap?.overlaps, false);
-  assert.equal(db.calls, 7);
+  assert.equal(response.spacing?.status, "CLEAR");
+  assert.equal(response.spacing?.minimumDistanceM, 303);
+  assert.equal(db.calls, 8);
 });
 
 test("rejects water before generating a border preview", async () => {
@@ -170,6 +173,142 @@ test("rejects existing kingdom border overlap with a stable no-start reason", as
   assert.equal(response.previewPolygon, null);
   assert.equal(response.toleranceStatus, "STRICT");
   assert.equal(db.calls, 7);
+});
+
+test("rejects points inside the dynamic spacing buffer", async () => {
+  const db = createFakeDb([
+    [{ tableExists: true }],
+    [
+      {
+        maskCount: 9,
+        matchedSource: "MAMALIK_COARSE_V0_1",
+        matchedName: "Arabian Peninsula coarse land mask",
+      },
+    ],
+    [{ geojson: previewPolygon, visibleAreaM2: 49_684 }],
+    [{ tableExists: true }],
+    [{ zoneCount: 2 }],
+    [],
+    [{ overlapCount: 0 }],
+    [{ nearestKingdomId: "kingdom_1", nearestDistanceM: 281.6 }],
+  ]);
+
+  const response = await validateKingdomLocationWithPostgis(db, {
+    lat: 24.7136,
+    lng: 46.6753,
+  });
+
+  assert.equal(response.valid, false);
+  assert.equal(response.reason, "too-close-to-existing-kingdom");
+  assert.equal(response.overlap?.overlaps, false);
+  assert.equal(response.spacing?.status, "TOO_CLOSE");
+  assert.equal(response.spacing?.minimumDistanceM, 303);
+  assert.equal(response.spacing?.nearestDistanceM, 282);
+  assert.equal(response.suggestions.length, 0);
+  assert.equal(db.calls, 8);
+});
+
+test("adds validated nearby suggestions without recursive suggestion generation", async () => {
+  const validCandidateBatchResponses = [
+    [{ tableExists: true }],
+    [{ tableExists: true }],
+    [{ tableExists: true }],
+    [
+      {
+        maskCount: 9,
+        matchedSource: "MAMALIK_COARSE_V0_1",
+        matchedName: "Arabian Peninsula coarse land mask",
+      },
+    ],
+    [
+      {
+        maskCount: 9,
+        matchedSource: "MAMALIK_COARSE_V0_1",
+        matchedName: "Arabian Peninsula coarse land mask",
+      },
+    ],
+    [
+      {
+        maskCount: 9,
+        matchedSource: "MAMALIK_COARSE_V0_1",
+        matchedName: "Arabian Peninsula coarse land mask",
+      },
+    ],
+    [{ geojson: previewPolygon, visibleAreaM2: 49_684 }],
+    [{ geojson: previewPolygon, visibleAreaM2: 49_684 }],
+    [{ geojson: previewPolygon, visibleAreaM2: 49_684 }],
+    [{ tableExists: true }],
+    [{ tableExists: true }],
+    [{ tableExists: true }],
+    [{ zoneCount: 2 }],
+    [{ zoneCount: 2 }],
+    [{ zoneCount: 2 }],
+    [],
+    [],
+    [],
+    [{ overlapCount: 0 }],
+    [{ overlapCount: 0 }],
+    [{ overlapCount: 0 }],
+    [],
+    [],
+    [],
+  ];
+  const db = createFakeDb([
+    [{ tableExists: true }],
+    [
+      {
+        maskCount: 9,
+        matchedSource: "MAMALIK_COARSE_V0_1",
+        matchedName: "Arabian Peninsula coarse land mask",
+      },
+    ],
+    [{ geojson: previewPolygon, visibleAreaM2: 49_684 }],
+    [{ tableExists: true }],
+    [{ zoneCount: 2 }],
+    [],
+    [{ overlapCount: 0 }],
+    [{ nearestKingdomId: "kingdom_1", nearestDistanceM: 281.6 }],
+    ...validCandidateBatchResponses,
+  ]);
+
+  const response = await validateKingdomLocationWithPostgis(db, {
+    lat: 24.7136,
+    lng: 46.6753,
+    includeSuggestions: true,
+  });
+
+  assert.equal(response.valid, false);
+  assert.equal(response.reason, "too-close-to-existing-kingdom");
+  assert.equal(response.suggestions.length, 3);
+  assert.deepEqual(
+    response.suggestions.map((suggestion) => suggestion.reason),
+    ["nearby-valid-location", "nearby-valid-location", "nearby-valid-location"],
+  );
+  assert.deepEqual(
+    response.suggestions.map((suggestion) => suggestion.distanceM),
+    [300, 300, 300],
+  );
+  assert.deepEqual(
+    response.suggestions.map((suggestion) => suggestion.bearingDeg),
+    [0, 45, 90],
+  );
+  assert.equal(response.suggestions[0]?.visibleAreaM2, 49_684);
+  assert.equal(response.suggestions[0]?.toleranceStatus, "STRICT");
+  assert.equal(db.calls, 32);
+});
+
+test("does not generate suggestions for invalid coordinate ranges", async () => {
+  const db = createFakeDb([]);
+  const response = await validateKingdomLocationWithPostgis(db, {
+    lat: 91,
+    lng: 46.6753,
+    includeSuggestions: true,
+  });
+
+  assert.equal(response.valid, false);
+  assert.equal(response.reason, "latitude-out-of-range");
+  assert.equal(response.suggestions.length, 0);
+  assert.equal(db.calls, 0);
 });
 
 test("rejects missing restricted-zone table before overlap checks", async () => {

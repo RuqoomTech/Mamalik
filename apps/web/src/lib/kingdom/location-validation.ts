@@ -20,7 +20,12 @@ export type LocationCoordinates = {
 };
 
 export type LocationSuggestion = LocationCoordinates & {
-  label: string;
+  label?: string;
+  reason?: "nearby-valid-location";
+  distanceM?: number;
+  bearingDeg?: number;
+  visibleAreaM2?: number;
+  toleranceStatus?: "STRICT" | "LOOSE" | "FALLBACK";
 };
 
 export type PreviewPolygon = {
@@ -71,6 +76,11 @@ export type LocationValidationResponse = {
   overlap?: {
     overlaps: boolean;
     overlappingKingdomCount: number;
+  } | null;
+  spacing?: {
+    status: "CLEAR" | "TOO_CLOSE";
+    minimumDistanceM: number;
+    nearestDistanceM?: number;
   } | null;
   landCheck?: LandCheckResponse;
   waterCheck?: "LAND" | "WATER" | "DATA_MISSING" | "NOT_IMPLEMENTED";
@@ -244,6 +254,7 @@ export function createInvalidLocationResponse(
     previewPolygon: null,
     toleranceStatus: null,
     overlap: null,
+    spacing: null,
     landCheck: {
       status: "NOT_IMPLEMENTED",
       source: "NOT_IMPLEMENTED",

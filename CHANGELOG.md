@@ -7,16 +7,22 @@ All notable Mamalik project changes are recorded here.
 ### Added
 
 - Added a focused overlap regression test proving generated preview polygons with existing-border overlap return `too-close-to-existing-kingdom` and preserve overlap count metadata.
+- Added a server-only dynamic spacing helper using a v0.1 `max(300, ceil(previewRadiusM * 2 + 50))` minimum-distance rule.
+- Added PostGIS `ST_DWithin` center-distance checks after direct visible-border overlap validation.
+- Added capped server-generated nearby valid suggestions for water, restricted-zone, overlap, and spacing failures.
+- Added dynamic-spacing and suggestion tests for radius-based minimum spacing, candidate rings/bearings, suggestion caps, spacing result mapping, and non-recursive validation.
 
 ### Changed
 
 - Marked S4-004 complete as overlap validation reconciliation because S4-001 already implemented direct visible-border overlap checks and S4-003 live smoke verified the behavior.
 - Documented that direct no-overlap validation uses `ST_Intersects` against stored `Kingdom.visibleBorderGeojson`, while dynamic buffer spacing remains S4-005.
+- Updated `/api/kingdom/validate-location` to return up to 3 server-validated nearby suggestions when invalid selections can be repaired nearby.
+- Updated the create-kingdom map UI to show suggestion distance, bearing, border tolerance, and visible area when available.
+- Marked S4-005 complete and marked nearby valid point suggestions complete because the S4-005 task bundled the basic server-generated suggestion flow.
 
 ### Deferred
 
-- Dynamic buffer distance checks beyond direct visible-border overlap remain pending S4-005.
-- Visible-border expansion after land purchase and nearby valid point suggestions remain pending Sprint 4 follow-up work.
+- Area-type buffer classification, visible-border expansion after land purchase, and map preview polish remain pending Sprint 4 follow-up work.
 
 ## 2026-06-24
 

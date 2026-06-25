@@ -274,3 +274,11 @@
 - Decision: v0.1 foundation overlap detection uses `ST_Intersects` between the generated preview polygon and existing `Kingdom.visibleBorderGeojson` converted with `ST_GeomFromGeoJSON`.
 - Decision: Direct visible-border overlap returns the existing `too-close-to-existing-kingdom` no-start reason. Dynamic buffer distance checks beyond direct overlap remain S4-005.
 - Decision: Kingdom creation remains protected because `POST /api/kingdom/create` reruns the shared server-side validation and does not accept client-submitted polygon, area, overlap, or tolerance values.
+
+## 2026-06-25 - Sprint 4 Dynamic Spacing And Suggestions
+
+- Decision: S4-005 uses `minimumDistanceM = max(300, ceil(previewRadiusM * 2 + 50))` as the v0.1 dynamic spacing rule. The starting 50,000 m2 preview resolves to 303 meters.
+- Decision: Dynamic spacing is checked after direct visible-border overlap and uses PostGIS `ST_DWithin` against existing kingdom centers. Direct overlap and spacing failures both return `too-close-to-existing-kingdom`.
+- Decision: Nearby suggestions are generated only on the server for water, restricted-zone, overlap, and dynamic-spacing failures. Invalid coordinate-range errors do not trigger suggestion scans.
+- Decision: Suggestion candidates use 300m, 600m, 1,000m, 1,500m, and 2,000m rings with 0/45/90/135/180/225/270/315 degree bearings. The scan validates at most 24 candidates in small batches, and each candidate is revalidated through the same pipeline with recursive suggestions disabled.
+- Decision: `/api/kingdom/validate-location` returns up to 3 validated suggestions. `POST /api/kingdom/create` reruns validation without suggestions and never auto-applies a suggested coordinate.

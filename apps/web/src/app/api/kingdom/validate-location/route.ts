@@ -51,6 +51,7 @@ export async function POST(request: Request) {
     const validation = await validateKingdomLocationWithPostgis(getPrismaClient(), {
       lat: parsedCoordinates.coordinates.lat,
       lng: parsedCoordinates.coordinates.lng,
+      includeSuggestions: true,
     });
 
     return NextResponse.json(validation);
