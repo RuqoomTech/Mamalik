@@ -15,6 +15,7 @@ import {
   suggestKingdomName,
   validateKingdomName,
 } from "@/lib/kingdom/kingdom-name";
+import { formatSquareMeters, formatToleranceStatus } from "@/lib/map/location-ui";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -58,19 +59,6 @@ function formatNumber(value: number): string {
 
 function getPolygonPointCount(validationResult: LocationValidationResponse): number {
   return validationResult.previewPolygon?.coordinates[0]?.length ?? 0;
-}
-
-function formatToleranceStatus(status: LocationValidationResponse["toleranceStatus"]): string {
-  switch (status) {
-    case "STRICT":
-      return "Excellent fit";
-    case "LOOSE":
-      return "Acceptable fit";
-    case "FALLBACK":
-      return "Approximate border";
-    default:
-      return "Pending";
-  }
 }
 
 export function KingdomConfirmationPanel({
@@ -174,21 +162,30 @@ export function KingdomConfirmationPanel({
           <div>
             <dt className="text-[#5f665d]">Usable land</dt>
             <dd className="font-semibold text-[#10140f]">
-              {formatNumber(validationResult.usableLandM2)} m2
+              {formatSquareMeters(validationResult.usableLandM2)}
             </dd>
           </div>
           <div>
             <dt className="text-[#5f665d]">Visible area</dt>
             <dd className="font-semibold text-[#10140f]">
-              {validationResult.visibleAreaM2
-                ? `${formatNumber(validationResult.visibleAreaM2)} m2`
-                : "Pending"}
+              {formatSquareMeters(validationResult.visibleAreaM2)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-[#5f665d]">Target area</dt>
+            <dd className="font-semibold text-[#10140f]">
+              {formatSquareMeters(validationResult.targetAreaM2)}
             </dd>
           </div>
           <div>
             <dt className="text-[#5f665d]">Tolerance</dt>
             <dd className="font-semibold text-[#10140f]">
               {formatToleranceStatus(validationResult.toleranceStatus)}
+              {validationResult.toleranceStatus ? (
+                <span className="ml-1 text-xs font-medium text-[#5f665d]">
+                  ({validationResult.toleranceStatus})
+                </span>
+              ) : null}
             </dd>
           </div>
           <div>

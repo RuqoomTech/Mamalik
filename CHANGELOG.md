@@ -9,17 +9,22 @@ All notable Mamalik project changes are recorded here.
 - Added bounded dynamic visible-border generation attempts for Sprint 4 location validation.
 - Added helper and PostGIS tests for corrected-radius math, bounded radius attempts, and strict/loose/fallback preview selection.
 - Added `targetAreaM2` and bounded attempt count metadata to location-validation responses that include a generated preview.
+- Added shared map-preview UI helpers and tests for validation states, validation reasons, tolerance labels, and suggestion summaries.
 
 ### Changed
 
 - Updated PostGIS preview generation to try the initial circular radius, a measured-area correction, and deterministic radius adjustment factors before choosing the best server-generated polygon.
 - Updated create-kingdom validation UI copy to show player-facing border tolerance labels: Excellent fit, Acceptable fit, and Approximate border.
 - Marked S4-007 complete in the Sprint 4 docs and task trackers.
+- Updated the create-kingdom map to render validated server-generated preview polygons, clear stale polygons on selection/validation changes, and rerun validation when a suggested location is selected.
+- Updated the create-kingdom status, invalid-reason, suggestion, and confirmation panels to show visible area, target area, tolerance, area type, and clear user-facing state.
+- Marked S4-009 complete in the Sprint 4 docs and task trackers.
 
 ### Deferred
 
 - Visible-border expansion after land purchases remains deferred to later Sprint 4 work.
 - Real cadastral parcel shapes and production-grade parcel-style borders remain deferred beyond this v0.1 foundation.
+- Area-type-based dynamic buffer variation remains deferred until non-`STANDARD` classification is introduced.
 
 ## 2026-06-25
 

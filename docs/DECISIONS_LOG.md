@@ -298,3 +298,11 @@
 - Decision: The selected preview prefers `STRICT` tolerance first, then `LOOSE`, then `FALLBACK`; within the same tolerance band, the area closest to the 50,000 m2 target wins.
 - Decision: `/api/kingdom/validate-location`, nearby suggestions, and `POST /api/kingdom/create` all use the same server-side generator. Client-submitted polygons, visible area, attempt counts, and tolerance values remain untrusted.
 - Decision: Visible border area remains a measured map polygon value. Gameplay usable land credit remains exactly 50,000 m2 for starting kingdoms and is not derived from the polygon area.
+
+## 2026-06-26 - Sprint 4 Map Preview UI
+
+- Decision: S4-009 renders only server-generated valid preview polygons on the create-kingdom map. Selecting a new point, starting validation, or receiving an invalid result clears the preview to avoid stale border display.
+- Decision: The create-kingdom UI uses explicit validation states: not selected, selected but unvalidated, validating, valid, invalid, and request failed.
+- Decision: Validation reason copy is user-facing and generic. Restricted-zone messages do not expose detailed restricted data, while direct border overlap can be described as overlap when the validation result includes overlap metadata.
+- Decision: Suggestion clicks update the marker, pan the map, clear stale state, and rerun server validation for the suggested coordinate. Suggestions are never accepted automatically by kingdom creation.
+- Decision: Confirmation UI may display visible area, target area, tolerance, and area type for user clarity, but `POST /api/kingdom/create` remains the source of truth and reruns validation server-side.

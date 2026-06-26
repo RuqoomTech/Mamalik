@@ -2,12 +2,29 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getLandAreaTypeLabel } from "@mamalik/game";
-import maplibregl, { type LngLatLike, type Map, type Marker } from "maplibre-gl";
+import maplibregl, {
+  type GeoJSONSource,
+  type LngLatLike,
+  type Map,
+  type Marker,
+} from "maplibre-gl";
 import { KingdomConfirmationPanel } from "@/components/create-kingdom/KingdomConfirmationPanel";
 import type {
   LocationSuggestion,
   LocationValidationResponse,
+  PreviewPolygon,
 } from "@/lib/kingdom/location-validation";
+import {
+  describeLocationValidationStatus,
+  formatBearing,
+  formatDistanceMeters,
+  formatLocationValidationStatus,
+  formatSquareMeters,
+  formatSuggestionSummary,
+  formatToleranceStatus,
+  formatValidationReason,
+  getLocationValidationUiStatus,
+} from "@/lib/map/location-ui";
 
 type SelectedLocation = {
   latitude: number;
@@ -21,73 +38,82 @@ type KingdomLocationMapProps = {
 };
 
 const RIYADH_CENTER: LngLatLike = [46.6753, 24.7136];
+const PREVIEW_SOURCE_ID = "mamalik-selected-border-preview";
+const PREVIEW_FILL_LAYER_ID = "mamalik-selected-border-preview-fill";
+const PREVIEW_LINE_LAYER_ID = "mamalik-selected-border-preview-line";
+const EMPTY_PREVIEW_FEATURE_COLLECTION = {
+  type: "FeatureCollection" as const,
+  features: [],
+};
 
 function formatCoordinate(value: number): string {
   return value.toFixed(6);
 }
 
-function formatDistanceMeters(value: number | undefined): string | null {
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    return null;
-  }
-
-  if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(1)} km`;
-  }
-
-  return `${Math.round(value)} m`;
+function createPreviewFeatureCollection(previewPolygon: PreviewPolygon) {
+  return {
+    type: "FeatureCollection" as const,
+    features: [
+      {
+        type: "Feature" as const,
+        properties: {},
+        geometry: previewPolygon,
+      },
+    ],
+  };
 }
 
-function formatBearing(value: number | undefined): string | null {
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    return null;
+function ensurePreviewLayers(map: Map) {
+  if (!map.getSource(PREVIEW_SOURCE_ID)) {
+    map.addSource(PREVIEW_SOURCE_ID, {
+      type: "geojson",
+      data: EMPTY_PREVIEW_FEATURE_COLLECTION,
+    });
   }
 
-  return `${Math.round(value)} deg`;
-}
+  if (!map.getLayer(PREVIEW_FILL_LAYER_ID)) {
+    map.addLayer({
+      id: PREVIEW_FILL_LAYER_ID,
+      type: "fill",
+      source: PREVIEW_SOURCE_ID,
+      paint: {
+        "fill-color": "#183f35",
+        "fill-opacity": 0.22,
+      },
+    });
+  }
 
-function formatReason(reason: string | null): string {
-  switch (reason) {
-    case "too-close-to-existing-kingdom":
-      return "That point is too close to an existing kingdom.";
-    case "water":
-      return "That point is water. Choose a location on land.";
-    case "land-mask-data-missing":
-      return "Land validation data is not loaded yet.";
-    case "restricted-zone":
-      return "That point is inside a restricted no-start zone.";
-    case "restricted-zone-data-missing":
-      return "Restricted-zone validation data is not loaded yet.";
-    case "user-already-has-kingdom":
-      return "This account already has a kingdom.";
-    case "missing-coordinates":
-      return "Choose a map point before validating.";
-    case "invalid-coordinates":
-      return "The selected coordinates are invalid.";
-    case "latitude-out-of-range":
-      return "Latitude must be between -90 and 90.";
-    case "longitude-out-of-range":
-      return "Longitude must be between -180 and 180.";
-    case "unauthenticated":
-      return "Sign in before validating a kingdom location.";
-    case "border-generation-failed":
-      return "The selected point could not generate a valid border preview.";
-    default:
-      return "Location validation failed.";
+  if (!map.getLayer(PREVIEW_LINE_LAYER_ID)) {
+    map.addLayer({
+      id: PREVIEW_LINE_LAYER_ID,
+      type: "line",
+      source: PREVIEW_SOURCE_ID,
+      paint: {
+        "line-color": "#f0b45d",
+        "line-opacity": 0.95,
+        "line-width": 3,
+      },
+    });
   }
 }
 
-function formatToleranceStatus(status: LocationValidationResponse["toleranceStatus"]): string {
-  switch (status) {
-    case "STRICT":
-      return "Excellent fit";
-    case "LOOSE":
-      return "Acceptable fit";
-    case "FALLBACK":
-      return "Approximate border";
-    default:
-      return "Pending";
+function setPreviewPolygon(map: Map, previewPolygon: PreviewPolygon) {
+  if (!map.isStyleLoaded()) {
+    return;
   }
+
+  ensurePreviewLayers(map);
+  const source = map.getSource(PREVIEW_SOURCE_ID) as GeoJSONSource | undefined;
+  source?.setData(createPreviewFeatureCollection(previewPolygon));
+}
+
+function clearPreviewPolygon(map: Map | null) {
+  if (!map?.isStyleLoaded()) {
+    return;
+  }
+
+  const source = map.getSource(PREVIEW_SOURCE_ID) as GeoJSONSource | undefined;
+  source?.setData(EMPTY_PREVIEW_FEATURE_COLLECTION);
 }
 
 export function KingdomLocationMap({
@@ -102,6 +128,7 @@ export function KingdomLocationMap({
   const [mapError, setMapError] = useState<string | null>(
     mapStyleUrl ? null : "NEXT_PUBLIC_MAP_STYLE_URL is required before the map can load.",
   );
+  const [isMapReady, setIsMapReady] = useState(false);
   const [validationResult, setValidationResult] = useState<LocationValidationResponse | null>(
     null,
   );
@@ -112,6 +139,7 @@ export function KingdomLocationMap({
     setSelectedLocation(nextLocation);
     setValidationResult(null);
     setValidationError(null);
+    clearPreviewPolygon(mapRef.current);
 
     const map = mapRef.current;
 
@@ -144,6 +172,11 @@ export function KingdomLocationMap({
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
 
+    map.on("load", () => {
+      setIsMapReady(true);
+      clearPreviewPolygon(map);
+    });
+
     map.on("click", (event) => {
       const nextLocation = {
         latitude: event.lngLat.lat,
@@ -160,19 +193,32 @@ export function KingdomLocationMap({
     return () => {
       markerRef.current?.remove();
       markerRef.current = null;
+      setIsMapReady(false);
       map.remove();
       mapRef.current = null;
     };
   }, [mapStyleUrl, selectLocation]);
 
-  async function handleValidateLocation() {
-    if (!selectedLocation) {
+  useEffect(() => {
+    const map = mapRef.current;
+
+    if (!map) {
       return;
     }
 
+    if (validationResult?.valid && validationResult.previewPolygon) {
+      setPreviewPolygon(map, validationResult.previewPolygon);
+      return;
+    }
+
+    clearPreviewPolygon(map);
+  }, [validationResult]);
+
+  async function validateLocation(location: SelectedLocation) {
     setIsValidating(true);
     setValidationResult(null);
     setValidationError(null);
+    clearPreviewPolygon(mapRef.current);
 
     try {
       const response = await fetch("/api/kingdom/validate-location", {
@@ -181,8 +227,8 @@ export function KingdomLocationMap({
           "content-type": "application/json",
         },
         body: JSON.stringify({
-          lat: selectedLocation.latitude,
-          lng: selectedLocation.longitude,
+          lat: location.latitude,
+          lng: location.longitude,
         }),
       });
       const result = (await response.json()) as LocationValidationResponse;
@@ -199,23 +245,54 @@ export function KingdomLocationMap({
     }
   }
 
-  function handleSuggestionClick(suggestion: LocationSuggestion) {
-    selectLocation({
+  async function handleValidateLocation() {
+    if (!selectedLocation) {
+      return;
+    }
+
+    await validateLocation(selectedLocation);
+  }
+
+  async function handleSuggestionClick(suggestion: LocationSuggestion) {
+    const nextLocation = {
       latitude: suggestion.lat,
       longitude: suggestion.lng,
-    });
+    };
+
+    selectLocation(nextLocation);
     mapRef.current?.panTo([suggestion.lng, suggestion.lat]);
+    await validateLocation(nextLocation);
   }
 
   function handleChangeLocation() {
     setValidationResult(null);
     setValidationError(null);
+    clearPreviewPolygon(mapRef.current);
   }
+
+  const validationStatus = getLocationValidationUiStatus({
+    hasSelectedLocation: Boolean(selectedLocation),
+    isValidating,
+    validationResult,
+    validationError,
+  });
+  const validationReasonDisplay =
+    validationResult && !validationResult.valid
+      ? formatValidationReason(validationResult.reason, {
+          overlapsExistingKingdom: validationResult.overlap?.overlaps,
+        })
+      : null;
+  const validateButtonDisabled = !selectedLocation || isValidating || !isMapReady || Boolean(mapError);
 
   return (
     <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="mamalik-card min-h-[520px] overflow-hidden bg-[#eef3ec]">
+      <div className="mamalik-card relative min-h-[520px] overflow-hidden bg-[#eef3ec]">
         <div ref={mapContainerRef} className="h-[520px] w-full" />
+        {!mapError && !isMapReady ? (
+          <div className="absolute inset-x-4 top-4 rounded-md border border-[#dfe5dc] bg-white/90 px-3 py-2 text-sm font-medium text-[#183f35] shadow-sm">
+            Loading map...
+          </div>
+        ) : null}
         {mapError ? (
           <div className="border-t border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {mapError}
@@ -245,7 +322,18 @@ export function KingdomLocationMap({
         </section>
 
         <section className="mamalik-card p-5">
-          <h2 className="text-lg font-semibold text-[#10140f]">Selected Location</h2>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-[#10140f]">Location validation</h2>
+              <p className="mt-1 text-sm text-[#5f665d]">
+                {describeLocationValidationStatus(validationStatus)}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full border border-[#dfe5dc] bg-[#f7f8f4] px-2.5 py-1 text-xs font-semibold text-[#183f35]">
+              {formatLocationValidationStatus(validationStatus)}
+            </span>
+          </div>
+
           {selectedLocation ? (
             <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
               <div>
@@ -269,7 +357,7 @@ export function KingdomLocationMap({
 
           <button
             className="mamalik-action-primary mt-5 w-full px-4 py-2.5"
-            disabled={!selectedLocation || isValidating}
+            disabled={validateButtonDisabled}
             onClick={handleValidateLocation}
             type="button"
           >
@@ -285,25 +373,52 @@ export function KingdomLocationMap({
           {validationResult?.valid ? (
             <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
               <p className="font-medium">Location has a valid border preview.</p>
-              <p className="mt-1">
-                Usable land: {validationResult.usableLandM2.toLocaleString()} m2
-              </p>
-              {validationResult.toleranceStatus ? (
-                <p className="mt-1">
-                  Border tolerance: {formatToleranceStatus(validationResult.toleranceStatus)}
-                </p>
-              ) : null}
-              {validationResult.areaType ? (
-                <p className="mt-1">
-                  Area type: {getLandAreaTypeLabel(validationResult.areaType)}
-                </p>
-              ) : null}
+              <dl className="mt-2 grid grid-cols-2 gap-2">
+                <div>
+                  <dt className="text-emerald-900/70">Usable land</dt>
+                  <dd className="font-semibold">
+                    {formatSquareMeters(validationResult.usableLandM2)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-emerald-900/70">Visible area</dt>
+                  <dd className="font-semibold">
+                    {formatSquareMeters(validationResult.visibleAreaM2)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-emerald-900/70">Target area</dt>
+                  <dd className="font-semibold">
+                    {formatSquareMeters(validationResult.targetAreaM2)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-emerald-900/70">Border fit</dt>
+                  <dd className="font-semibold">
+                    {formatToleranceStatus(validationResult.toleranceStatus)}
+                    {validationResult.toleranceStatus ? (
+                      <span className="ml-1 text-xs font-medium">
+                        ({validationResult.toleranceStatus})
+                      </span>
+                    ) : null}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-emerald-900/70">Area type</dt>
+                  <dd className="font-semibold">
+                    {validationResult.areaType
+                      ? getLandAreaTypeLabel(validationResult.areaType)
+                      : "Standard"}
+                  </dd>
+                </div>
+              </dl>
             </div>
           ) : null}
 
-          {validationResult && !validationResult.valid ? (
+          {validationResult && !validationResult.valid && validationReasonDisplay ? (
             <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-              <p className="font-medium">{formatReason(validationResult.reason)}</p>
+              <p className="font-medium">{validationReasonDisplay.title}</p>
+              <p className="mt-1 text-amber-900">{validationReasonDisplay.description}</p>
               {validationResult.suggestions.length > 0 ? (
                 <div className="mt-3 space-y-2">
                   <p className="text-xs font-medium uppercase tracking-wide">
@@ -316,25 +431,18 @@ export function KingdomLocationMap({
                       onClick={() => handleSuggestionClick(suggestion)}
                       type="button"
                     >
-                      <span className="font-medium">
-                        {suggestion.label ?? "Nearby valid location"}
-                      </span>
+                      <span className="font-medium">Use this location</span>
                       <span className="block text-xs text-neutral-600">
                         {formatCoordinate(suggestion.lat)}, {formatCoordinate(suggestion.lng)}
                       </span>
                       <span className="mt-1 block text-xs text-neutral-600">
-                        {[
-                          formatDistanceMeters(suggestion.distanceM),
-                          formatBearing(suggestion.bearingDeg),
-                          suggestion.toleranceStatus
-                            ? `border ${suggestion.toleranceStatus.toLowerCase()}`
-                            : null,
-                          suggestion.visibleAreaM2
-                            ? `${suggestion.visibleAreaM2.toLocaleString()} m2`
-                            : null,
-                        ]
-                          .filter(Boolean)
-                          .join(" · ")}
+                        {formatSuggestionSummary(suggestion)}
+                      </span>
+                      <span className="mt-2 grid grid-cols-2 gap-2 text-xs text-neutral-600">
+                        <span>Distance: {formatDistanceMeters(suggestion.distanceM) ?? "nearby"}</span>
+                        <span>Direction: {formatBearing(suggestion.bearingDeg) ?? "unknown"}</span>
+                        <span>Visible: {formatSquareMeters(suggestion.visibleAreaM2)}</span>
+                        <span>Fit: {formatToleranceStatus(suggestion.toleranceStatus)}</span>
                       </span>
                     </button>
                   ))}

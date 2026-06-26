@@ -68,7 +68,7 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - [x] S4-006: Implement area type classification placeholder.
 - [x] S4-007: Implement visible polygon generation with dynamic tolerance.
 - [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
-- [ ] S4-009: Update map preview UI.
+- [x] S4-009: Update map preview UI.
 
 ## Implementation Notes
 
@@ -80,6 +80,10 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - S4-007 makes visible-border generation explicitly dynamic and bounded. The generator tries the initial radius, then a corrected radius based on the measured area, then deterministic adjustment factors `0.96`, `0.98`, `1.00`, `1.02`, and `1.04` around the initial radius.
 - S4-007 selects the best generated preview by preferring `STRICT`, then `LOOSE`, then `FALLBACK`; ties within a tolerance band choose the area closest to the 50,000 m2 target.
 - `/api/kingdom/validate-location` now returns `targetAreaM2` and a bounded attempt count alongside the selected preview polygon, visible area, and tolerance status. The UI maps tolerance status to player-facing labels: Excellent fit, Acceptable fit, and Approximate border.
+- S4-009 adds the MapLibre preview source/layers for validated server-generated polygons. Selecting a new point, starting validation, or receiving an invalid result clears the preview so stale borders are not shown.
+- S4-009 adds explicit UI states for not selected, selected but unvalidated, validating, valid, invalid, and request failed.
+- S4-009 makes nearby suggestions actionable from the UI: choosing a suggestion updates the marker, pans the map, clears stale state, and reruns server validation for that coordinate. Suggestions are not applied automatically during kingdom creation.
+- S4-009 keeps restricted-zone messages generic and displays validation details such as usable land, visible area, target area, tolerance label/raw status, and area type without trusting client-side values for creation.
 - Existing kingdom overlap is checked by converting stored `Kingdom.visibleBorderGeojson` to geometry with PostGIS and comparing it to the generated preview polygon.
 - S4-004 verifies the existing overlap foundation and marks overlap complete without rewriting the helper.
 - No-overlap is based on `ST_Intersects` between the generated preview polygon and existing `Kingdom.visibleBorderGeojson` values converted with `ST_GeomFromGeoJSON`.
