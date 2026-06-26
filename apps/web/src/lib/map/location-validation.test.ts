@@ -66,6 +66,9 @@ test("validates a land point with land mask, preview polygon, and overlap checks
   assert.equal(response.overlap?.overlaps, false);
   assert.equal(response.spacing?.status, "CLEAR");
   assert.equal(response.spacing?.minimumDistanceM, 303);
+  assert.equal(response.areaType, "STANDARD");
+  assert.equal(response.areaTypeClassification?.source, "V0_1_DEFAULT");
+  assert.equal(response.areaTypeClassification?.confidence, "LOW");
   assert.equal(db.calls, 8);
 });
 
@@ -85,6 +88,8 @@ test("rejects water before generating a border preview", async () => {
   assert.deepEqual(response.center, { lat: 0, lng: -30 });
   assert.equal(response.landCheck?.status, "WATER");
   assert.equal(response.waterCheck, "WATER");
+  assert.equal(response.areaType, null);
+  assert.equal(response.areaTypeClassification, null);
   assert.equal(response.previewPolygon, null);
   assert.equal(db.calls, 2);
 });

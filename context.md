@@ -12,7 +12,7 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 
 - Active milestone: v0.1
 - Active sprint: Sprint 4 - Map Validation + Borders
-- Active task sequence: Sprint 1, Sprint 2, and Sprint 3 are complete from the documented feature and automated-check standpoint. Sprint 4 has completed S4-001 through S4-005: PostGIS-backed preview polygon generation, area measurement, overlap checks, coarse land-mask water rejection, placeholder restricted-zone no-start validation, dynamic spacing checks, and server-generated nearby valid suggestions are in place. Area classification placeholders, visible-border expansion/polish, and map preview polish remain Sprint 4 follow-ups.
+- Active task sequence: Sprint 1, Sprint 2, and Sprint 3 are complete from the documented feature and automated-check standpoint. Sprint 4 has completed S4-001 through S4-006: PostGIS-backed preview polygon generation, area measurement, overlap checks, coarse land-mask water rejection, placeholder restricted-zone no-start validation, dynamic spacing checks, server-generated nearby valid suggestions, and the server-side `STANDARD` area-type placeholder are in place. Visible-border expansion/polish, area-type buffer variation, and map preview polish remain Sprint 4 follow-ups.
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -227,6 +227,7 @@ v0.1 must include:
 - Sprint 4 S4-004 verifies direct visible-border overlap as complete for the v0.1 foundation. It uses `ST_Intersects` between the generated preview polygon and stored `Kingdom.visibleBorderGeojson`, and returns `too-close-to-existing-kingdom` for direct overlap. Dynamic buffer distance checks beyond direct overlap remain S4-005.
 - Sprint 4 S4-005 adds a v0.1 dynamic spacing rule: `minimumDistanceM = max(300, ceil(previewRadiusM * 2 + 50))`, which is 303 meters for the starting 50,000 m2 preview. The check uses PostGIS `ST_DWithin` against existing kingdom centers after direct overlap checks.
 - Sprint 4 S4-005 adds nearby valid suggestions for water, restricted-zone, overlap, and dynamic-spacing failures. Suggestions are generated server-side from fixed rings and 45-degree bearings, validated through the same location pipeline with recursive suggestions disabled, and never auto-applied by kingdom creation.
+- Sprint 4 S4-006 classifies valid starts server-side as `STANDARD` with source `V0_1_DEFAULT` and low confidence. Kingdom creation stores this server-side value in `Kingdom.areaType`, while non-standard classification, area-type-based buffer variation, and area-type bonuses remain deferred.
 - Sprint 4 S4-002 adds a raw SQL `LandMaskPolygon` PostGIS table with `geometry(MultiPolygon, 4326)`, a GiST spatial index, and a coarse `MAMALIK_COARSE_V0_1` seed loaded by `npm run db:seed-land-mask`.
 - The first land mask rejects obvious open-ocean starts but is not coastline-accurate. Production should import Natural Earth 1:50m/1:110m or an equivalent licensed global land mask from local files; validation endpoints must not fetch remote map data at runtime.
 - Missing land-mask data blocks kingdom validation and creation by default. `ALLOW_MISSING_LAND_MASK=true` is a local-development-only fallback.

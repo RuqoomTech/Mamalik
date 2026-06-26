@@ -282,3 +282,11 @@
 - Decision: Nearby suggestions are generated only on the server for water, restricted-zone, overlap, and dynamic-spacing failures. Invalid coordinate-range errors do not trigger suggestion scans.
 - Decision: Suggestion candidates use 300m, 600m, 1,000m, 1,500m, and 2,000m rings with 0/45/90/135/180/225/270/315 degree bearings. The scan validates at most 24 candidates in small batches, and each candidate is revalidated through the same pipeline with recursive suggestions disabled.
 - Decision: `/api/kingdom/validate-location` returns up to 3 validated suggestions. `POST /api/kingdom/create` reruns validation without suggestions and never auto-applies a suggested coordinate.
+
+## 2026-06-25 - Sprint 4 Area Type Placeholder
+
+- Decision: S4-006 adds a deterministic server-side area type classifier after coordinate, land/water, preview polygon, restricted-zone, overlap, and dynamic-spacing validation.
+- Decision: The v0.1 placeholder returns `areaType: STANDARD`, source `V0_1_DEFAULT`, and confidence `LOW` because no reliable land-use dataset is active.
+- Decision: Kingdom creation persists the server-side classification in the existing `Kingdom.areaType` field. The current Prisma enum still only allows `STANDARD`, so no migration is added in S4-006.
+- Decision: Land purchase pricing continues to use the server-stored/default `STANDARD` area type. Non-standard pricing and area-type-based dynamic buffer variation remain inactive until a real classifier and enum expansion are introduced.
+- Decision: Client-submitted area type values are not trusted or accepted by validation, creation, or land purchase flows.

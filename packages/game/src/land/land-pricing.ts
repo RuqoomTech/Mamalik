@@ -1,6 +1,8 @@
 import { getLandPurchasePackageBySize } from "./land-packages";
-
-export type LandAreaType = "STANDARD" | "RURAL" | "URBAN" | "STRATEGIC";
+import {
+  normalizeLandAreaType,
+  type LandAreaType,
+} from "./area-type";
 
 export type LandPriceInput = {
   currentUsableLandM2: number;
@@ -43,12 +45,6 @@ export function calculateLandPrice(input: LandPriceInput): LandPriceResult {
   };
 }
 
-export function normalizeLandAreaType(areaType: LandAreaType | string | null | undefined): LandAreaType {
-  const normalizedAreaType = String(areaType ?? "STANDARD").toUpperCase();
-
-  return isLandAreaType(normalizedAreaType) ? normalizedAreaType : "STANDARD";
-}
-
 export function getKingdomSizeMultiplier(currentUsableLandM2: number): number {
   const land = toNonNegativeInteger(currentUsableLandM2);
 
@@ -73,10 +69,6 @@ export function roundLandPrice(value: number): number {
   }
 
   return Math.ceil(value);
-}
-
-function isLandAreaType(value: string): value is LandAreaType {
-  return Object.prototype.hasOwnProperty.call(LAND_AREA_MULTIPLIERS, value);
 }
 
 function toNonNegativeInteger(value: number): number {

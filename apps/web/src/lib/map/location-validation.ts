@@ -31,6 +31,10 @@ import {
   validatePointAndPreviewAgainstRestrictedZones,
   type RestrictedZoneValidationResult,
 } from "@/lib/map/restricted-zones";
+import {
+  classifyAreaTypeForLocation,
+  type AreaTypeClassificationResult,
+} from "@/lib/map/area-type-classification";
 
 export type SpatialLocationValidationResponse = LocationValidationResponse & {
   ok: boolean;
@@ -41,6 +45,8 @@ export type SpatialLocationValidationResponse = LocationValidationResponse & {
   landCheck: LocationValidationResponse["landCheck"];
   waterCheck: NonNullable<LocationValidationResponse["waterCheck"]>;
   restrictedZoneCheck: RestrictedZoneCheckResponse;
+  areaType: LocationValidationResponse["areaType"];
+  areaTypeClassification: LocationValidationResponse["areaTypeClassification"];
 };
 
 type PostgisValidationClient = Parameters<typeof generateVisibleBorderPreview>[0];
@@ -134,6 +140,8 @@ export async function validateKingdomLocationWithPostgis(
       landCheck: createLandCheckResponse(landCheck),
       waterCheck: landCheck.status,
       restrictedZoneCheck: createRestrictedZoneCheckResponse(restrictedZoneCheck),
+      areaType: null,
+      areaTypeClassification: null,
     };
   }
 
@@ -161,8 +169,15 @@ export async function validateKingdomLocationWithPostgis(
       landCheck: createLandCheckResponse(landCheck),
       waterCheck: landCheck.status,
       restrictedZoneCheck: createRestrictedZoneCheckResponse(restrictedZoneCheck),
+      areaType: null,
+      areaTypeClassification: null,
     };
   }
+
+  const areaTypeClassification = classifyAreaTypeForLocation({
+    coordinates: center,
+    previewPolygon: borderPreview.previewPolygon,
+  });
 
   return {
     ok: true,
@@ -178,6 +193,8 @@ export async function validateKingdomLocationWithPostgis(
     landCheck: createLandCheckResponse(landCheck),
     waterCheck: landCheck.status,
     restrictedZoneCheck: createRestrictedZoneCheckResponse(restrictedZoneCheck),
+    areaType: areaTypeClassification.areaType,
+    areaTypeClassification: createAreaTypeClassificationResponse(areaTypeClassification),
     suggestions: [],
   };
 }
@@ -214,6 +231,8 @@ export function invalidSpatialResponse(
     landCheck,
     waterCheck: landCheck.status,
     restrictedZoneCheck,
+    areaType: null,
+    areaTypeClassification: null,
     suggestions: options.suggestions ?? [],
   };
 }
@@ -325,5 +344,16 @@ function createRestrictedZoneCheckResponse(
             reason: zone.reason,
           }))
         : undefined,
+  };
+}
+
+function createAreaTypeClassificationResponse(
+  classification: AreaTypeClassificationResult,
+): NonNullable<LocationValidationResponse["areaTypeClassification"]> {
+  return {
+    areaType: classification.areaType,
+    source: classification.source,
+    confidence: classification.confidence,
+    reason: classification.reason,
   };
 }

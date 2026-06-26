@@ -77,3 +77,28 @@ Precision limits:
 - The current dataset is intentionally tiny and artificial.
 - It only verifies the storage, seed, and validation path.
 - Production restricted zones require a reviewed, licensed, versioned import source before launch hardening.
+
+## Area Type Classification
+
+Status: Sprint 4 placeholder.
+
+Current source: `V0_1_DEFAULT`.
+
+Behavior:
+
+- Valid starts are classified server-side as `STANDARD`.
+- The validation response includes source `V0_1_DEFAULT`, confidence `LOW`, and a reason explaining that no v0.1 land-use dataset is active.
+- Kingdom creation reruns validation and stores the server-side `STANDARD` value in `Kingdom.areaType`.
+- Client-submitted area type values are not accepted.
+
+Operational rule:
+
+- No remote land-use data is fetched at runtime.
+- Land purchase pricing continues to use the server-stored/default `STANDARD` area type.
+- Non-standard area types require a future reviewed dataset, a schema enum migration, and balancing work before they affect pricing or dynamic buffers.
+
+Precision limits:
+
+- The placeholder is intentionally not realistic.
+- It is only a stable API/data-model foundation for later classification.
+- It must not be described as accurate urban, rural, or strategic classification.

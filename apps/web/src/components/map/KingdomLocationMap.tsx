@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { getLandAreaTypeLabel } from "@mamalik/game";
 import maplibregl, { type LngLatLike, type Map, type Marker } from "maplibre-gl";
 import { KingdomConfirmationPanel } from "@/components/create-kingdom/KingdomConfirmationPanel";
 import type {
@@ -276,6 +277,11 @@ export function KingdomLocationMap({
               </p>
               {validationResult.toleranceStatus ? (
                 <p className="mt-1">Border tolerance: {validationResult.toleranceStatus}</p>
+              ) : null}
+              {validationResult.areaType ? (
+                <p className="mt-1">
+                  Area type: {getLandAreaTypeLabel(validationResult.areaType)}
+                </p>
               ) : null}
             </div>
           ) : null}

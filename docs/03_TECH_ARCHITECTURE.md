@@ -84,6 +84,8 @@ S4-004 reconciles overlap tracking without rewriting the helper. Direct visible-
 
 S4-005 adds `apps/web/src/lib/map/dynamic-spacing.ts` for the v0.1 kingdom spacing rule and suggestion candidate generation. The composed validation pipeline now checks direct visible-border overlap first, then center-distance spacing with PostGIS `ST_DWithin`, using `minimumDistanceM = max(300, ceil(previewRadiusM * 2 + 50))`. `/api/kingdom/validate-location` enables server-generated nearby suggestions, while `POST /api/kingdom/create` reruns validation without suggestions and never auto-selects a suggested point.
 
+S4-006 adds `apps/web/src/lib/map/area-type-classification.ts` as the v0.1 area type placeholder. The composed validation pipeline classifies area type only after land, preview polygon, restricted-zone, overlap, and dynamic-spacing checks pass. It returns `STANDARD` with `V0_1_DEFAULT` and low confidence, and kingdom creation persists that server-side classification in the existing `Kingdom.areaType` field. Non-standard area types and area-type buffer variation remain inactive until a real land-use classifier is added.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`
@@ -138,6 +140,8 @@ S4-002 stores the coarse land mask in `LandMaskPolygon.geom` as `geometry(MultiP
 S4-003 stores configured no-start fixtures in `RestrictedZone.geom` as `geometry(MultiPolygon, 4326)` with a GiST index. Prisma does not model this geometry table directly; migrations and seed scripts manage it, and app helpers query it with parameterized raw SQL.
 
 S4-005 suggestions are generated server-side by projecting candidate coordinates around the invalid click at 300m, 600m, 1,000m, 1,500m, and 2,000m rings across 45-degree bearings. The scan validates at most 24 candidates, checks candidates in small batches, and revalidates each candidate through the same server-side land, restricted-zone, overlap, and dynamic-spacing pipeline with recursive suggestion generation disabled.
+
+S4-006 area type classification is deliberately not a PostGIS dataset query yet. It is a deterministic server-side placeholder that reports the default `STANDARD` area type and documents the low-confidence source so future non-standard classification can replace it without trusting client input.
 
 ## Prisma strategy
 

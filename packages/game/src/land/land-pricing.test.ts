@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
+import { normalizeLandAreaType } from "./area-type";
 import {
   calculateLandPrice,
   getKingdomSizeMultiplier,
-  normalizeLandAreaType,
   roundLandPrice,
 } from "./land-pricing";
 

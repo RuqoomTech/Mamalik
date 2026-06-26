@@ -204,6 +204,9 @@ export async function POST(request: Request) {
         throw new Error(`create-kingdom-location-${locationValidation.reason}`);
       }
 
+      const persistedAreaType =
+        locationValidation.areaType === "STANDARD" ? locationValidation.areaType : "STANDARD";
+
       const baseSlug = createUniqueKingdomSlug(nameValidation.name, []);
       const existingSlugs = await tx.kingdom.findMany({
         where: {
@@ -233,7 +236,7 @@ export async function POST(request: Request) {
           usedLandM2: getStarterUsedLandM2(),
           population: STARTING_POPULATION,
           protectionEndsAt: createBeginnerProtectionEndsAt(now),
-          areaType: "STANDARD",
+          areaType: persistedAreaType,
         },
         select: {
           id: true,

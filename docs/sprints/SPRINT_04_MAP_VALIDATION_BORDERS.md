@@ -65,7 +65,7 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - [x] S4-003: Add restricted-zone placeholder model and checks.
 - [x] S4-004: Reconcile overlap validation and tracker state.
 - [x] S4-005: Implement dynamic buffer checks and nearby valid suggestions.
-- [ ] S4-006: Implement area type classification placeholder.
+- [x] S4-006: Implement area type classification placeholder.
 - [ ] S4-007: Implement visible polygon generation with dynamic tolerance.
 - [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
 - [ ] S4-009: Update map preview UI.
@@ -84,6 +84,10 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - S4-005 adds a v0.1 dynamic spacing rule: `minimumDistanceM = max(300, ceil(previewRadiusM * 2 + 50))`. For the starting 50,000 m2 preview this is 303 meters.
 - S4-005 checks spacing with PostGIS `ST_DWithin` against existing kingdom centers after direct border-overlap checks. Direct overlap and spacing failures both use `too-close-to-existing-kingdom`.
 - S4-005 adds server-generated nearby suggestions for water, restricted-zone, overlap, and spacing failures. Suggestions scan 300m, 600m, 1,000m, 1,500m, and 2,000m rings at 45-degree bearings, cap validation at the first 24 candidates, validate each candidate through the same pipeline with recursive suggestions disabled, and return up to 3 valid candidates.
+- S4-006 adds a server-side v0.1 area type classification placeholder in `apps/web/src/lib/map/area-type-classification.ts`.
+- S4-006 returns `areaType: STANDARD` with `source: V0_1_DEFAULT` and `confidence: LOW` after land, restricted-zone, overlap, and dynamic-spacing checks pass.
+- Kingdom creation stores the server-side classification in the existing `Kingdom.areaType` field, which currently only supports `STANDARD`; client area type values are not accepted.
+- Land purchase pricing continues to use the server-stored/default `STANDARD` area type. Non-standard area type persistence, accurate land-use datasets, and area-type-based buffer variation remain deferred until classification is promoted beyond the placeholder.
 - `/api/kingdom/validate-location` now uses the PostGIS validation helper and preserves the existing response fields for the current UI.
 - `POST /api/kingdom/create` reruns the same server-side validation and stores the server-generated preview polygon and measured area. It still does not trust client geometry.
 - S4-002 adds a raw SQL `LandMaskPolygon` table with `geometry(MultiPolygon, 4326)` and a GiST index for coarse land/water validation.

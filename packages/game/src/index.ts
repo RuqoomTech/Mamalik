@@ -2,6 +2,7 @@ export * from "./buildings/construction-progress";
 export * from "./constants";
 export * from "./economy/food-consumption";
 export * from "./economy/resource-generation";
+export * from "./land/area-type";
 export * from "./land/land-cooldowns";
 export * from "./land/district-reassignment";
 export * from "./land/land-packages";

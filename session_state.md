@@ -2,50 +2,55 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-25 21:45:31 +03:00
+- Current date/time: 2026-06-26 21:29:29 +03:00
 - Current sprint: Sprint 4 - Map Validation + Borders
 - Current sprint file: `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
-- Current task: None; S4-005 is complete.
+- Current task: None; S4-006 is complete.
 
 ## Last Completed Task
 
-- Completed S4-005 - Dynamic buffer checks and nearby valid suggestions.
-- Added a server-only dynamic spacing helper with the v0.1 rule `minimumDistanceM = max(300, ceil(previewRadiusM * 2 + 50))`.
-- Starting 50,000 m2 preview radius resolves to a 303m minimum spacing rule.
-- Added PostGIS `ST_DWithin` spacing checks against existing kingdom centers after direct visible-border overlap checks.
-- Kept direct visible-border overlap and dynamic spacing as separate checks, while both return the stable `too-close-to-existing-kingdom` no-start reason.
-- Added server-generated nearby valid suggestions for water, restricted-zone, overlap, and dynamic-spacing failures.
-- Suggestions scan fixed rings and 45-degree bearings, validate at most 24 candidates in small batches, run each candidate through the same pipeline with recursive suggestions disabled, and return up to 3 valid suggestions.
-- Updated `/api/kingdom/validate-location` to enable suggestions.
-- Kept `POST /api/kingdom/create` as a reject-only path; it reruns validation and does not auto-use suggestions.
-- Updated the create-kingdom map UI to display suggestion distance, bearing, border tolerance, and visible area when available.
-- Marked S4-005 complete and marked S4-008 complete because the active S4-005 task explicitly bundled the basic nearby valid suggestion flow.
+- Completed S4-006 - Implement area type classification placeholder.
+- Added shared area-type helpers in `packages/game/src/land/area-type.ts`.
+- Added a server-side area type classifier in `apps/web/src/lib/map/area-type-classification.ts`.
+- The v0.1 classifier returns `STANDARD`, source `V0_1_DEFAULT`, and confidence `LOW` for valid starts because no reliable land-use dataset is active yet.
+- Integrated area classification into the composed validation pipeline after coordinate, land/water, preview polygon, restricted-zone, overlap, and dynamic-spacing checks pass.
+- Updated `/api/kingdom/validate-location` response typing and output to include `areaType` and `areaTypeClassification` for valid locations.
+- Updated `POST /api/kingdom/create` to persist the server-side classification in the existing `Kingdom.areaType` field. The current Prisma enum only supports `STANDARD`, so no migration was added.
+- Updated the create-kingdom validation and confirmation UI to display the server-returned area type.
+- Left non-standard classification, area-type bonuses, area-type pricing changes beyond existing `STANDARD`, and area-type-based buffer variation deferred.
 
 ## Files Changed Recently
 
-Changed for Sprint 4 S4-005:
+Changed for Sprint 4 S4-006:
 
 - `CHANGELOG.md`
-- `apps/web/src/app/api/kingdom/validate-location/route.ts`
+- `apps/web/src/app/api/kingdom/create/route.ts`
+- `apps/web/src/components/create-kingdom/KingdomConfirmationPanel.tsx`
 - `apps/web/src/components/map/KingdomLocationMap.tsx`
 - `apps/web/src/lib/kingdom/location-validation.ts`
-- `apps/web/src/lib/map/dynamic-spacing.test.ts`
-- `apps/web/src/lib/map/dynamic-spacing.ts`
+- `apps/web/src/lib/map/area-type-classification.test.ts`
+- `apps/web/src/lib/map/area-type-classification.ts`
 - `apps/web/src/lib/map/location-validation.test.ts`
 - `apps/web/src/lib/map/location-validation.ts`
 - `context.md`
 - `docs/03_TECH_ARCHITECTURE.md`
+- `docs/04_DATA_MODEL.md`
 - `docs/DECISIONS_LOG.md`
+- `docs/MAP_DATA_SOURCES.md`
 - `docs/TESTING_STRATEGY.md`
 - `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
+- `packages/game/src/index.ts`
+- `packages/game/src/land/area-type.test.ts`
+- `packages/game/src/land/area-type.ts`
+- `packages/game/src/land/land-pricing.test.ts`
+- `packages/game/src/land/land-pricing.ts`
 - `session_state.md`
 - `tasks/backlog.md`
 - `tasks/sprint_04.md`
 
 ## Commands Run
 
-- `Select-String -Path C:\Users\user\.codex\memories\MEMORY.md -Pattern "Mamalik|Sprint 4|map validation|overlap" -Context 0,2`
-- `git status --short`
+- `Select-String -Path C:\Users\user\.codex\memories\MEMORY.md -Pattern "Mamalik|mandatory workflow|documentation updates" -Context 0,2`
 - `Get-Content -Path AGENTS.md`
 - `Get-Content -Path context.md`
 - `Get-Content -Path session_state.md`
@@ -58,76 +63,76 @@ Changed for Sprint 4 S4-005:
 - `Get-Content -Path tasks/backlog.md`
 - `Get-Content -Path CHANGELOG.md`
 - `Get-Content -Path docs/MAP_DATA_SOURCES.md`
+- `git status --short`
+- `Get-ChildItem -Path packages/game/src/land`
+- `Get-Content -Path packages/game/src/index.ts`
+- `Get-Content -Path packages/game/src/land/land-pricing.ts`
+- `Select-String -Path packages/db/prisma/schema.prisma -Pattern "enum AreaType|areaType|model Kingdom" -Context 0,12`
 - `Get-Content -Path apps/web/src/lib/map/location-validation.ts`
-- `Get-Content -Path apps/web/src/lib/map/postgis.ts`
-- `Get-Content -Path apps/web/src/lib/map/border-generation.ts`
 - `Get-Content -Path apps/web/src/lib/kingdom/location-validation.ts`
-- `Get-Content -Path apps/web/src/lib/map/location-validation.test.ts`
-- `Get-Content -Path apps/web/src/app/api/kingdom/validate-location/route.ts`
 - `Get-Content -Path apps/web/src/app/api/kingdom/create/route.ts`
 - `Get-Content -Path apps/web/src/components/map/KingdomLocationMap.tsx`
-- `Get-Content -Path apps/web/src/app/create-kingdom/page.tsx`
-- `rg -n "suggestions|LocationSuggestion|Validate location|validation" apps/web/src/components apps/web/src/app/create-kingdom apps/web/src/app/api/kingdom -S`
-- `Get-Content -Path apps/web/src/lib/map/border-generation.test.ts`
-- `Get-Content -Path apps/web/src/lib/map/land-mask.ts`
-- `Get-Content -Path apps/web/src/lib/map/restricted-zones.ts`
-- `Get-Content -Path apps/web/tsconfig.json`
-- `npm --prefix apps/web run test`
-- `npm run test`
+- `Get-Content -Path apps/web/src/components/create-kingdom/KingdomConfirmationPanel.tsx`
+- `Get-Content -Path apps/web/src/lib/map/location-validation.test.ts`
+- `Get-Content -Path packages/game/src/land/land-pricing.test.ts`
+- `rg -n 'areaType|normalizeLandAreaType|LandAreaType|STANDARD|RURAL|URBAN|STRATEGIC' apps packages workers -S`
+- `npm run game:test` (first sandboxed run failed with known `spawn EPERM`)
+- `npm --prefix apps/web run test` (first sandboxed run failed with known `spawn EPERM`)
+- `npm run game:typecheck`
+- `npm run game:test` (rerun outside sandbox passed)
+- `npm --prefix apps/web run test` (rerun outside sandbox passed)
 - `npm run typecheck`
+- `npm run test`
 - `npm run lint`
+- `npm run db:typecheck`
+- `npm run tick:typecheck`
 - `npm run build`
 - `npm run db:validate`
-- `npm run db:typecheck`
-- `npm run game:test`
 - `npm run game:typecheck`
 - `npm run tick:test`
-- `npm run tick:typecheck`
-- `npm exec -- tsx tmp-s4-005-smoke.ts`
+- `npm --prefix apps/web exec -- tsx tmp-s4-006-smoke.ts` (failed because the script path was resolved from the repository root)
+- `npm exec -- tsx tmp-s4-006-smoke.ts` from `apps/web` (failed before wrapping top-level await)
+- `npm exec -- tsx tmp-s4-006-smoke.ts` from `apps/web` (passed after wrapping temporary script body)
 - `Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"`
 - `git diff --stat`
-- `git diff --check`
 - `git status --short`
 
 ## Test Status
 
-- `npm --prefix apps/web run test`: initial sandbox run failed with known `spawn EPERM`; rerun outside the sandbox passed with 106 web tests.
-- `npm run test`: passed outside the sandbox with 106 web tests, 55 game tests, and 8 worker tests.
+- `npm run game:test`: initial sandbox run failed with known `spawn EPERM`; rerun outside the sandbox passed with 59 game tests.
+- `npm --prefix apps/web run test`: initial sandbox run failed with known `spawn EPERM`; rerun outside the sandbox passed with 108 web tests.
 - `npm run typecheck`: passed.
+- `npm run test`: passed with 108 web tests, 59 game tests, and 8 worker tests.
 - `npm run lint`: passed.
-- `npm run build`: passed outside the sandbox. Existing Node `module.register()` deprecation warning remains non-blocking.
-- `npm run db:validate`: passed outside the sandbox.
+- `npm run build`: passed. Existing Node `module.register()` deprecation warning remains non-blocking.
+- `npm run db:validate`: passed.
 - `npm run db:typecheck`: passed.
-- `npm run game:test`: passed with 55 tests.
 - `npm run game:typecheck`: passed.
-- `npm run tick:test`: passed with 8 tests.
+- `npm run tick:test`: passed with 8 worker tests.
 - `npm run tick:typecheck`: passed.
-- `git diff --check`: passed; Git printed expected CRLF normalization warnings for modified text files.
-- `git status --short`: shows only the S4-005 source, UI, docs, tracker, changelog, context, and session-state edits.
+- `git diff --check`: pending final run after this session-state update.
+- `git status --short`: pending final run after this session-state update.
 
 ## Manual PostGIS Smoke Status
 
-- First smoke run timed out before the candidate scan was capped. The implementation was updated to validate at most 24 suggestion candidates in small batches.
-- Capped direct helper smoke against the configured PostgreSQL/PostGIS database passed:
-  - Riyadh safe land: valid, land, restricted clear, overlap false, spacing clear, minimum distance 303m, visible area 49,684 m2, strict tolerance.
-  - Existing kingdom center: invalid with `too-close-to-existing-kingdom`, overlap true, and 3 nearby suggestions at 600m bearings 0, 45, and 90.
-  - Existing kingdom first suggestion: valid, land, restricted clear, overlap false, spacing clear, visible area 49,701 m2, strict tolerance.
-  - Atlantic point `lat: 0`, `lng: -30`: invalid with `water`; suggestions were empty because no valid land candidate was found within the capped scan.
-  - Restricted fixture `lat: 24.95`, `lng: 46.9`: invalid with `restricted-zone` and 3 nearby valid suggestions at 1,000m bearings 0, 45, and 90.
-- Browser smoke for clicking suggestions in `/create-kingdom` was not run in this task. The UI compiles and the shared validation helper was smoked against the live database.
+- Temporary helper smoke was run against the configured PostgreSQL/PostGIS database.
+- Riyadh safe point: valid, `areaType: STANDARD`, source `V0_1_DEFAULT`, confidence `LOW`, land, restricted clear, overlap false, spacing clear.
+- Atlantic point `lat: 0`, `lng: -30`: invalid with `water`; area type fields remained null.
+- Restricted fixture `lat: 24.95`, `lng: 46.9`: invalid with `restricted-zone`, 3 suggestions, area type fields remained null.
+- Existing kingdom center: invalid with `too-close-to-existing-kingdom`, overlap true, 3 suggestions, area type fields remained null.
+- Browser smoke for the create-kingdom UI area-type display was not run; the UI compiles, and the shared validation helper was smoked against the live database.
 
 ## Tracker Updates
 
-- Marked S4-005 complete in `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`.
-- Marked S4-005 complete in `tasks/sprint_04.md`.
-- Marked S4-005 complete in `tasks/backlog.md`.
-- Marked S4-008 complete as covered by S4-005 because the active task bundled server-generated nearby valid suggestions.
-- Marked Sprint 4 invalid-reason and nearby-suggestion acceptance criteria complete.
-- Left area-type buffer classification, visible-border expansion/polish, and map preview polish pending.
+- Marked S4-006 complete in `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`.
+- Marked S4-006 complete in `tasks/sprint_04.md`.
+- Marked S4-006 complete in `tasks/backlog.md`.
+- Left the broader acceptance item `Dynamic buffer uses area type` unchecked because S4-006 only introduces the placeholder classifier and all v0.1 classifications currently resolve to `STANDARD`.
 
 ## Known Issues
 
-- Dynamic spacing does not yet vary by area type; S4-006 owns the area-type classification placeholder.
+- Area type classification is intentionally low-confidence and defaults to `STANDARD`; it is not real urban/rural/strategic classification.
+- Dynamic spacing does not yet vary by area type because no non-`STANDARD` classifier or persisted enum values are active.
 - Visible-border expansion after land purchases is still pending later Sprint 4 work.
 - Map preview polish remains pending.
 - The current `MAMALIK_COARSE_V0_1` land mask rejects obvious open ocean but is not coastline-accurate.
@@ -137,8 +142,8 @@ Changed for Sprint 4 S4-005:
 
 ## Open Questions
 
-- None for S4-005.
+- None for S4-006.
 
 ## Next Recommended Task
 
-- S4-006 - Implement area type classification placeholder.
+- S4-007 - Implement visible polygon generation with dynamic tolerance.

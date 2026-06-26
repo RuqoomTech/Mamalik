@@ -3,6 +3,7 @@ import {
   TEMPORARY_MIN_KINGDOM_DISTANCE_M,
   TEMPORARY_VISIBLE_AREA_M2,
 } from "@mamalik/game/constants";
+import type { LandAreaType } from "@mamalik/game";
 
 export type CoordinateInput = {
   lat: unknown;
@@ -50,6 +51,13 @@ export type RestrictedZoneCheckResponse = {
   }>;
 };
 
+export type AreaTypeClassificationResponse = {
+  areaType: LandAreaType;
+  source: "V0_1_DEFAULT" | "V0_1_FIXTURE" | "UNKNOWN";
+  confidence: "LOW" | "MEDIUM" | "HIGH";
+  reason: string;
+};
+
 export type LocationValidationReason =
   | "missing-coordinates"
   | "invalid-coordinates"
@@ -85,6 +93,8 @@ export type LocationValidationResponse = {
   landCheck?: LandCheckResponse;
   waterCheck?: "LAND" | "WATER" | "DATA_MISSING" | "NOT_IMPLEMENTED";
   restrictedZoneCheck?: RestrictedZoneCheckResponse;
+  areaType?: LandAreaType | null;
+  areaTypeClassification?: AreaTypeClassificationResponse | null;
   suggestions: LocationSuggestion[];
 };
 
@@ -264,6 +274,8 @@ export function createInvalidLocationResponse(
       status: "NOT_IMPLEMENTED",
       source: "NOT_IMPLEMENTED",
     },
+    areaType: null,
+    areaTypeClassification: null,
     suggestions,
   };
 }
@@ -300,6 +312,14 @@ export function validateTemporaryKingdomLocation(
     restrictedZoneCheck: {
       status: "NOT_IMPLEMENTED",
       source: "NOT_IMPLEMENTED",
+    },
+    areaType: "STANDARD",
+    areaTypeClassification: {
+      areaType: "STANDARD",
+      source: "V0_1_DEFAULT",
+      confidence: "LOW",
+      reason:
+        "Temporary validation uses the default Standard area type until Sprint 4 classification is active.",
     },
     suggestions: [],
   };

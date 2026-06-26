@@ -8,6 +8,7 @@ import {
   STARTING_POPULATION,
   STARTING_RESOURCES,
 } from "@mamalik/game/constants";
+import { getLandAreaTypeLabel } from "@mamalik/game";
 import type { LocationValidationResponse } from "@/lib/kingdom/location-validation";
 import {
   formatKingdomNameError,
@@ -175,6 +176,14 @@ export function KingdomConfirmationPanel({
             <dt className="text-[#5f665d]">Tolerance</dt>
             <dd className="font-semibold text-[#10140f]">
               {validationResult.toleranceStatus ?? "Pending"}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-[#5f665d]">Area type</dt>
+            <dd className="font-semibold text-[#10140f]">
+              {validationResult.areaType
+                ? getLandAreaTypeLabel(validationResult.areaType)
+                : "Standard"}
             </dd>
           </div>
         </dl>
