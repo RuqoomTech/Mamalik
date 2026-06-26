@@ -60,6 +60,19 @@ function getPolygonPointCount(validationResult: LocationValidationResponse): num
   return validationResult.previewPolygon?.coordinates[0]?.length ?? 0;
 }
 
+function formatToleranceStatus(status: LocationValidationResponse["toleranceStatus"]): string {
+  switch (status) {
+    case "STRICT":
+      return "Excellent fit";
+    case "LOOSE":
+      return "Acceptable fit";
+    case "FALLBACK":
+      return "Approximate border";
+    default:
+      return "Pending";
+  }
+}
+
 export function KingdomConfirmationPanel({
   selectedLocation,
   validationResult,
@@ -175,7 +188,7 @@ export function KingdomConfirmationPanel({
           <div>
             <dt className="text-[#5f665d]">Tolerance</dt>
             <dd className="font-semibold text-[#10140f]">
-              {validationResult.toleranceStatus ?? "Pending"}
+              {formatToleranceStatus(validationResult.toleranceStatus)}
             </dd>
           </div>
           <div>

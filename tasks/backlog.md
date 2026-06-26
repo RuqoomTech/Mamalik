@@ -69,7 +69,7 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S4-004: Reconcile overlap validation and tracker state.
 - [x] S4-005: Implement dynamic buffer checks and nearby valid suggestions.
 - [x] S4-006: Implement area type classification placeholder.
-- [ ] S4-007: Implement visible polygon generation with dynamic tolerance.
+- [x] S4-007: Implement visible polygon generation with dynamic tolerance.
 - [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
 - [ ] S4-009: Update map preview UI.
 

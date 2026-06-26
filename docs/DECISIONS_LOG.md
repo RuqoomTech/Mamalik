@@ -290,3 +290,11 @@
 - Decision: Kingdom creation persists the server-side classification in the existing `Kingdom.areaType` field. The current Prisma enum still only allows `STANDARD`, so no migration is added in S4-006.
 - Decision: Land purchase pricing continues to use the server-stored/default `STANDARD` area type. Non-standard pricing and area-type-based dynamic buffer variation remain inactive until a real classifier and enum expansion are introduced.
 - Decision: Client-submitted area type values are not trusted or accepted by validation, creation, or land purchase flows.
+
+## 2026-06-26 - Sprint 4 Dynamic Visible Border Tolerance
+
+- Decision: S4-007 keeps the v0.1 visible border as a PostGIS-generated circular buffer, but replaces the single-radius attempt with a bounded dynamic attempt sequence.
+- Decision: The generator starts with `sqrt(targetAreaM2 / pi)`, then tries a corrected radius based on measured area, then tries deterministic adjustment factors `0.96`, `0.98`, `1.00`, `1.02`, and `1.04` around the initial radius.
+- Decision: The selected preview prefers `STRICT` tolerance first, then `LOOSE`, then `FALLBACK`; within the same tolerance band, the area closest to the 50,000 m2 target wins.
+- Decision: `/api/kingdom/validate-location`, nearby suggestions, and `POST /api/kingdom/create` all use the same server-side generator. Client-submitted polygons, visible area, attempt counts, and tolerance values remain untrusted.
+- Decision: Visible border area remains a measured map polygon value. Gameplay usable land credit remains exactly 50,000 m2 for starting kingdoms and is not derived from the polygon area.

@@ -77,6 +77,19 @@ function formatReason(reason: string | null): string {
   }
 }
 
+function formatToleranceStatus(status: LocationValidationResponse["toleranceStatus"]): string {
+  switch (status) {
+    case "STRICT":
+      return "Excellent fit";
+    case "LOOSE":
+      return "Acceptable fit";
+    case "FALLBACK":
+      return "Approximate border";
+    default:
+      return "Pending";
+  }
+}
+
 export function KingdomLocationMap({
   mapStyleUrl,
   playerDisplayName,
@@ -276,7 +289,9 @@ export function KingdomLocationMap({
                 Usable land: {validationResult.usableLandM2.toLocaleString()} m2
               </p>
               {validationResult.toleranceStatus ? (
-                <p className="mt-1">Border tolerance: {validationResult.toleranceStatus}</p>
+                <p className="mt-1">
+                  Border tolerance: {formatToleranceStatus(validationResult.toleranceStatus)}
+                </p>
               ) : null}
               {validationResult.areaType ? (
                 <p className="mt-1">

@@ -66,7 +66,7 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - [x] S4-004: Reconcile overlap validation and tracker state.
 - [x] S4-005: Implement dynamic buffer checks and nearby valid suggestions.
 - [x] S4-006: Implement area type classification placeholder.
-- [ ] S4-007: Implement visible polygon generation with dynamic tolerance.
+- [x] S4-007: Implement visible polygon generation with dynamic tolerance.
 - [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
 - [ ] S4-009: Update map preview UI.
 
@@ -77,6 +77,9 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - S4-001 adds PostGIS raw SQL helpers in `apps/web/src/lib/map/postgis.ts`.
 - The first border preview uses a geodesic circular buffer around the selected point. The radius is approximated with `sqrt(area / pi)`, targeting 50,000 m2.
 - Generated visible area is measured with PostGIS and classified as `STRICT`, `LOOSE`, or `FALLBACK` against the locked tolerance bands.
+- S4-007 makes visible-border generation explicitly dynamic and bounded. The generator tries the initial radius, then a corrected radius based on the measured area, then deterministic adjustment factors `0.96`, `0.98`, `1.00`, `1.02`, and `1.04` around the initial radius.
+- S4-007 selects the best generated preview by preferring `STRICT`, then `LOOSE`, then `FALLBACK`; ties within a tolerance band choose the area closest to the 50,000 m2 target.
+- `/api/kingdom/validate-location` now returns `targetAreaM2` and a bounded attempt count alongside the selected preview polygon, visible area, and tolerance status. The UI maps tolerance status to player-facing labels: Excellent fit, Acceptable fit, and Approximate border.
 - Existing kingdom overlap is checked by converting stored `Kingdom.visibleBorderGeojson` to geometry with PostGIS and comparing it to the generated preview polygon.
 - S4-004 verifies the existing overlap foundation and marks overlap complete without rewriting the helper.
 - No-overlap is based on `ST_Intersects` between the generated preview polygon and existing `Kingdom.visibleBorderGeojson` values converted with `ST_GeomFromGeoJSON`.

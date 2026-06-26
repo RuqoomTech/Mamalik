@@ -79,8 +79,10 @@ export type LocationValidationResponse = {
   center?: LocationCoordinates | null;
   usableLandM2: number;
   visibleAreaM2: number | null;
+  targetAreaM2?: number | null;
   previewPolygon: PreviewPolygon | null;
   toleranceStatus?: "STRICT" | "LOOSE" | "FALLBACK" | null;
+  borderAttemptCount?: number | null;
   overlap?: {
     overlaps: boolean;
     overlappingKingdomCount: number;
@@ -261,8 +263,10 @@ export function createInvalidLocationResponse(
     center: null,
     usableLandM2: STARTING_USABLE_LAND_M2,
     visibleAreaM2: null,
+    targetAreaM2: null,
     previewPolygon: null,
     toleranceStatus: null,
+    borderAttemptCount: null,
     overlap: null,
     spacing: null,
     landCheck: {
@@ -298,8 +302,10 @@ export function validateTemporaryKingdomLocation(
     center: coordinates,
     usableLandM2: STARTING_USABLE_LAND_M2,
     visibleAreaM2: TEMPORARY_VISIBLE_AREA_M2,
+    targetAreaM2: TEMPORARY_VISIBLE_AREA_M2,
     previewPolygon: createTemporaryPreviewPolygon(coordinates),
     toleranceStatus: "STRICT",
+    borderAttemptCount: 1,
     overlap: {
       overlaps: false,
       overlappingKingdomCount: 0,

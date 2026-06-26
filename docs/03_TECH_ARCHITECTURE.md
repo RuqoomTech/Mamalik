@@ -86,6 +86,8 @@ S4-005 adds `apps/web/src/lib/map/dynamic-spacing.ts` for the v0.1 kingdom spaci
 
 S4-006 adds `apps/web/src/lib/map/area-type-classification.ts` as the v0.1 area type placeholder. The composed validation pipeline classifies area type only after land, preview polygon, restricted-zone, overlap, and dynamic-spacing checks pass. It returns `STANDARD` with `V0_1_DEFAULT` and low confidence, and kingdom creation persists that server-side classification in the existing `Kingdom.areaType` field. Non-standard area types and area-type buffer variation remain inactive until a real land-use classifier is added.
 
+S4-007 makes `apps/web/src/lib/map/postgis.ts` use bounded dynamic visible-border attempts. The generator starts with the circular `sqrt(area / pi)` radius, tries a corrected radius from the measured area, then tries deterministic adjustment factors around the initial radius. It returns the best server-generated polygon by preferring `STRICT`, then `LOOSE`, then `FALLBACK`, with closest-to-target area as the tiebreaker. Validation and kingdom creation keep gameplay usable land at 50,000 m2 and never accept client-submitted polygons or area values.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`
@@ -142,6 +144,8 @@ S4-003 stores configured no-start fixtures in `RestrictedZone.geom` as `geometry
 S4-005 suggestions are generated server-side by projecting candidate coordinates around the invalid click at 300m, 600m, 1,000m, 1,500m, and 2,000m rings across 45-degree bearings. The scan validates at most 24 candidates, checks candidates in small batches, and revalidates each candidate through the same server-side land, restricted-zone, overlap, and dynamic-spacing pipeline with recursive suggestion generation disabled.
 
 S4-006 area type classification is deliberately not a PostGIS dataset query yet. It is a deterministic server-side placeholder that reports the default `STANDARD` area type and documents the low-confidence source so future non-standard classification can replace it without trusting client input.
+
+S4-007 dynamic visible-border generation remains circular and v0.1-simple, but the radius is no longer a single blind attempt. The selected polygon is measured in PostGIS and can expose `targetAreaM2`, `visibleAreaM2`, `toleranceStatus`, and bounded attempt metadata to server-side validation. Nearby suggestions reuse the same generator because they run through the same validation pipeline with recursive suggestions disabled.
 
 ## Prisma strategy
 

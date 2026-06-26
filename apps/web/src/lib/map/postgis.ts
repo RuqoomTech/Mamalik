@@ -1,7 +1,13 @@
 import type { PreviewPolygon } from "@/lib/kingdom/location-validation";
 import {
+  appendUniqueBorderRadius,
   calculateCircularBorderRadiusM,
+  calculateCorrectedBorderRadiusM,
   classifyVisibleBorderTolerance,
+  createAdjustedBorderRadii,
+  MAX_VISIBLE_BORDER_ATTEMPTS,
+  selectBestVisibleBorderAttempt,
+  type VisibleBorderGenerationAttempt,
   type VisibleBorderToleranceStatus,
 } from "@/lib/map/border-generation";
 
@@ -9,7 +15,9 @@ export type BorderPreviewResult = {
   previewPolygon: PreviewPolygon;
   visibleAreaM2: number;
   toleranceStatus: VisibleBorderToleranceStatus;
+  targetAreaM2: number;
   radiusM: number;
+  attempts: VisibleBorderGenerationAttempt[];
 };
 
 export type BorderOverlapResult = {
@@ -41,12 +49,70 @@ export async function generateVisibleBorderPreview(
     targetAreaM2: number;
   },
 ): Promise<BorderPreviewResult> {
-  const radiusM = calculateCircularBorderRadiusM(input.targetAreaM2);
+  const targetAreaM2 = input.targetAreaM2;
+  const initialRadiusM = calculateCircularBorderRadiusM(targetAreaM2);
+  let radiusAttempts = appendUniqueBorderRadius([], initialRadiusM);
+  const attempts: BorderPreviewCandidate[] = [];
+
+  for (
+    let index = 0;
+    index < radiusAttempts.length && index < MAX_VISIBLE_BORDER_ATTEMPTS;
+    index += 1
+  ) {
+    const candidate = await generateVisibleBorderPreviewAtRadius(db, {
+      lat: input.lat,
+      lng: input.lng,
+      radiusM: radiusAttempts[index] ?? initialRadiusM,
+    });
+
+    attempts.push(candidate);
+
+    if (candidate.toleranceStatus === "STRICT") {
+      return createBorderPreviewResult(candidate, attempts, targetAreaM2);
+    }
+
+    if (index === 0) {
+      radiusAttempts = appendUniqueBorderRadius(
+        radiusAttempts,
+        calculateCorrectedBorderRadiusM({
+          currentRadiusM: candidate.radiusM,
+          targetAreaM2,
+          measuredAreaM2: candidate.visibleAreaM2,
+        }),
+      );
+
+      for (const adjustedRadiusM of createAdjustedBorderRadii(initialRadiusM)) {
+        radiusAttempts = appendUniqueBorderRadius(radiusAttempts, adjustedRadiusM);
+      }
+    }
+  }
+
+  const bestAttempt = selectBestVisibleBorderAttempt(attempts, targetAreaM2);
+
+  if (!bestAttempt) {
+    throw new Error("postgis-border-preview-empty");
+  }
+
+  return createBorderPreviewResult(bestAttempt, attempts, targetAreaM2);
+}
+
+type BorderPreviewCandidate = VisibleBorderGenerationAttempt & {
+  previewPolygon: PreviewPolygon;
+};
+
+async function generateVisibleBorderPreviewAtRadius(
+  db: PostgisQueryClient,
+  input: {
+    lat: number;
+    lng: number;
+    radiusM: number;
+  },
+): Promise<BorderPreviewCandidate> {
   const rows = await db.$queryRaw<BorderPreviewRow[]>`
     WITH generated AS (
       SELECT ST_Buffer(
         ST_SetSRID(ST_MakePoint(${input.lng}, ${input.lat}), 4326)::geography,
-        ${radiusM}
+        ${input.radiusM}
       )::geometry AS geom
     )
     SELECT
@@ -67,7 +133,26 @@ export async function generateVisibleBorderPreview(
     previewPolygon,
     visibleAreaM2,
     toleranceStatus: classifyVisibleBorderTolerance(visibleAreaM2),
-    radiusM,
+    radiusM: input.radiusM,
+  };
+}
+
+function createBorderPreviewResult(
+  selectedAttempt: BorderPreviewCandidate,
+  attempts: BorderPreviewCandidate[],
+  targetAreaM2: number,
+): BorderPreviewResult {
+  return {
+    previewPolygon: selectedAttempt.previewPolygon,
+    visibleAreaM2: selectedAttempt.visibleAreaM2,
+    toleranceStatus: selectedAttempt.toleranceStatus,
+    targetAreaM2,
+    radiusM: selectedAttempt.radiusM,
+    attempts: attempts.map((attempt) => ({
+      radiusM: attempt.radiusM,
+      visibleAreaM2: attempt.visibleAreaM2,
+      toleranceStatus: attempt.toleranceStatus,
+    })),
   };
 }
 

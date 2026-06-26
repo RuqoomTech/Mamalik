@@ -12,7 +12,7 @@ Map validation and border generation are v0.1-ready.
 - [x] S4-004: Reconcile overlap validation and tracker state.
 - [x] S4-005: Implement dynamic buffer checks and nearby valid suggestions.
 - [x] S4-006: Implement area type classification placeholder.
-- [ ] S4-007: Implement visible polygon generation with dynamic tolerance.
+- [x] S4-007: Implement visible polygon generation with dynamic tolerance.
 - [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
 - [ ] S4-009: Update map preview UI.
 
@@ -33,4 +33,5 @@ Map validation and border generation are v0.1-ready.
 - S4-004 verifies overlap validation as already implemented: generated preview polygons are checked against existing `Kingdom.visibleBorderGeojson` geometry and return `too-close-to-existing-kingdom` on direct border intersection. Dynamic buffer spacing remains S4-005.
 - S4-005 adds a 303m starting dynamic spacing rule derived from preview radius, uses PostGIS `ST_DWithin` for center-distance spacing, and returns up to 3 server-validated nearby suggestions for water, restricted-zone, overlap, and spacing failures.
 - S4-006 adds a server-side area-type placeholder that classifies valid starts as `STANDARD` with `V0_1_DEFAULT` and low confidence, stores `STANDARD` during kingdom creation, and leaves non-standard buffer/pricing behavior inactive until a real classifier is introduced.
-- Area-type buffer variation, visible-border expansion, and map preview polish remain pending follow-up Sprint 4 tasks.
+- S4-007 adds bounded dynamic visible-border generation: initial radius, corrected radius, deterministic adjustment factors, and best-result selection that prefers `STRICT`, then `LOOSE`, then `FALLBACK` closest to the 50,000 m2 target.
+- Area-type buffer variation, visible-border expansion after land purchases, and map preview polish remain pending follow-up Sprint 4 tasks.

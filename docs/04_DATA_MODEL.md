@@ -73,6 +73,8 @@ Notes:
 - Sprint 1 Task 14 creates the kingdom inside a transaction and stores the temporary preview polygon as `visibleBorderGeojson`.
 - Sprint 4 Task S4-001 keeps `visibleBorderGeojson` as the storage source for the visible border and uses PostGIS raw SQL to generate new preview GeoJSON, measure visible area in m2, and check overlap by converting stored GeoJSON with `ST_GeomFromGeoJSON`.
 - S4-001 does not add a native geometry column or spatial index. That remains a future hardening option if overlap checks become slow.
+- S4-007 stores the selected server-generated dynamic preview polygon in `visibleBorderGeojson` and its measured selected area in `visibleAreaM2` during kingdom creation. The generator may attempt multiple radii, but only the chosen polygon/area is persisted.
+- `visibleAreaM2` is an approximate visible-map area and can be `STRICT`, `LOOSE`, or `FALLBACK` relative to the 50,000 m2 target. It is intentionally separate from `usableLandM2`, which remains the exact gameplay land credit.
 - `usedLandM2` starts as the sum of starter building footprints.
 - `AreaType.STANDARD` is the only current persisted area type. S4-006 classifies valid locations as `STANDARD` with source `V0_1_DEFAULT` and low confidence, then kingdom creation stores that server-side value. More persisted area categories require a future enum migration and a real classifier; area-type bonuses remain post-v0.1.
 
@@ -459,6 +461,7 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Initial land purchase mutation logic lives in `apps/web/src/lib/kingdom/land-purchase.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes price/cooldown/area type from database state before mutating Money, usable land, cooldowns, and reports.
 - Initial district allocation mutation logic lives in `apps/web/src/lib/kingdom/district-allocation.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes unallocated usable land from database state before incrementing the target district allocation.
 - Initial PostGIS visible-border helpers live in `apps/web/src/lib/map`. They generate a geodesic buffer preview from selected coordinates, classify the measured area against locked tolerance bands, and reject overlap with existing kingdom visible borders.
+- S4-007 extends the visible-border helpers with bounded dynamic radius attempts and best-result selection. The selected preview prefers strict tolerance, then loose tolerance, then fallback closest to the 50,000 m2 target.
 - Initial land/water validation helpers live in `apps/web/src/lib/map/land-mask.ts` and query the raw SQL `LandMaskPolygon` table before border preview generation.
 - Initial area-type classification lives in `apps/web/src/lib/map/area-type-classification.ts` and returns only `STANDARD` until a real land-use dataset/classifier is introduced.
 - Kingdom creation server logic reuses the `packages/game` constants instead of duplicating locked starter values in route handlers or UI components.
