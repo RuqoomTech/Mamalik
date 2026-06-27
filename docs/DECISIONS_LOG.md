@@ -306,3 +306,10 @@
 - Decision: Validation reason copy is user-facing and generic. Restricted-zone messages do not expose detailed restricted data, while direct border overlap can be described as overlap when the validation result includes overlap metadata.
 - Decision: Suggestion clicks update the marker, pan the map, clear stale state, and rerun server validation for the suggested coordinate. Suggestions are never accepted automatically by kingdom creation.
 - Decision: Confirmation UI may display visible area, target area, tolerance, and area type for user clarity, but `POST /api/kingdom/create` remains the source of truth and reruns validation server-side.
+
+## 2026-06-27 - Kingdom UI Navigation Refinement
+
+- Decision: The authenticated `/dashboard` is now a command overview, not the full detail surface for every kingdom system.
+- Decision: Full kingdom detail is split into focused pages: `/world`, `/economy`, `/land`, `/buildings`, `/army`, and `/reports`.
+- Decision: Focused kingdom pages reuse the existing server-side `getKingdomDashboardData` read model and shared panels so formulas and display shaping are not duplicated in UI components.
+- Decision: Dashboard and world map previews render stored `Kingdom.visibleBorderGeojson` through a read-only MapLibre component. Client-side geometry remains display-only and is not trusted for gameplay.

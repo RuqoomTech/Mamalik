@@ -42,6 +42,7 @@ export type DashboardSourceKingdom = {
   usableLandM2: number;
   usedLandM2: number;
   visibleAreaM2: number;
+  visibleBorderGeojson: unknown;
   population: number;
   areaType: string;
   resourceStockpile: {
@@ -119,7 +120,9 @@ export type KingdomDashboardData = {
     usedLandM2: number;
     freeLandM2: number;
     visibleAreaM2: number;
+    visibleBorderGeojson: unknown;
     population: number;
+    areaType: string;
   };
   resources: {
     money: number;
@@ -569,7 +572,9 @@ export function shapeKingdomDashboardData(
       usedLandM2: source.usedLandM2,
       freeLandM2: calculateFreeLandM2(source.usableLandM2, source.usedLandM2),
       visibleAreaM2: source.visibleAreaM2,
+      visibleBorderGeojson: source.visibleBorderGeojson,
       population: source.population,
+      areaType: source.areaType,
     },
     resources,
     economyEstimate: {
@@ -671,6 +676,7 @@ export async function getKingdomDashboardData(
         usableLandM2: true,
         usedLandM2: true,
         visibleAreaM2: true,
+        visibleBorderGeojson: true,
         population: true,
         areaType: true,
         resourceStockpile: {

@@ -31,6 +31,9 @@ export async function purchaseLandAction(packageKey: string): Promise<PurchaseLa
 
   if (result.ok) {
     revalidatePath("/dashboard");
+    revalidatePath("/economy");
+    revalidatePath("/land");
+    revalidatePath("/reports");
   }
 
   return result;
@@ -62,6 +65,8 @@ export async function allocateDistrictLandAction(
 
   if (result.ok) {
     revalidatePath("/dashboard");
+    revalidatePath("/land");
+    revalidatePath("/reports");
   }
 
   return result;

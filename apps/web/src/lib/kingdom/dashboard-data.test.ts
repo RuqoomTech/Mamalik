@@ -26,6 +26,18 @@ const sourceKingdom: DashboardSourceKingdom = {
   usableLandM2: 50_000,
   usedLandM2: 7_000,
   visibleAreaM2: 50_000,
+  visibleBorderGeojson: {
+    type: "Polygon",
+    coordinates: [
+      [
+        [46.675, 24.713],
+        [46.676, 24.713],
+        [46.676, 24.714],
+        [46.675, 24.714],
+        [46.675, 24.713],
+      ],
+    ],
+  },
   population: 1_000,
   areaType: "STANDARD",
   resourceStockpile: {
@@ -271,6 +283,8 @@ test("shapes dashboard data with economy and tick read models", () => {
   );
 
   assert.equal(dashboardData.kingdom.freeLandM2, 43_000);
+  assert.equal(dashboardData.kingdom.areaType, "STANDARD");
+  assert.deepEqual(dashboardData.kingdom.visibleBorderGeojson, sourceKingdom.visibleBorderGeojson);
   assert.equal(dashboardData.kingdom.protectionRemaining, "3 days");
   assert.deepEqual(
     dashboardData.districts.map((district) => [

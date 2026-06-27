@@ -69,6 +69,7 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - [x] S4-007: Implement visible polygon generation with dynamic tolerance.
 - [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
 - [x] S4-009: Update map preview UI.
+- [x] S4-010: Split kingdom dashboard into overview and focused kingdom pages.
 
 ## Implementation Notes
 
@@ -84,6 +85,9 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - S4-009 adds explicit UI states for not selected, selected but unvalidated, validating, valid, invalid, and request failed.
 - S4-009 makes nearby suggestions actionable from the UI: choosing a suggestion updates the marker, pans the map, clears stale state, and reruns server validation for that coordinate. Suggestions are not applied automatically during kingdom creation.
 - S4-009 keeps restricted-zone messages generic and displays validation details such as usable land, visible area, target area, tolerance label/raw status, and area type without trusting client-side values for creation.
+- S4-010 restructures authenticated kingdom UI so `/dashboard` is a command overview instead of a full data dump.
+- S4-010 adds focused kingdom pages for `/world`, `/economy`, `/land`, `/buildings`, `/army`, and `/reports`, all backed by the existing server-side dashboard read model.
+- S4-010 adds a read-only MapLibre kingdom border preview for dashboard/world pages using stored `Kingdom.visibleBorderGeojson`; client geometry remains untrusted.
 - Existing kingdom overlap is checked by converting stored `Kingdom.visibleBorderGeojson` to geometry with PostGIS and comparing it to the generated preview polygon.
 - S4-004 verifies the existing overlap foundation and marks overlap complete without rewriting the helper.
 - No-overlap is based on `ST_Intersects` between the generated preview polygon and existing `Kingdom.visibleBorderGeojson` values converted with `ST_GeomFromGeoJSON`.

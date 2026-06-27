@@ -2,6 +2,27 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-27
+
+### Added
+
+- Added an authenticated kingdom app shell with section navigation for overview, world, economy, land, buildings, army, and reports.
+- Added focused kingdom pages at `/world`, `/economy`, `/land`, `/buildings`, `/army`, and `/reports`.
+- Added a read-only MapLibre kingdom border preview component that renders stored `Kingdom.visibleBorderGeojson` on dashboard/world surfaces.
+
+### Changed
+
+- Changed `/dashboard` from an all-in-one data page into a command overview with resource, map, queue, land, economy, and report summaries linking to focused pages.
+- Reused shared kingdom display panels across focused pages so economy, land, building, army, tick, and report views still use server-shaped data.
+- Extended dashboard read-model data to expose stored visible border GeoJSON and server-side area type for authenticated map/detail pages.
+- Revalidated focused land/economy/report routes after existing land purchase and district allocation actions.
+- Improved the authenticated kingdom section navigation so it wraps cleanly on narrower viewports instead of showing a horizontal scrollbar.
+- Marked S4-010 complete in active Sprint 4 docs and task trackers.
+
+### Deferred
+
+- New gameplay actions, start-construction UI, start-training UI, scouting, combat, alliances, rankings, and visible-border expansion after purchases remain in their existing v0.1 owning tasks.
+
 ## 2026-06-26
 
 ### Added

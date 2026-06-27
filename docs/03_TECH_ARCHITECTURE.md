@@ -88,6 +88,10 @@ S4-006 adds `apps/web/src/lib/map/area-type-classification.ts` as the v0.1 area 
 
 S4-007 makes `apps/web/src/lib/map/postgis.ts` use bounded dynamic visible-border attempts. The generator starts with the circular `sqrt(area / pi)` radius, tries a corrected radius from the measured area, then tries deterministic adjustment factors around the initial radius. It returns the best server-generated polygon by preferring `STRICT`, then `LOOSE`, then `FALLBACK`, with closest-to-target area as the tiebreaker. Validation and kingdom creation keep gameplay usable land at 50,000 m2 and never accept client-submitted polygons or area values.
 
+S4-010 makes the authenticated kingdom UI follow an overview-plus-detail structure. `/dashboard` is the command overview, while `/world`, `/economy`, `/land`, `/buildings`, `/army`, and `/reports` own their full-detail surfaces. These pages reuse `getKingdomDashboardData` and shared kingdom panels so formulas and read-model shaping stay server-side.
+
+S4-010 adds `KingdomBorderMapPreview` as a read-only MapLibre component for stored kingdom borders. It renders `Kingdom.visibleBorderGeojson` and the center marker for dashboard/world views, while validation and creation continue to trust only server-side geometry.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`

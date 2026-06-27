@@ -15,6 +15,7 @@ Map validation and border generation are v0.1-ready.
 - [x] S4-007: Implement visible polygon generation with dynamic tolerance.
 - [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
 - [x] S4-009: Update map preview UI.
+- [x] S4-010: Split kingdom dashboard into overview and focused kingdom pages.
 
 ## Acceptance Criteria
 
@@ -35,4 +36,5 @@ Map validation and border generation are v0.1-ready.
 - S4-006 adds a server-side area-type placeholder that classifies valid starts as `STANDARD` with `V0_1_DEFAULT` and low confidence, stores `STANDARD` during kingdom creation, and leaves non-standard buffer/pricing behavior inactive until a real classifier is introduced.
 - S4-007 adds bounded dynamic visible-border generation: initial radius, corrected radius, deterministic adjustment factors, and best-result selection that prefers `STRICT`, then `LOOSE`, then `FALLBACK` closest to the 50,000 m2 target.
 - S4-009 adds clear create-kingdom map preview states, validated polygon rendering, stale-preview clearing, suggestion revalidation, and confirmation-panel target/tolerance details.
+- S4-010 makes `/dashboard` a command overview, adds focused `/world`, `/economy`, `/land`, `/buildings`, `/army`, and `/reports` pages, and renders stored kingdom borders through a read-only MapLibre preview.
 - Area-type buffer variation and visible-border expansion after land purchases remain pending follow-up Sprint 4 tasks.

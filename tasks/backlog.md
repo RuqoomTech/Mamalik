@@ -72,6 +72,7 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S4-007: Implement visible polygon generation with dynamic tolerance.
 - [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
 - [x] S4-009: Update map preview UI.
+- [x] S4-010: Split kingdom dashboard into overview and focused kingdom pages.
 
 ## Sprint 5 - Movement + Scouting + Combat
 
