@@ -8,6 +8,8 @@ Status: Sprint 4 foundation.
 
 Current source: `MAMALIK_COARSE_V0_1`, a small checked-in coarse global land mask seeded by `npm run db:seed-land-mask`.
 
+Sprint 4 closure decision: acceptable for the v0.1 validation foundation and Sprint 5 start, but not accurate enough for production launch precision claims.
+
 Storage:
 
 - Table: `LandMaskPolygon`
@@ -41,6 +43,8 @@ Future production source:
 Status: Sprint 4 placeholder foundation.
 
 Current source: `MAMALIK_RESTRICTED_V0_1`, a small checked-in artificial no-start fixture set seeded by `npm run db:seed-restricted-zones`.
+
+Sprint 4 closure decision: acceptable for proving the restricted-zone validation path and seed workflow, but not a production global restricted-zone dataset.
 
 Storage:
 
@@ -83,6 +87,8 @@ Precision limits:
 Status: Sprint 4 placeholder.
 
 Current source: `V0_1_DEFAULT`.
+
+Sprint 4 closure decision: area-type metadata is wired, but area-type-based buffer variation and non-`STANDARD` pricing behavior remain deferred until a real classifier and enum expansion exist.
 
 Behavior:
 

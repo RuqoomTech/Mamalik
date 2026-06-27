@@ -92,6 +92,8 @@ S4-010 makes the authenticated kingdom UI follow an overview-plus-detail structu
 
 S4-010 adds `KingdomBorderMapPreview` as a read-only MapLibre component for stored kingdom borders. It renders `Kingdom.visibleBorderGeojson` and the center marker for dashboard/world views, while validation and creation continue to trust only server-side geometry.
 
+Sprint 4 closure keeps this map architecture as the v0.1 foundation: PostGIS-heavy validation stays in server-only helper modules with parameterized raw SQL, stored visible borders remain GeoJSON on `Kingdom`, and production-grade land/restricted datasets plus land-purchase border expansion are deferred map-hardening work.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`

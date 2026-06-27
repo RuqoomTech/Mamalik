@@ -313,3 +313,14 @@
 - Decision: Full kingdom detail is split into focused pages: `/world`, `/economy`, `/land`, `/buildings`, `/army`, and `/reports`.
 - Decision: Focused kingdom pages reuse the existing server-side `getKingdomDashboardData` read model and shared panels so formulas and display shaping are not duplicated in UI components.
 - Decision: Dashboard and world map previews render stored `Kingdom.visibleBorderGeojson` through a read-only MapLibre component. Client-side geometry remains display-only and is not trusted for gameplay.
+
+## 2026-06-27 - Sprint 4 Closure
+
+- Decision: Sprint 4 is complete for the v0.1 map-validation and starting-border foundation and is ready for Sprint 5.
+- Decision: Visible-border expansion after land purchases is deferred as future v0.1 map hardening because land purchases currently change gameplay usable land credit only, and gameplay land credit remains separate from visible border area.
+- Decision: Area-type-based buffer variation is deferred until non-`STANDARD` area classification exists. Applying variation while every valid start is low-confidence `STANDARD` would be misleading.
+- Decision: Coarse `MAMALIK_COARSE_V0_1` land-mask precision is acceptable for the v0.1 foundation, but production launch hardening needs a reviewed, licensed global land-mask import.
+- Decision: Artificial `MAMALIK_RESTRICTED_V0_1` restricted-zone fixtures are acceptable for validating the no-start path, but production launch hardening needs a reviewed, sensitivity-aware restricted-zone dataset.
+- Decision: Circular PostGIS preview polygons are acceptable for v0.1 starting-border validation. Cadastral or parcel-like border generation remains future map-fidelity work.
+- Decision: PostGIS-heavy map validation continues to use server-only helper modules and parameterized raw SQL, while Prisma remains the relational ORM.
+- Decision: Browser smoke is recommended but not blocking for Sprint 4 closure when helper/API tests, PostGIS smoke, build, and type checks pass. A no-kingdom manual browser pass remains recommended before public v0.1 launch.

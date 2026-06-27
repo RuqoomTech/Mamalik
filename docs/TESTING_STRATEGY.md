@@ -84,6 +84,8 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Route/API smoke for `/api/kingdom/validate-location` requires a signed-in no-kingdom user because the endpoint enforces authentication and one-kingdom-per-user behavior.
 - Kingdom creation smoke should confirm the server reruns PostGIS validation and stores the server-generated `visibleBorderGeojson`; client-submitted preview polygons remain untrusted.
 - Water and restricted-zone checks must not be marked complete until their datasets/checks exist.
+- Sprint 4 closure can use helper-level PostGIS smoke when a no-kingdom browser session is not available. The helper smoke should validate safe land, ocean, restricted fixture, existing-kingdom overlap, and at least one returned suggestion through `validateKingdomLocationWithPostgis`.
+- Create-kingdom browser smoke remains recommended before public launch, especially for MapLibre layer rendering and stale-preview clearing, but a blocked browser automation session should be documented rather than worked around unsafely.
 
 ## Documentation Requirement
 

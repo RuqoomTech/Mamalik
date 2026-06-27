@@ -9,6 +9,7 @@ All notable Mamalik project changes are recorded here.
 - Added an authenticated kingdom app shell with section navigation for overview, world, economy, land, buildings, army, and reports.
 - Added focused kingdom pages at `/world`, `/economy`, `/land`, `/buildings`, `/army`, and `/reports`.
 - Added a read-only MapLibre kingdom border preview component that renders stored `Kingdom.visibleBorderGeojson` on dashboard/world surfaces.
+- Added `docs/sprints/SPRINT_04_REVIEW.md` with Sprint 4 closure status, acceptance criteria, PostGIS smoke results, browser smoke status, map dataset status, migration/seed status, deferred items, and Sprint 5 readiness.
 
 ### Changed
 
@@ -18,10 +19,13 @@ All notable Mamalik project changes are recorded here.
 - Revalidated focused land/economy/report routes after existing land purchase and district allocation actions.
 - Improved the authenticated kingdom section navigation so it wraps cleanly on narrower viewports instead of showing a horizontal scrollbar.
 - Marked S4-010 complete in active Sprint 4 docs and task trackers.
+- Closed Sprint 4 from the documentation and task-tracking standpoint and marked it ready for Sprint 5.
 
 ### Deferred
 
 - New gameplay actions, start-construction UI, start-training UI, scouting, combat, alliances, rankings, and visible-border expansion after purchases remain in their existing v0.1 owning tasks.
+- Area-type buffer variation remains deferred until non-`STANDARD` area classification exists.
+- Production-grade land-mask/restricted-zone datasets and cadastral parcel-like border generation remain deferred map-hardening work.
 
 ## 2026-06-26
 

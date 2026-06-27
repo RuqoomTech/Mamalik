@@ -11,8 +11,8 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 ## Active Release
 
 - Active milestone: v0.1
-- Active sprint: Sprint 4 - Map Validation + Borders
-- Active task sequence: Sprint 1, Sprint 2, and Sprint 3 are complete from the documented feature and automated-check standpoint. Sprint 4 has completed S4-001 through S4-009: PostGIS-backed preview polygon generation, area measurement, overlap checks, coarse land-mask water rejection, placeholder restricted-zone no-start validation, dynamic spacing checks, server-generated nearby valid suggestions, the server-side `STANDARD` area-type placeholder, bounded dynamic visible-border tolerance generation, and the create-kingdom map preview UI are in place. Visible-border expansion after land purchases and area-type buffer variation remain Sprint 4 follow-ups.
+- Active sprint: Sprint 4 - Map Validation + Borders is closed and ready for Sprint 5 when the user starts it.
+- Active task sequence: Sprint 1, Sprint 2, Sprint 3, and Sprint 4 are complete from the documented feature and automated-check standpoint. Sprint 4 delivered PostGIS-backed preview polygon generation, area measurement, overlap checks, coarse land-mask water rejection, placeholder restricted-zone no-start validation, dynamic spacing checks, server-generated nearby valid suggestions, the server-side `STANDARD` area-type placeholder, bounded dynamic visible-border tolerance generation, create-kingdom map preview UI, and the overview-plus-detail kingdom UI split. Visible-border expansion after land purchases, production map datasets, and area-type buffer variation remain future v0.1 map-hardening work.
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -216,7 +216,7 @@ v0.1 must include:
 - Existing `LandPurchaseCooldown` persistence is reused for Sprint 3; no duplicate cooldown model is added.
 - Sprint 3 land purchases use a Next.js Server Action backed by `apps/web/src/lib/kingdom/land-purchase.ts`. The action accepts only a package key, then reloads kingdom, stockpile, and cooldown state server-side before recalculating price/cooldown and mutating Money, usable land, cooldown rows, and `LAND_PURCHASE` reports in a transaction.
 - The dashboard land purchase UI uses server-computed options from `apps/web/src/lib/kingdom/land-purchase-options.ts`; the client panel submits only package keys to the Server Action and never submits prices, cooldowns, resource values, land values, or area type.
-- Land purchases currently increase gameplay usable land credit only. Real visible-border expansion and polygon recalculation remain Sprint 4 spatial work.
+- Land purchases currently increase gameplay usable land credit only. Real visible-border expansion and polygon recalculation are deferred future v0.1 map-hardening work because gameplay usable land credit and visible border area are intentionally separate.
 - The dashboard district land view uses `District.usedLandM2` as the canonical source for district used/free land and uses `BuildingInstance` rows only for per-district building counts and building detail display.
 - Sprint 3 district allocation is allocation-only: a player can add unallocated usable land into an existing district through a Server Action, but cannot take allocated land out of a district or move land between districts yet.
 - District allocation creates `DISTRICT_ALLOCATION` reports. Migration `000005_district_allocation_report_type` adds the report enum value.
@@ -232,6 +232,7 @@ v0.1 must include:
 - Sprint 4 S4-009 makes the create-kingdom UI render only validated server-generated preview polygons, clear stale polygons when selection/validation state changes, expose clear validation statuses and user-facing reason text, and rerun validation when a nearby suggestion is selected.
 - Sprint 4 S4-010 makes the authenticated kingdom UI use an overview-plus-detail structure: `/dashboard` is the command overview, while `/world`, `/economy`, `/land`, `/buildings`, `/army`, and `/reports` own full detail for those systems.
 - Dashboard and world map previews render stored `Kingdom.visibleBorderGeojson` through a read-only MapLibre component. These previews are display-only; validation and creation still trust only server-side geometry.
+- Sprint 4 closure accepts circular PostGIS preview polygons, the coarse land mask, and artificial restricted-zone fixtures as the v0.1 foundation. Production hardening must replace map datasets with reviewed, licensed imports before public launch precision claims.
 - Sprint 4 S4-002 adds a raw SQL `LandMaskPolygon` PostGIS table with `geometry(MultiPolygon, 4326)`, a GiST spatial index, and a coarse `MAMALIK_COARSE_V0_1` seed loaded by `npm run db:seed-land-mask`.
 - The first land mask rejects obvious open-ocean starts but is not coastline-accurate. Production should import Natural Earth 1:50m/1:110m or an equivalent licensed global land mask from local files; validation endpoints must not fetch remote map data at runtime.
 - Missing land-mask data blocks kingdom validation and creation by default. `ALLOW_MISSING_LAND_MASK=true` is a local-development-only fallback.

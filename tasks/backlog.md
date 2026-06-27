@@ -74,6 +74,13 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S4-009: Update map preview UI.
 - [x] S4-010: Split kingdom dashboard into overview and focused kingdom pages.
 
+## Sprint 4 Maintenance
+
+- [x] 2026-06-27: Complete Sprint 4 QA, stabilization, and closure review.
+- [ ] Future v0.1 map hardening: Expand/recalculate visible borders after land purchases.
+- [ ] Future v0.1 map hardening: Add non-`STANDARD` area classification before enabling area-type buffer variation.
+- [ ] Future v0.1 map hardening: Import production-grade land-mask and restricted-zone datasets.
+
 ## Sprint 5 - Movement + Scouting + Combat
 
 - [ ] See `tasks/sprint_05.md`.

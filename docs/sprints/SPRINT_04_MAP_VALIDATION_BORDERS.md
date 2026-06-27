@@ -49,7 +49,7 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 
 - [x] Clicking water is rejected.
 - [x] Clicking too close to another kingdom is rejected.
-- [ ] Dynamic buffer uses area type.
+- [ ] Dynamic buffer uses area type. Deferred until non-`STANDARD` classification exists.
 - [x] Existing kingdom overlap is rejected.
 - [x] Restricted-zone placeholder check exists.
 - [x] A valid starting point returns a visible polygon preview.
@@ -70,6 +70,7 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - [x] S4-008: Implement nearby valid point suggestions. Completed as part of S4-005.
 - [x] S4-009: Update map preview UI.
 - [x] S4-010: Split kingdom dashboard into overview and focused kingdom pages.
+- [x] Sprint 4 QA, stabilization, and closure review.
 
 ## Implementation Notes
 
@@ -88,6 +89,8 @@ If a clicked point is invalid, suggest nearby valid points using a simple scan a
 - S4-010 restructures authenticated kingdom UI so `/dashboard` is a command overview instead of a full data dump.
 - S4-010 adds focused kingdom pages for `/world`, `/economy`, `/land`, `/buildings`, `/army`, and `/reports`, all backed by the existing server-side dashboard read model.
 - S4-010 adds a read-only MapLibre kingdom border preview for dashboard/world pages using stored `Kingdom.visibleBorderGeojson`; client geometry remains untrusted.
+- Sprint 4 closure accepts the current validation and UI foundation as complete for starting Sprint 5. Area-type-based buffer variation is deferred because the only current classifier result is low-confidence `STANDARD`; visible-border expansion after land purchases is deferred as future v0.1 map hardening because gameplay land credit and visible polygon area are intentionally separate.
+- `docs/sprints/SPRINT_04_REVIEW.md` records the closure acceptance criteria, PostGIS smoke result, browser smoke status, dataset precision decisions, migration/seed status, and Sprint 5 readiness.
 - Existing kingdom overlap is checked by converting stored `Kingdom.visibleBorderGeojson` to geometry with PostGIS and comparing it to the generated preview polygon.
 - S4-004 verifies the existing overlap foundation and marks overlap complete without rewriting the helper.
 - No-overlap is based on `ST_Intersects` between the generated preview polygon and existing `Kingdom.visibleBorderGeojson` values converted with `ST_GeomFromGeoJSON`.

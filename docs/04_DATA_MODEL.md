@@ -302,6 +302,12 @@ Notes:
 - Current categories are `AIRPORT`, `MILITARY`, `PROTECTED_AREA`, `ADMIN_BLOCK`, and `TEST_FIXTURE`.
 - User-facing errors should stay generic so future sensitive restricted datasets do not leak detailed public information.
 
+Sprint 4 closure:
+
+- `LandMaskPolygon` and `RestrictedZone` are accepted as the v0.1 spatial validation foundation.
+- They are managed through raw SQL migrations and seed scripts because Prisma does not model PostGIS geometry columns directly in this project.
+- The current seed datasets are intentionally coarse/artificial. Production launch hardening needs reviewed, licensed, versioned imports before Mamalik claims coastline-accurate land validation or comprehensive restricted-zone coverage.
+
 ## Dashboard Read Model
 
 Sprint 1 Task 16 adds a server-side dashboard read model in `apps/web/src/lib/kingdom/dashboard-data.ts`.
