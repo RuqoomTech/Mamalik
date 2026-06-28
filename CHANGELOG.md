@@ -2,6 +2,18 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-29
+
+### Changed
+
+- Tightened the public landing page to more closely match the supplied reference proportions, including the centered parchment frame, shorter hero, lower feature-card band, compact trust strip, and aligned footer.
+- Replaced placeholder-style landing and footer symbols with inline SVG icon treatments and arrow controls.
+- Removed the duplicate rendered kingdom stat overlay because the supplied hero art already contains the reference stat card.
+
+### Known issues
+
+- Browser screenshot capture through the requested Browser plugin was not available in this tool session; local `/` returned HTTP 200 and automated typecheck/lint/build checks passed.
+
 ## 2026-06-28
 
 ### Added

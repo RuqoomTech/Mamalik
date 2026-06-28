@@ -331,3 +331,9 @@
 - Decision: Public marketing pages live as static App Router pages at `/features`, `/about`, `/how-to-play`, `/roadmap`, `/updates`, `/careers`, and `/contact`.
 - Decision: Public copy may sell the Mamalik fantasy, but it must stay honest about implementation status. Sprint 5 combat and Sprint 6 alliance/ranking systems are described as roadmap work until implemented.
 - Decision: The supplied kingdom image is stored as a local public asset at `apps/web/public/brand/mamalik-hero-world.png`; runtime pages must not depend on external image fetches for the landing hero.
+
+## 2026-06-29 - Landing Reference Matching Pass
+
+- Decision: The public landing page should keep the supplied reference's compact central parchment frame, short hero, three-card band, trust strip, and full-width dark green footer as the current public marketing direction.
+- Decision: The supplied hero art already contains the reference kingdom-stat card, so the landing page should not render a second stat-card overlay on top of that asset.
+- Decision: Landing-page icons are implemented as small inline SVG UI ornaments in the existing React components instead of adding a new icon dependency for this polishing checkpoint.

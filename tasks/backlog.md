@@ -84,6 +84,7 @@ Canonical Markdown backlog for active v0.1 work.
 ## Public UI / Marketing Maintenance
 
 - [x] 2026-06-28: Refresh public landing page and add required public marketing pages.
+- [x] 2026-06-29: Tighten public landing page proportions and icon treatment against the supplied reference.
 
 ## Sprint 5 - Movement + Scouting + Combat
 
