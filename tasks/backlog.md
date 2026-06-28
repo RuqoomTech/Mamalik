@@ -81,6 +81,10 @@ Canonical Markdown backlog for active v0.1 work.
 - [ ] Future v0.1 map hardening: Add non-`STANDARD` area classification before enabling area-type buffer variation.
 - [ ] Future v0.1 map hardening: Import production-grade land-mask and restricted-zone datasets.
 
+## Public UI / Marketing Maintenance
+
+- [x] 2026-06-28: Refresh public landing page and add required public marketing pages.
+
 ## Sprint 5 - Movement + Scouting + Combat
 
 - [ ] See `tasks/sprint_05.md`.

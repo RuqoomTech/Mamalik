@@ -180,6 +180,12 @@ S4-007 dynamic visible-border generation remains circular and v0.1-simple, but t
 - `apps/web` uses Turbopack with the repository root configured so it can import repo-local package source from `packages/db`.
 - `apps/web` also sets Next.js `outputFileTracingRoot` to the repository root so production builds can trace runtime files from repo-local packages such as `packages/db`.
 
+## Public Marketing UI
+
+- Public marketing pages use a shared App Router shell in `apps/web/src/components/marketing/MarketingChrome.tsx`.
+- The landing hero uses the local asset `apps/web/public/brand/mamalik-hero-world.png`; public pages must not depend on runtime external image fetches for the main visual.
+- Marketing copy should distinguish completed v0.1 systems from roadmap systems so public pages do not imply Sprint 5/Sprint 6 gameplay is already live.
+
 ## Realtime strategy
 
 v0.1 does not need realtime WebSockets. Use simple polling and manual refresh. WebSockets can be added later once the core gameplay is stable.

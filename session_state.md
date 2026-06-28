@@ -2,34 +2,42 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-28 00:54:11 +03:00
-- Current sprint: Sprint 4 - Map Validation + Borders is closed.
+- Current date/time: 2026-06-29 00:02:55 +03:00
+- Current sprint: Sprint 4 is closed; this was a public UI polish checkpoint before Sprint 5.
 - Current sprint file: `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
-- Current task: None; Sprint 4 QA, stabilization, and closure review is complete.
+- Current task: None; public landing page and marketing pages refresh is complete.
 
 ## Last Completed Task
 
-- Completed Sprint 4 QA, stabilization, and closure review.
-- Created `docs/sprints/SPRINT_04_REVIEW.md`.
-- Verified Sprint 4 acceptance status across PostGIS validation, water rejection, restricted zones, overlap, dynamic spacing, nearby suggestions, area-type placeholder, dynamic visible-border tolerance, create-kingdom map preview UI, and the overview/detail kingdom UI.
-- Documented closure decisions for visible-border expansion after purchases, area-type buffer variation, browser smoke, map dataset precision, circular previews, production map data imports, and the PostGIS raw SQL helper pattern.
+- Completed a public UI and overall-feeling improvement checkpoint.
+- Rebuilt the public landing page to follow the supplied Mamalik reference: parchment surface, deep green/gold controls, kingdom-world hero art, feature cards, trust strip, and footer navigation.
+- Added required public marketing pages for `/features`, `/about`, `/how-to-play`, `/roadmap`, `/updates`, `/careers`, and `/contact`.
+- Added a reusable public marketing shell in `apps/web/src/components/marketing/MarketingChrome.tsx`.
+- Added the supplied hero image as `apps/web/public/brand/mamalik-hero-world.png`.
+- Kept marketing copy honest about current v0.1 status: Sprint 5 combat and Sprint 6 alliances/rankings are shown as roadmap work, not completed systems.
 
 ## Files Changed Recently
 
-Changed for Sprint 4 closure:
+Changed for the public UI refresh:
 
 - `CHANGELOG.md`
+- `apps/web/public/brand/mamalik-hero-world.png`
+- `apps/web/src/app/about/page.tsx`
+- `apps/web/src/app/careers/page.tsx`
+- `apps/web/src/app/contact/page.tsx`
+- `apps/web/src/app/features/page.tsx`
+- `apps/web/src/app/globals.css`
+- `apps/web/src/app/how-to-play/page.tsx`
+- `apps/web/src/app/page.tsx`
+- `apps/web/src/app/roadmap/page.tsx`
+- `apps/web/src/app/updates/page.tsx`
+- `apps/web/src/components/marketing/MarketingChrome.tsx`
 - `context.md`
 - `docs/03_TECH_ARCHITECTURE.md`
-- `docs/04_DATA_MODEL.md`
 - `docs/DECISIONS_LOG.md`
-- `docs/MAP_DATA_SOURCES.md`
 - `docs/TESTING_STRATEGY.md`
-- `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
-- `docs/sprints/SPRINT_04_REVIEW.md`
 - `session_state.md`
 - `tasks/backlog.md`
-- `tasks/sprint_04.md`
 
 ## Commands Run
 
@@ -38,109 +46,55 @@ Changed for Sprint 4 closure:
 - `Get-Content session_state.md`
 - `Get-Content docs/01_LOCKED_DECISIONS.md`
 - `Get-Content docs/02_V0_1_SCOPE.md`
-- `Get-Content docs/03_TECH_ARCHITECTURE.md`
-- `Get-Content docs/04_DATA_MODEL.md`
-- `Get-Content docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
 - `Get-Content docs/sprints/SPRINT_04_REVIEW.md`
-- `Get-Content tasks/sprint_04.md`
-- `Get-Content tasks/backlog.md`
-- `Get-Content CHANGELOG.md`
-- `Get-Content docs/MAP_DATA_SOURCES.md`
-- `Get-Content docs/DECISIONS_LOG.md`
 - `Get-Content docs/TESTING_STRATEGY.md`
-- Temporary helper-level PostGIS validation smoke script, then deleted before final status.
-- Browser smoke attempt for `/create-kingdom` with the in-app browser.
-- `npm run test`
+- `Get-Content CHANGELOG.md`
+- `Get-Content apps/web/src/app/page.tsx`
+- `Get-Content apps/web/src/app/globals.css`
+- `Get-Content apps/web/src/app/layout.tsx`
+- `Get-Content apps/web/src/app/login/page.tsx`
+- `Get-Content apps/web/src/app/register/page.tsx`
+- `Get-Content apps/web/src/components/legal/LegalLinks.tsx`
+- `Copy-Item` for the supplied hero image into `apps/web/public/brand/mamalik-hero-world.png`
+- `rg "[^\\x00-\\x7F]" ...` on new UI source files
 - `npm run typecheck`
 - `npm run lint`
+- `npm run test`
 - `npm run build`
-- `npm run db:validate`
-- `npm run db:typecheck`
-- `npm run db:migrate:deploy`
-- `npm run db:seed-land-mask`
-- `npm run db:seed-restricted-zones`
-- `npm run game:test`
-- `npm run game:typecheck`
-- `npm run tick:test`
-- `npm run tick:typecheck`
-- `git status --short`
 
 ## Test And Check Status
 
-- `npm run test`: passed after approval rerun because the sandboxed run hit `spawn EPERM`; covered 117 web tests, 59 game tests, and 8 worker tests.
 - `npm run typecheck`: passed.
-- `npm run lint`: passed.
-- `npm run build`: passed after approval rerun because the sandboxed run hit `spawn EPERM`; existing Node `module.register()` deprecation warning remains non-blocking.
-- `npm run db:validate`: passed after approval rerun because the sandboxed run could not fetch/use Prisma engines through the restricted proxy.
-- `npm run db:typecheck`: passed.
-- `npm run game:test`: passed after approval rerun because the sandboxed run hit `spawn EPERM`; 59 game tests passed.
-- `npm run game:typecheck`: passed.
-- `npm run tick:test`: passed after approval rerun; 8 worker tests passed.
-- `npm run tick:typecheck`: passed.
-- `npm run db:seed-land-mask`: passed; seeded 9 `MAMALIK_COARSE_V0_1` polygons.
-- `npm run db:seed-restricted-zones`: passed; seeded 2 `MAMALIK_RESTRICTED_V0_1` fixtures.
-- `npm run db:migrate:deploy`: did not complete from this local environment. The sandboxed attempt failed through the restricted Prisma engine path, and the approval rerun reached Prisma but returned `P1001` against the configured Supabase pooler. The same database accepted seed scripts and PostGIS helper smoke, so Sprint 4 spatial tables/data are operational. Re-run Prisma migrate deploy from the deployment environment.
+- `npm run lint`: passed after fixing one unescaped apostrophe in the About page copy.
+- `npm run test`: sandbox run failed with the known Windows `spawn EPERM`; approval rerun passed with 117 web tests, 59 game tests, and 8 worker tests.
+- `npm run build`: sandbox run compiled but failed during a spawned final phase with `spawn EPERM`; approval rerun passed. The build prerendered `/features`, `/about`, `/how-to-play`, `/roadmap`, `/updates`, `/careers`, and `/contact` as static pages. Existing Node `module.register()` deprecation warning remains non-blocking.
 - `git diff --check`: passed; Git reported LF-to-CRLF working-copy warnings only.
-- `git status --short`: ran and showed the expected Sprint 4 closure documentation/state changes plus new `docs/sprints/SPRINT_04_REVIEW.md`.
+- `git status --short`: ran and showed the expected public UI refresh changes and new public route files.
 
-## Manual PostGIS Smoke Status
+## Manual Smoke Status
 
-Helper-level PostGIS validation smoke ran against the configured database without creating a kingdom.
-
-- Safe Riyadh coordinate `24.7136, 46.6753`: valid, `LAND`, restricted `CLEAR`, overlap false, spacing clear, area type `STANDARD`, visible area 49,684 m2, tolerance `STRICT`.
-- Atlantic coordinate `0, -30`: invalid with `water`; no preview polygon.
-- Restricted fixture `24.95, 46.9`: invalid with `restricted-zone`; 3 validated suggestions returned.
-- First restricted suggestion: valid, `LAND`, restricted `CLEAR`, overlap false, spacing clear, area type `STANDARD`, tolerance `STRICT`.
-- Existing kingdom center: invalid with `too-close-to-existing-kingdom`, overlap count 1, 3 validated suggestions returned.
-- First overlap suggestion: valid, `LAND`, restricted `CLEAR`, overlap false, spacing clear, area type `STANDARD`, tolerance `STRICT`.
-
-## Browser Smoke Status
-
-- Dashboard/detail browser smoke was completed in S4-010 for `/dashboard`, `/world`, `/economy`, `/land`, `/buildings`, `/army`, and `/reports`.
-- Create-kingdom browser smoke was attempted during closure but could not be completed because the available browser session belonged to a user with an existing kingdom, correctly redirecting away from `/create-kingdom`.
-- Attempts to create a disposable no-kingdom browser account were blocked by the browser automation text-entry/session limitations. The Browser virtual clipboard was not installed, and script-navigation/form workarounds were blocked.
-- Manual human browser smoke with a prepared no-kingdom account is recommended before public v0.1 launch, but this is not blocking Sprint 5 because helper-level PostGIS smoke and automated checks passed.
-
-## Migration And Seed Status
-
-Expected migrations are present and documented:
-
-- `000003_tick_logs`
-- `000004_training_queue_items`
-- `000005_district_allocation_report_type`
-- `000006_land_mask_polygons`
-- `000007_restricted_zones`
-
-Seed scripts are idempotent and were run successfully:
-
-- `npm run db:seed-land-mask`
-- `npm run db:seed-restricted-zones`
-
-`npm run db:migrate:deploy` should be rerun from the deployment environment because this local run hit Prisma/Supabase pooler connectivity issues even though the operational tables and seed data were reachable through the app/helper paths.
+- Browser smoke was not run in this turn.
+- Production build route output verified that the new public pages are routable and statically generated where expected.
+- Recommended manual smoke: visit `/`, `/features`, `/about`, `/how-to-play`, `/roadmap`, `/updates`, `/careers`, `/contact`, `/login`, and `/register` in the browser to confirm visual fit, nav links, footer links, and auth CTAs.
 
 ## Tracker Updates
 
-- Marked Sprint 4 QA, stabilization, and closure review complete in `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`.
-- Marked Sprint 4 QA, stabilization, and closure review complete in `tasks/sprint_04.md`.
-- Marked Sprint 4 closure complete in `tasks/backlog.md`.
-- Added `docs/sprints/SPRINT_04_REVIEW.md`.
-- Updated `context.md` to record that Sprint 4 is closed and Sprint 5 is the next implementation sprint.
+- Added a completed Public UI / Marketing Maintenance entry to `tasks/backlog.md`.
+- Updated `CHANGELOG.md` with the public landing refresh and new pages.
+- Updated `docs/DECISIONS_LOG.md` with the public marketing UI direction.
+- Updated `docs/03_TECH_ARCHITECTURE.md`, `docs/TESTING_STRATEGY.md`, and `context.md` with the shared marketing shell and public asset convention.
 
 ## Known Issues
 
-- Visible borders are simplified circular buffer previews, not cadastral parcel shapes.
-- Visible-border expansion after land purchases is not implemented and is deferred as future v0.1 map hardening.
-- Area-type buffer variation is deferred until non-`STANDARD` classification exists.
-- Current land mask is coarse and not coastline-accurate.
-- Current restricted-zone seed is artificial and not production-ready.
-- Suggestion scans are capped and may return no suggestions for invalid points that need a wider search.
+- No browser screenshot smoke was completed for the new public landing page in this turn.
+- The landing hero uses the supplied raster image as a local asset; future art updates should replace the local file deliberately.
+- Public marketing copy intentionally describes Sprint 5 and Sprint 6 systems as roadmap work until those systems are implemented.
 - `npm run build` passes but emits the existing Node `module.register()` deprecation warning.
-- Local `npm run db:migrate:deploy` could not complete because Prisma could not connect to the configured Supabase pooler from this environment.
 
 ## Open Questions
 
-- None for Sprint 4 closure.
+- None for this UI checkpoint.
 
 ## Next Recommended Task
 
-- Start Sprint 5 with the first Movement + Scouting + Combat task. Before coding, read `docs/sprints/SPRINT_05_COMBAT_SCOUTING.md`, `tasks/sprint_05.md`, and the standard Mamalik preflight files.
+- Run a browser visual smoke pass for the refreshed public pages, then start Sprint 5 with the first Movement + Scouting + Combat task.

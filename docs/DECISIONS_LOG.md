@@ -324,3 +324,10 @@
 - Decision: Circular PostGIS preview polygons are acceptable for v0.1 starting-border validation. Cadastral or parcel-like border generation remains future map-fidelity work.
 - Decision: PostGIS-heavy map validation continues to use server-only helper modules and parameterized raw SQL, while Prisma remains the relational ORM.
 - Decision: Browser smoke is recommended but not blocking for Sprint 4 closure when helper/API tests, PostGIS smoke, build, and type checks pass. A no-kingdom manual browser pass remains recommended before public v0.1 launch.
+
+## 2026-06-28 - Public Marketing UI Refresh
+
+- Decision: The public landing page now uses a reference-inspired marketing shell with parchment surfaces, deep green action controls, gold accents, a kingdom-world hero image, feature cards, trust strip, and footer navigation.
+- Decision: Public marketing pages live as static App Router pages at `/features`, `/about`, `/how-to-play`, `/roadmap`, `/updates`, `/careers`, and `/contact`.
+- Decision: Public copy may sell the Mamalik fantasy, but it must stay honest about implementation status. Sprint 5 combat and Sprint 6 alliance/ranking systems are described as roadmap work until implemented.
+- Decision: The supplied kingdom image is stored as a local public asset at `apps/web/public/brand/mamalik-hero-world.png`; runtime pages must not depend on external image fetches for the landing hero.

@@ -2,6 +2,19 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-06-28
+
+### Added
+
+- Added a shared public marketing shell for the Mamalik landing page and public information pages.
+- Added public pages for `/features`, `/about`, `/how-to-play`, `/roadmap`, `/updates`, `/careers`, and `/contact`.
+- Added the supplied kingdom world reference image as the local landing hero asset.
+
+### Changed
+
+- Rebuilt the public landing page with the reference-inspired kingdom hero, green/gold action buttons, feature cards, trust strip, and footer navigation.
+- Kept landing-page copy aligned with current v0.1 status so future Sprint 5 and Sprint 6 systems are presented as roadmap work, not completed gameplay.
+
 ## 2026-06-27
 
 ### Added

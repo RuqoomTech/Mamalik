@@ -18,6 +18,7 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 | Map/spatial logic | unit tests for helpers, PostGIS validation, manual map smoke notes |
 | Worker/tick logic | `npm run tick:test`, `npm run tick:typecheck`, manual `npm run tick:once` when a migrated PostgreSQL/PostGIS database is reachable |
 | UI flows | manual smoke notes until E2E tests are introduced |
+| Public marketing UI | `npm run typecheck`, `npm run lint`, `npm run build`, plus browser smoke for `/`, `/features`, `/about`, `/how-to-play`, `/roadmap`, `/updates`, `/careers`, and `/contact` when a browser is available |
 
 ## Sprint 1 Testing Priorities
 
