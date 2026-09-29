@@ -190,6 +190,16 @@ test("calculates district land usage and status labels", () => {
   });
 });
 
+test("clamps shaped kingdom free land at zero when overused", () => {
+  const dashboardData = shapeKingdomDashboardData({
+    ...sourceKingdom,
+    usableLandM2: 1_000,
+    usedLandM2: 1_200,
+  });
+
+  assert.equal(dashboardData.kingdom.freeLandM2, 0);
+});
+
 test("calculates kingdom land totals without allowing negative free land", () => {
   assert.deepEqual(
     calculateKingdomLandTotals({

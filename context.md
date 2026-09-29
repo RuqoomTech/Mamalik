@@ -235,7 +235,10 @@ v0.1 must include:
 - Sprint 4 closure accepts circular PostGIS preview polygons, the coarse land mask, and artificial restricted-zone fixtures as the v0.1 foundation. Production hardening must replace map datasets with reviewed, licensed imports before public launch precision claims.
 - Sprint 4 S4-002 adds a raw SQL `LandMaskPolygon` PostGIS table with `geometry(MultiPolygon, 4326)`, a GiST spatial index, and a coarse `MAMALIK_COARSE_V0_1` seed loaded by `npm run db:seed-land-mask`.
 - The first land mask rejects obvious open-ocean starts but is not coastline-accurate. Production should import Natural Earth 1:50m/1:110m or an equivalent licensed global land mask from local files; validation endpoints must not fetch remote map data at runtime.
-- Missing land-mask data blocks kingdom validation and creation by default. `ALLOW_MISSING_LAND_MASK=true` is a local-development-only fallback.
+- Missing land-mask data blocks kingdom validation and creation by default. `ALLOW_MISSING_LAND_MASK=true` is a local-development-only fallback and is forced fail-closed in production (`NODE_ENV=production`).
+- Email/password registration rejects `ADMIN_EMAILS` allowlisted addresses with `admin-reserved` to prevent pre-registration admin takeover until email verification exists.
+- Kingdom and admin free-land display uses clamped zero-floor values; raw negative math remains only in `calculateFreeLandM2` for tests.
+- `getKingdomDashboardData` enforces ownership when `expectedUserId` is provided; authenticated kingdom pages pass the signed-in user id.
 - Sprint 4 S4-003 adds a raw SQL `RestrictedZone` PostGIS table with `geometry(MultiPolygon, 4326)`, a GiST spatial index, and artificial `MAMALIK_RESTRICTED_V0_1` no-start fixtures loaded by `npm run db:seed-restricted-zones`.
 - Restricted-zone validation rejects a start if the selected point is inside an enabled zone or the generated preview polygon intersects one. Missing restricted-zone table data blocks kingdom validation and creation, while an existing table with zero active rows is treated as clear.
 - The current restricted-zone seed is placeholder-only and not a production global dataset. Future sensitive datasets should keep user-facing rejection messages generic.

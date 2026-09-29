@@ -13,7 +13,7 @@ export type KingdomPageData = {
 
 export async function getKingdomPageData(): Promise<KingdomPageData> {
   const user = await requireUserWithKingdom();
-  const dashboardData = await getKingdomDashboardData(user.kingdom.id);
+  const dashboardData = await getKingdomDashboardData(user.kingdom.id, user.id);
 
   if (!dashboardData) {
     redirect("/create-kingdom");

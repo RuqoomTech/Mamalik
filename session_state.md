@@ -2,78 +2,65 @@
 
 ## Current Session
 
-- Current date/time: 2026-06-29 00:31:40 +03:00
-- Current sprint: Sprint 4 is closed; this was a public landing-reference polish checkpoint before Sprint 5.
+- Current date/time: 2026-09-29 15:11:00 +03:00
+- Current sprint: Sprint 4 is closed; foundation hardening batch 1 done, ready for Sprint 5 when user starts it.
 - Current sprint file: `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
-- Current task: None; landing-reference polish is complete pending any user visual review feedback.
+- Current task: None; foundation audit + safe fixes complete.
 
 ## Last Completed Task
 
-- Tightened the public landing page against the supplied reference image.
-- Matched the compact parchment frame, 84px-style header, shorter hero, left hero text rhythm, lower three-card feature band, compact trust strip, and full-width dark green footer more closely.
-- Replaced text placeholder symbols with inline SVG feature, trust, arrow, and footer community icons.
-- Removed the rendered kingdom-stat overlay because the supplied hero art already includes the reference stat card.
-- Preserved the existing public marketing page structure and did not change gameplay systems.
+- Audited foundation across tick/economy, auth/DB/security, map/land, code health via parallel research.
+- Fixed clamped free-land display in dashboard and admin read models.
+- Forced `ALLOW_MISSING_LAND_MASK` fail-closed in production.
+- Blocked `ADMIN_EMAILS` pre-registration takeover in email/password register route.
+- Enforced kingdom ownership in `getKingdomDashboardData` with optional `expectedUserId`.
+- Added regression tests for clamped free-land shaping and production land-mask bypass block.
+- Preserved v0.1 scope; no new Sprint 5/6 models added.
 
 ## Files Changed Recently
 
 - `CHANGELOG.md`
-- `apps/web/src/app/globals.css`
-- `apps/web/src/app/page.tsx`
-- `apps/web/src/components/marketing/MarketingChrome.tsx`
-- `context.md`
+- `apps/web/src/app/api/auth/register/route.ts`
+- `apps/web/src/lib/admin/admin-data.ts`
+- `apps/web/src/lib/kingdom/dashboard-data.ts`
+- `apps/web/src/lib/kingdom/dashboard-data.test.ts`
+- `apps/web/src/lib/kingdom/kingdom-page-data.ts`
+- `apps/web/src/lib/map/land-mask.ts`
+- `apps/web/src/lib/map/land-mask.test.ts`
 - `docs/DECISIONS_LOG.md`
 - `session_state.md`
 - `tasks/backlog.md`
+- `context.md`
 
 ## Commands Run
 
-- `Get-Content -Raw AGENTS.md`
-- `Get-Content -Raw context.md`
-- `Get-Content -Raw session_state.md`
-- `Get-Content -Raw docs/01_LOCKED_DECISIONS.md`
-- `Get-Content -Raw docs/02_V0_1_SCOPE.md`
-- `Get-Content -Raw docs/sprints/SPRINT_04_REVIEW.md`
-- `Get-Content -Raw apps/web/src/app/page.tsx`
-- `Get-Content -Raw apps/web/src/components/marketing/MarketingChrome.tsx`
-- `Get-Content -Raw apps/web/src/app/globals.css`
-- `git status --short`
-- `git diff -- apps/web/src/app/page.tsx`
-- `git diff --stat`
-- Browser plugin bridge metadata check through `mcp__node_repl`
-- `npm run typecheck`
-- `npm run lint`
-- `npm run build`
-- `Invoke-WebRequest -UseBasicParsing http://localhost:3000/`
-- `git diff --check`
+- `Test-Path apps/web/node_modules` (false — deps not installed)
+- `npx tsc --noEmit` in `apps/web` (blocked — typescript not installed locally)
+- Static Read/Grep verification of edited files
 
 ## Test And Check Status
 
-- `npm run typecheck`: passed.
-- `npm run lint`: passed.
-- `npm run build`: sandbox attempt compiled but failed in a spawned final phase with known Windows `spawn EPERM`; approved rerun outside the sandbox passed.
-- Local `/` response check: passed with HTTP 200 from `http://localhost:3000/`.
-- `git diff --check`: passed; Git reported LF-to-CRLF working-copy warnings only.
-- `git status --short`: showed the expected public UI polish changes.
+- `npm run typecheck`: skipped — `apps/web/node_modules` missing, `tsc` not available without install.
+- `npm run lint`: skipped — same missing-deps reason.
+- `npm run test`: skipped — same missing-deps reason.
+- Static verification: read back all edited files; existing tests for `calculateFreeLandM2`, land-mask flag parsing, and `isAdminUser` remain compatible; new regression tests added for clamped shaping and production bypass block.
+- `npm install` recommended before Sprint 5 to restore full checks.
 
 ## Manual Smoke Status
 
-- Browser screenshot smoke was requested, but the Browser plugin tools exposed only the Node REPL bridge in this session and no live page/screenshot handle. The available bridge metadata did not include a browser session target.
-- Local HTTP smoke confirmed the landing route responds with HTTP 200.
-- Recommended user/browser visual review: open `http://localhost:3000/` and compare the landing page against the supplied reference for final pixel-level adjustments.
+- No live DB/browser smoke — foundation batch is code-only, no route behavior change for happy paths except reserved-email 403 and clamped display.
 
 ## Tracker Updates
 
-- Added a completed Public UI / Marketing Maintenance entry to `tasks/backlog.md`.
-- Updated `CHANGELOG.md` with the reference-matching UI pass.
-- Updated `docs/DECISIONS_LOG.md` with the compact frame/stat-overlay/icon decisions.
-- Updated `context.md` with the permanent note that the current hero asset already contains the stat card.
+- Added Foundation Maintenance section to `tasks/backlog.md`.
+- Updated `CHANGELOG.md` with 2026-09-29 foundation batch.
+- Updated `docs/DECISIONS_LOG.md` with production fail-closed, admin-reserved, clamped display, ownership decisions.
+- Updated `context.md` with permanent foundation conventions.
 
 ## Known Issues
 
-- Pixel-level screenshot comparison was not completed because the Browser plugin did not expose screenshot/page control in this session.
-- The landing page is now closer to the reference by code and proportions, but a final human/browser screenshot review may still find small spacing differences.
-- Existing Node `module.register()` deprecation warning remains non-blocking during build.
+- Tick STARTED lease/retry, per-kingdom isolation, login rate-limit, session revocation, Google PKCE/ID-token, polygon water checks, visible-border expansion, Movement/Alliance schema remain deferred.
+- Full typecheck/lint/test still require `npm install` in `apps/web` (and `packages/db`).
 
 ## Open Questions
 
@@ -81,4 +68,4 @@
 
 ## Next Recommended Task
 
-- After user visual approval of the public landing page, start Sprint 5 with the first Movement + Scouting + Combat task.
+- Run `npm install` then `npm run typecheck`, `lint`, `test`; then start Sprint 5 S5-001 movement order model.

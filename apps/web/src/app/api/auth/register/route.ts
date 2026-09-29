@@ -5,6 +5,7 @@ import { authFailureResponse, authSuccessResponse } from "@/lib/auth/responses";
 import { createSessionPayload, createSessionToken } from "@/lib/auth/session";
 import { setSessionCookie } from "@/lib/auth/cookies";
 import { validateRegisterInput } from "@/lib/auth/validation";
+import { isAdminUser } from "@/lib/auth/route-destinations";
 
 export const runtime = "nodejs";
 
@@ -20,6 +21,17 @@ export async function POST(request: Request) {
       "/register",
       "invalid-registration",
       validation.errors[0]?.message ?? "Registration details are invalid.",
+    );
+  }
+
+  if (isAdminUser({ email: validation.data.email, role: "PLAYER" })) {
+    return authFailureResponse(
+      request,
+      wantsJson,
+      403,
+      "/register",
+      "admin-reserved",
+      "That email is reserved for operator use. Contact support for access.",
     );
   }
 

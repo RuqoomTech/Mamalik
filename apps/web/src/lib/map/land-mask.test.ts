@@ -108,6 +108,13 @@ test("parses the missing-land-mask fallback environment flag", () => {
   assert.equal(isMissingLandMaskAllowed({}), false);
 });
 
+test("blocks the missing-land-mask fallback in production", () => {
+  assert.equal(
+    isMissingLandMaskAllowed({ ALLOW_MISSING_LAND_MASK: "true" }, "production"),
+    false,
+  );
+});
+
 test("checks table existence before querying land mask geometry", async () => {
   const db = createFakeDb([[{ tableExists: false }]]);
   const result = await validatePointAgainstLandMask(db, {

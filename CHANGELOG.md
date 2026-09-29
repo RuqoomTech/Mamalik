@@ -2,6 +2,20 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-09-29
+
+### Fixed
+
+- Clamped kingdom and admin free-land display at zero so overused land no longer shows negative values.
+- Forced `ALLOW_MISSING_LAND_MASK` fail-closed in production; the bypass works only outside production.
+- Blocked email/password registration for `ADMIN_EMAILS` allowlisted addresses to prevent admin pre-registration takeover.
+- Enforced kingdom ownership in `getKingdomDashboardData` via optional `expectedUserId` and updated kingdom page data to pass the signed-in user id.
+
+### Known issues
+
+- `npm run typecheck`/`lint`/`test` were not rerun here because `apps/web/node_modules` is not installed in this environment; static file verification only.
+- Tick recovery (STARTED lease/retry, per-kingdom isolation), login rate-limiting, session revocation, Google OAuth PKCE/ID-token validation, polygon water checks, and visible-border expansion remain deferred foundation hardening.
+
 ## 2026-06-29
 
 ### Changed

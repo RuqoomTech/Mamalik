@@ -1,5 +1,5 @@
 import { getPrismaClient } from "@/lib/db/client";
-import { calculateFreeLandM2 } from "@/lib/kingdom/dashboard-data";
+import { calculateClampedFreeLandM2 } from "@/lib/kingdom/dashboard-data";
 
 export const ADMIN_TABLE_LIMIT = 50;
 export const ADMIN_DETAIL_TABLE_LIMIT = 100;
@@ -175,7 +175,7 @@ export function shapeAdminDistrictRow(source: AdminDistrictSource): AdminDistric
     typeLabel: formatAdminEnumLabel(source.type),
     allocatedLandM2: source.allocatedLandM2,
     usedLandM2: source.usedLandM2,
-    freeLandM2: calculateFreeLandM2(source.allocatedLandM2, source.usedLandM2),
+    freeLandM2: calculateClampedFreeLandM2(source.allocatedLandM2, source.usedLandM2),
   };
 }
 
@@ -399,7 +399,7 @@ export async function getAdminOverviewData(): Promise<AdminOverviewData> {
       centerLng: kingdom.centerLng,
       usableLandM2: kingdom.usableLandM2,
       usedLandM2: kingdom.usedLandM2,
-      freeLandM2: calculateFreeLandM2(kingdom.usableLandM2, kingdom.usedLandM2),
+      freeLandM2: calculateClampedFreeLandM2(kingdom.usableLandM2, kingdom.usedLandM2),
       population: kingdom.population,
       protectionEndsAt: kingdom.protectionEndsAt,
       createdAt: kingdom.createdAt,

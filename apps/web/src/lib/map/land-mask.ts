@@ -45,7 +45,12 @@ export function isMissingLandMaskAllowed(
   env: { ALLOW_MISSING_LAND_MASK?: string } = process.env as {
     ALLOW_MISSING_LAND_MASK?: string;
   },
+  nodeEnv: string | undefined = process.env.NODE_ENV,
 ): boolean {
+  if (nodeEnv === "production") {
+    return false;
+  }
+
   const value = env.ALLOW_MISSING_LAND_MASK?.trim().toLowerCase();
 
   return value === "1" || value === "true" || value === "yes";

@@ -570,7 +570,7 @@ export function shapeKingdomDashboardData(
       protectionRemaining: getProtectionRemainingText(source.protectionEndsAt, now),
       usableLandM2: source.usableLandM2,
       usedLandM2: source.usedLandM2,
-      freeLandM2: calculateFreeLandM2(source.usableLandM2, source.usedLandM2),
+      freeLandM2: calculateClampedFreeLandM2(source.usableLandM2, source.usedLandM2),
       visibleAreaM2: source.visibleAreaM2,
       visibleBorderGeojson: source.visibleBorderGeojson,
       population: source.population,
@@ -661,11 +661,16 @@ export function shapeKingdomDashboardData(
 
 export async function getKingdomDashboardData(
   kingdomId: string,
+  expectedUserId?: string,
 ): Promise<KingdomDashboardData | null> {
   const prisma = getPrismaClient();
+  const kingdomWhere =
+    expectedUserId !== undefined
+      ? { id: kingdomId, userId: expectedUserId }
+      : { id: kingdomId };
   const [kingdom, latestTickLogs] = await Promise.all([
-    prisma.kingdom.findUnique({
-      where: { id: kingdomId },
+    prisma.kingdom.findFirst({
+      where: kingdomWhere,
       select: {
         id: true,
         name: true,

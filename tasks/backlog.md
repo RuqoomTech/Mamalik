@@ -86,6 +86,11 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] 2026-06-28: Refresh public landing page and add required public marketing pages.
 - [x] 2026-06-29: Tighten public landing page proportions and icon treatment against the supplied reference.
 
+## Foundation Maintenance
+
+- [x] 2026-09-29: Harden foundation batch 1 — clamped free-land display, production fail-closed land-mask bypass, admin-reserved registration block, kingdom ownership enforcement.
+- [ ] Future foundation hardening: tick STARTED lease/retry + per-kingdom isolation, login rate-limit, session revocation/rotation, Google PKCE + ID-token validation, polygon water checks, visible-border expansion, Movement/Alliance schema for Sprint 5/6.
+
 ## Sprint 5 - Movement + Scouting + Combat
 
 - [ ] See `tasks/sprint_05.md`.

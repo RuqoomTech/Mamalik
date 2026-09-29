@@ -337,3 +337,10 @@
 - Decision: The public landing page should keep the supplied reference's compact central parchment frame, short hero, three-card band, trust strip, and full-width dark green footer as the current public marketing direction.
 - Decision: The supplied hero art already contains the reference kingdom-stat card, so the landing page should not render a second stat-card overlay on top of that asset.
 - Decision: Landing-page icons are implemented as small inline SVG UI ornaments in the existing React components instead of adding a new icon dependency for this polishing checkpoint.
+
+## 2026-09-29 - Foundation Hardening Batch 1
+
+- Decision: Kingdom and admin free-land display uses clamped zero-floor values; raw `calculateFreeLandM2` remains for math/tests but UI must not show negative free land.
+- Decision: `ALLOW_MISSING_LAND_MASK` is fail-closed in production (`NODE_ENV=production` always returns false) to prevent env-typo water-rejection bypass.
+- Decision: Email/password registration rejects `ADMIN_EMAILS` allowlisted addresses with `admin-reserved` until email verification exists; operator accounts must be created via direct DB promotion.
+- Decision: `getKingdomDashboardData` accepts optional `expectedUserId` ownership enforcement via `findFirst({id, userId})`; authenticated kingdom pages must pass the signed-in user id.
