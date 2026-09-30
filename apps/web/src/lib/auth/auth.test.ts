@@ -182,6 +182,29 @@ test("rejects expired session tokens", () => {
   assert.equal(verifySessionToken(token, TEST_SECRET, afterExpiry), null);
 });
 
+test("rejects session tokens with invalid role or future issue time", () => {
+  const now = new Date("2026-06-07T00:00:00.000Z");
+  const payload = createSessionPayload(
+    { id: "user-1", email: "player@example.com", role: "PLAYER" },
+    now,
+  );
+  const badRoleToken = createSessionToken(
+    { ...payload, role: "SUPERADMIN" as never },
+    TEST_SECRET,
+  );
+  const futureToken = createSessionToken(
+    {
+      ...payload,
+      issuedAt: Math.floor(now.getTime() / 1000) + 3_600,
+      expiresAt: Math.floor(now.getTime() / 1000) + 3_600 + 604_800,
+    },
+    TEST_SECRET,
+  );
+
+  assert.equal(verifySessionToken(badRoleToken, TEST_SECRET, now), null);
+  assert.equal(verifySessionToken(futureToken, TEST_SECRET, now), null);
+});
+
 test("creates and verifies Google OAuth state", () => {
   const state = createOAuthState();
   const otherState = createOAuthState();

@@ -2,31 +2,26 @@
 
 ## Current Session
 
-- Current date/time: 2026-09-29 15:11:00 +03:00
-- Current sprint: Sprint 4 is closed; foundation hardening batch 1 done, ready for Sprint 5 when user starts it.
+- Current date/time: 2026-09-29 15:25:00 +03:00
+- Current sprint: Sprint 4 is closed; foundation batches 1+2 done with green tests, ready for Sprint 5.
 - Current sprint file: `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
-- Current task: None; foundation audit + safe fixes complete.
+- Current task: None; npm install + tests + second hardening pass complete.
 
 ## Last Completed Task
 
-- Audited foundation across tick/economy, auth/DB/security, map/land, code health via parallel research.
-- Fixed clamped free-land display in dashboard and admin read models.
-- Forced `ALLOW_MISSING_LAND_MASK` fail-closed in production.
-- Blocked `ADMIN_EMAILS` pre-registration takeover in email/password register route.
-- Enforced kingdom ownership in `getKingdomDashboardData` with optional `expectedUserId`.
-- Added regression tests for clamped free-land shaping and production land-mask bypass block.
-- Preserved v0.1 scope; no new Sprint 5/6 models added.
+- Installed `apps/web` (382 pkgs) and `packages/db` (121 pkgs); generated Prisma client with dummy DATABASE_URL.
+- Baseline: web typecheck/lint pass, web test 118/119 (1 Arabic-locale digit failure), game 59/59, tick 8/8, db validate + game/tick typecheck pass.
+- Fixed locale bug by pinning `formatSquareMeters` and confirmation `formatNumber` to `en-US`; web tests now 120/120.
+- Hardened `verifySessionToken` to reject unknown roles, future issuedAt >5min skew, malformed expiry; added regression test.
+- Preserved v0.1 scope; tick isolation, rate-limit, revocation, PKCE, polygon water checks remain deferred.
 
 ## Files Changed Recently
 
 - `CHANGELOG.md`
-- `apps/web/src/app/api/auth/register/route.ts`
-- `apps/web/src/lib/admin/admin-data.ts`
-- `apps/web/src/lib/kingdom/dashboard-data.ts`
-- `apps/web/src/lib/kingdom/dashboard-data.test.ts`
-- `apps/web/src/lib/kingdom/kingdom-page-data.ts`
-- `apps/web/src/lib/map/land-mask.ts`
-- `apps/web/src/lib/map/land-mask.test.ts`
+- `apps/web/src/lib/auth/session.ts`
+- `apps/web/src/lib/auth/auth.test.ts`
+- `apps/web/src/lib/map/location-ui.ts`
+- `apps/web/src/components/create-kingdom/KingdomConfirmationPanel.tsx`
 - `docs/DECISIONS_LOG.md`
 - `session_state.md`
 - `tasks/backlog.md`
@@ -34,33 +29,36 @@
 
 ## Commands Run
 
-- `Test-Path apps/web/node_modules` (false — deps not installed)
-- `npx tsc --noEmit` in `apps/web` (blocked — typescript not installed locally)
-- Static Read/Grep verification of edited files
+- `npm install --prefix apps/web` (382 pkgs) and `--prefix packages/db` (121 pkgs)
+- `$env:DATABASE_URL=dummy; npm --prefix packages/db run db:generate` (passed)
+- `npm --prefix apps/web run typecheck` (passed), `run lint` (passed)
+- `npm --prefix apps/web run test` (120/120 passed after locale pin)
+- `npm run game:test` (59/59), `npm run tick:test` (8/8)
+- `$env:DATABASE_URL=dummy; npm run db:validate`, `game:typecheck`, `tick:typecheck` (passed)
 
 ## Test And Check Status
 
-- `npm run typecheck`: skipped — `apps/web/node_modules` missing, `tsc` not available without install.
-- `npm run lint`: skipped — same missing-deps reason.
-- `npm run test`: skipped — same missing-deps reason.
-- Static verification: read back all edited files; existing tests for `calculateFreeLandM2`, land-mask flag parsing, and `isAdminUser` remain compatible; new regression tests added for clamped shaping and production bypass block.
-- `npm install` recommended before Sprint 5 to restore full checks.
+- Web typecheck: passed. Lint: passed.
+- Web test: 120/120 passed. Fixed prior 118/119 Arabic-locale failure via `en-US` pin.
+- Game test: 59/59 passed. Tick test: 8/8 passed.
+- DB validate, game/tick typecheck: passed.
+- New regression tests: clamped free-land, prod land-mask block, session invalid role/future issuedAt.
 
 ## Manual Smoke Status
 
-- No live DB/browser smoke — foundation batch is code-only, no route behavior change for happy paths except reserved-email 403 and clamped display.
+- No live DB/browser smoke — code-only hardening, no happy-path route change except reserved-email 403 and deterministic number formatting.
 
 ## Tracker Updates
 
-- Added Foundation Maintenance section to `tasks/backlog.md`.
-- Updated `CHANGELOG.md` with 2026-09-29 foundation batch.
-- Updated `docs/DECISIONS_LOG.md` with production fail-closed, admin-reserved, clamped display, ownership decisions.
-- Updated `context.md` with permanent foundation conventions.
+- Extended Foundation Maintenance in `tasks/backlog.md` with batch 2.
+- Updated `CHANGELOG.md` with checks + batch 2 fixes.
+- Updated `docs/DECISIONS_LOG.md` with locale pin, session hardening, tick deferral.
+- Updated `context.md` with locale + session conventions.
 
 ## Known Issues
 
 - Tick STARTED lease/retry, per-kingdom isolation, login rate-limit, session revocation, Google PKCE/ID-token, polygon water checks, visible-border expansion, Movement/Alliance schema remain deferred.
-- Full typecheck/lint/test still require `npm install` in `apps/web` (and `packages/db`).
+- Live DB smoke still needs reachable PostgreSQL/PostGIS.
 
 ## Open Questions
 
@@ -68,4 +66,4 @@
 
 ## Next Recommended Task
 
-- Run `npm install` then `npm run typecheck`, `lint`, `test`; then start Sprint 5 S5-001 movement order model.
+- Start Sprint 5 S5-001 movement order model (Prisma model + migration design).

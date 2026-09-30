@@ -344,3 +344,9 @@
 - Decision: `ALLOW_MISSING_LAND_MASK` is fail-closed in production (`NODE_ENV=production` always returns false) to prevent env-typo water-rejection bypass.
 - Decision: Email/password registration rejects `ADMIN_EMAILS` allowlisted addresses with `admin-reserved` until email verification exists; operator accounts must be created via direct DB promotion.
 - Decision: `getKingdomDashboardData` accepts optional `expectedUserId` ownership enforcement via `findFirst({id, userId})`; authenticated kingdom pages must pass the signed-in user id.
+
+## 2026-09-29 - Foundation Hardening Batch 2
+
+- Decision: Map number formatting is pinned to `en-US` (`formatSquareMeters`, confirmation numbers) so UI and tests are deterministic across system locales.
+- Decision: Session verification rejects unknown roles, future `issuedAt` beyond 5-minute clock skew, and malformed expiry windows while preserving 7-day expiry behavior.
+- Decision: Tick per-kingdom isolation and STARTED lease/retry remain deferred; the single-transaction worker is accepted for v0.1 scale until Sprint 5 movement load requires the refactor.

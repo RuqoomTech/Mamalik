@@ -10,11 +10,22 @@ All notable Mamalik project changes are recorded here.
 - Forced `ALLOW_MISSING_LAND_MASK` fail-closed in production; the bypass works only outside production.
 - Blocked email/password registration for `ADMIN_EMAILS` allowlisted addresses to prevent admin pre-registration takeover.
 - Enforced kingdom ownership in `getKingdomDashboardData` via optional `expectedUserId` and updated kingdom page data to pass the signed-in user id.
+- Pinned map area/number formatting to `en-US` so `formatSquareMeters` and confirmation numbers are deterministic across system locales.
+- Hardened session verification to reject unknown roles, future `issuedAt` beyond 5-minute skew, and malformed expiry windows.
+
+### Checks
+
+- `npm install --prefix apps/web` and `--prefix packages/db`: passed.
+- `npm --prefix apps/web run typecheck`: passed.
+- `npm --prefix apps/web run lint`: passed.
+- `npm --prefix apps/web run test`: 120/120 passed after locale pin (was 118/119 with Arabic-locale digit failure).
+- `npm run game:test`: 59/59 passed. `npm run tick:test`: 8/8 passed.
+- `npm run db:validate`, `game:typecheck`, `tick:typecheck`: passed with dummy `DATABASE_URL` for Prisma generate/validate.
 
 ### Known issues
 
-- `npm run typecheck`/`lint`/`test` were not rerun here because `apps/web/node_modules` is not installed in this environment; static file verification only.
 - Tick recovery (STARTED lease/retry, per-kingdom isolation), login rate-limiting, session revocation, Google OAuth PKCE/ID-token validation, polygon water checks, and visible-border expansion remain deferred foundation hardening.
+- Live DB smoke still requires reachable PostgreSQL/PostGIS; Prisma generate/validate used a dummy URL only.
 
 ## 2026-06-29
 

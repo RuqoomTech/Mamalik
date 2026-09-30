@@ -89,6 +89,7 @@ Canonical Markdown backlog for active v0.1 work.
 ## Foundation Maintenance
 
 - [x] 2026-09-29: Harden foundation batch 1 — clamped free-land display, production fail-closed land-mask bypass, admin-reserved registration block, kingdom ownership enforcement.
+- [x] 2026-09-29: Harden foundation batch 2 — deterministic `en-US` number formatting, stricter session verification, full `npm install` + typecheck/lint/test baseline (web 120/120, game 59/59, tick 8/8).
 - [ ] Future foundation hardening: tick STARTED lease/retry + per-kingdom isolation, login rate-limit, session revocation/rotation, Google PKCE + ID-token validation, polygon water checks, visible-border expansion, Movement/Alliance schema for Sprint 5/6.
 
 ## Sprint 5 - Movement + Scouting + Combat

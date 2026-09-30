@@ -87,7 +87,18 @@ export function verifySessionToken(
     const payload = JSON.parse(fromBase64Url(body).toString("utf8")) as SessionPayload;
     const currentTime = Math.floor(now.getTime() / 1000);
 
-    if (!payload.userId || !payload.email || !payload.role || payload.expiresAt <= currentTime) {
+    if (
+      typeof payload.userId !== "string" ||
+      payload.userId.length === 0 ||
+      typeof payload.email !== "string" ||
+      payload.email.length === 0 ||
+      (payload.role !== "PLAYER" && payload.role !== "ADMIN") ||
+      typeof payload.issuedAt !== "number" ||
+      typeof payload.expiresAt !== "number" ||
+      payload.issuedAt > currentTime + 300 ||
+      payload.expiresAt <= currentTime ||
+      payload.expiresAt <= payload.issuedAt
+    ) {
       return null;
     }
 

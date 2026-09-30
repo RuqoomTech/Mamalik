@@ -190,7 +190,7 @@ export function formatSquareMeters(value: number | null | undefined): string {
     return "Pending";
   }
 
-  return `${Math.round(value).toLocaleString()} m2`;
+  return `${Math.round(value).toLocaleString("en-US")} m2`;
 }
 
 export function formatSuggestionSummary(suggestion: LocationSuggestion): string {

@@ -54,7 +54,7 @@ function formatCoordinate(value: number): string {
 }
 
 function formatNumber(value: number): string {
-  return value.toLocaleString();
+  return value.toLocaleString("en-US");
 }
 
 function getPolygonPointCount(validationResult: LocationValidationResponse): number {

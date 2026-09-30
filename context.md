@@ -239,6 +239,8 @@ v0.1 must include:
 - Email/password registration rejects `ADMIN_EMAILS` allowlisted addresses with `admin-reserved` to prevent pre-registration admin takeover until email verification exists.
 - Kingdom and admin free-land display uses clamped zero-floor values; raw negative math remains only in `calculateFreeLandM2` for tests.
 - `getKingdomDashboardData` enforces ownership when `expectedUserId` is provided; authenticated kingdom pages pass the signed-in user id.
+- Map area/number formatting is pinned to `en-US` for deterministic UI across locales.
+- Session verification rejects unknown roles, future `issuedAt` beyond 5-minute skew, and malformed expiry windows.
 - Sprint 4 S4-003 adds a raw SQL `RestrictedZone` PostGIS table with `geometry(MultiPolygon, 4326)`, a GiST spatial index, and artificial `MAMALIK_RESTRICTED_V0_1` no-start fixtures loaded by `npm run db:seed-restricted-zones`.
 - Restricted-zone validation rejects a start if the selected point is inside an enabled zone or the generated preview polygon intersects one. Missing restricted-zone table data blocks kingdom validation and creation, while an existing table with zero active rows is treated as clear.
 - The current restricted-zone seed is placeholder-only and not a production global dataset. Future sensitive datasets should keep user-facing rejection messages generic.
