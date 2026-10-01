@@ -83,6 +83,21 @@ enum TrainingQueueStatus {
   CANCELLED
 }
 
+enum MovementOrderType {
+  SCOUT
+  ATTACK
+  RETURN
+}
+
+enum MovementOrderStatus {
+  IN_TRANSIT
+  ARRIVED
+  RESOLVED
+  RETURNING
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id            String       @id @default(cuid())
   email         String       @unique
@@ -118,6 +133,8 @@ model Kingdom {
   trainingQueueItems   TrainingQueueItem[]
   landCooldowns        LandPurchaseCooldown[]
   reports              Report[]
+  outgoingMovementOrders MovementOrder[]           @relation("MovementOrderSource")
+  incomingMovementOrders MovementOrder[]           @relation("MovementOrderTarget")
   createdAt            DateTime               @default(now())
   updatedAt            DateTime               @updatedAt
 
@@ -195,6 +212,33 @@ model TrainingQueueItem {
 
   @@index([kingdomId, status])
   @@index([status, remainingTicks])
+}
+
+model MovementOrder {
+  id              String              @id @default(cuid())
+  sourceKingdomId String
+  sourceKingdom   Kingdom             @relation("MovementOrderSource", fields: [sourceKingdomId], references: [id], onDelete: Cascade)
+  targetKingdomId String
+  targetKingdom   Kingdom             @relation("MovementOrderTarget", fields: [targetKingdomId], references: [id], onDelete: Cascade)
+  orderType       MovementOrderType
+  status          MovementOrderStatus @default(IN_TRANSIT)
+  unitsJson       Json
+  distanceM       Int
+  travelTicks     Int
+  departureAt     DateTime
+  arrivalAt       DateTime
+  returnAt        DateTime?
+  parentOrderId   String?             @unique
+  parentOrder     MovementOrder?      @relation("MovementOrderReturnLeg", fields: [parentOrderId], references: [id], onDelete: SetNull)
+  returnOrder     MovementOrder?      @relation("MovementOrderReturnLeg")
+  resolvedAt      DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([sourceKingdomId, status])
+  @@index([targetKingdomId, status])
+  @@index([status, arrivalAt])
 }
 
 model LandPurchaseCooldown {

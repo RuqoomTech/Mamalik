@@ -4,6 +4,7 @@ import {
   TEMPORARY_VISIBLE_AREA_M2,
 } from "@mamalik/game/constants";
 import type { LandAreaType } from "@mamalik/game";
+import { calculateGreatCircleDistanceMeters } from "@mamalik/game/map/distance";
 
 export type CoordinateInput = {
   lat: unknown;
@@ -104,7 +105,6 @@ type CoordinateParseResult =
   | { ok: true; coordinates: LocationCoordinates }
   | { ok: false; reason: LocationValidationReason };
 
-const EARTH_RADIUS_M = 6_371_000;
 const METERS_PER_DEGREE_LATITUDE = 111_320;
 
 function toRadians(value: number): number {
@@ -149,15 +149,7 @@ export function calculateDistanceMeters(
   first: LocationCoordinates,
   second: LocationCoordinates,
 ): number {
-  const deltaLat = toRadians(second.lat - first.lat);
-  const deltaLng = toRadians(second.lng - first.lng);
-  const firstLat = toRadians(first.lat);
-  const secondLat = toRadians(second.lat);
-  const haversine =
-    Math.sin(deltaLat / 2) ** 2 +
-    Math.cos(firstLat) * Math.cos(secondLat) * Math.sin(deltaLng / 2) ** 2;
-
-  return 2 * EARTH_RADIUS_M * Math.asin(Math.sqrt(haversine));
+  return calculateGreatCircleDistanceMeters(first, second);
 }
 
 function isInsideCoordinateBounds(coordinates: LocationCoordinates): boolean {

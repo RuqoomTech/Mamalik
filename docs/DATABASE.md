@@ -12,7 +12,7 @@ Current contents:
 - `prisma/schema.prisma`
 - `prisma/migrations/000001_enable_postgis/migration.sql`
 - `prisma/migrations/000002_initial_v0_1_models/migration.sql`
-- later migrations for TickLog, training queues, report enum additions, land-mask polygons, and restricted-zone polygons
+- later migrations for TickLog, training queues, report enum additions, land-mask polygons, restricted-zone polygons, and movement orders
 - `.env.example`
 - package-local npm dependencies and lockfile
 
