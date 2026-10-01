@@ -94,7 +94,22 @@ Canonical Markdown backlog for active v0.1 work.
 
 ## Sprint 5 - Movement + Scouting + Combat
 
-- [ ] See `tasks/sprint_05.md`.
+- [x] S5-001: Add movement order model.
+- [x] S5-002: Implement distance-based travel time formula.
+- [x] S5-003: Implement scout order validation.
+- [ ] S5-004: Implement approximate scout reports.
+- [ ] S5-005: Implement attack order validation.
+- [ ] S5-006: Implement basic battle formula.
+- [ ] S5-007: Implement defender bonuses.
+- [ ] S5-008: Implement siege requirement.
+- [ ] S5-009: Implement war land capture limit.
+- [ ] S5-010: Create battle reports.
+
+### Status Notes
+
+- S5-001 adds `MovementOrder` with `MovementOrderType` and `MovementOrderStatus` enums plus migration `000008_movement_orders`. Status transitions, order creation, and unit reservation are not implemented yet.
+- S5-002 adds shared great-circle distance math and `packages/game/src/movement/travel-time.ts`. The base pace constant is a documented v0.1 balance placeholder, not a locked decision, and should be retuned against real playtest data.
+- S5-003 adds `validateScoutOrder` in `packages/game/src/movement/scout-order-validation.ts` as the single scout rule set, plus the `createScoutOrderForUser` mutation, the bounded `getScoutTargetOptionsForUser` read model, and the `/army` `ScoutOrderPanel`. A dispatch writes a `MovementOrder` row (`orderType: "SCOUT"`, `status: "IN_TRANSIT"`) and reserves `SCOUTS` from the garrison with a conditional atomic decrement. Dispatched orders do not resolve yet: arrival handling, tick-worker movement processing, the return leg, and the approximate scout report are all S5-004 work. No alliance check is implemented because Sprint 6 still has no `Alliance` schema.
 
 ## Sprint 6 - Alliances + Reports + Rankings + Admin Polish
 

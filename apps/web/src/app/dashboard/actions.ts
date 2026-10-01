@@ -12,6 +12,11 @@ import {
   purchaseLandForUser,
   type PurchaseLandResult,
 } from "@/lib/kingdom/land-purchase";
+import {
+  createScoutOrderForUser,
+  getCreateScoutOrderResultMessage,
+  type CreateScoutOrderResult,
+} from "@/lib/kingdom/scout-orders";
 
 export type PurchaseLandActionState = {
   status: "idle" | "success" | "error";
@@ -88,5 +93,47 @@ export async function allocateDistrictLandFormAction(
     status: result.ok ? "success" : "error",
     message: getAllocateDistrictLandResultMessage(result),
     districtId: result.ok ? result.districtId : districtId || null,
+  };
+}
+
+export type ScoutOrderActionState = {
+  status: "idle" | "success" | "error";
+  message: string;
+  targetKingdomId: string | null;
+};
+
+export async function createScoutOrderAction(
+  targetKingdomId: string,
+  scoutCount: number,
+): Promise<CreateScoutOrderResult> {
+  const user = await getCurrentUser();
+  const result = await createScoutOrderForUser(user, { targetKingdomId, scoutCount });
+
+  if (result.ok) {
+    revalidatePath("/army");
+    revalidatePath("/dashboard");
+  }
+
+  return result;
+}
+
+export async function createScoutOrderFormAction(
+  _previousState: ScoutOrderActionState,
+  formData: FormData,
+): Promise<ScoutOrderActionState> {
+  void _previousState;
+
+  const targetKingdomIdValue = formData.get("targetKingdomId");
+  const scoutCountValue = formData.get("scoutCount");
+  const targetKingdomId = typeof targetKingdomIdValue === "string" ? targetKingdomIdValue : "";
+  // A non-numeric submission becomes NaN here on purpose. The shared validator
+  // rejects it as INVALID_SCOUT_COUNT, so the server never trusts this value.
+  const scoutCount = typeof scoutCountValue === "string" ? Number(scoutCountValue) : Number.NaN;
+  const result = await createScoutOrderAction(targetKingdomId, scoutCount);
+
+  return {
+    status: result.ok ? "success" : "error",
+    message: getCreateScoutOrderResultMessage(result),
+    targetKingdomId: result.ok ? result.targetKingdomId : targetKingdomId || null,
   };
 }

@@ -11,8 +11,8 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 ## Active Release
 
 - Active milestone: v0.1
-- Active sprint: Sprint 4 - Map Validation + Borders is closed and ready for Sprint 5 when the user starts it.
-- Active task sequence: Sprint 1, Sprint 2, Sprint 3, and Sprint 4 are complete from the documented feature and automated-check standpoint. Sprint 4 delivered PostGIS-backed preview polygon generation, area measurement, overlap checks, coarse land-mask water rejection, placeholder restricted-zone no-start validation, dynamic spacing checks, server-generated nearby valid suggestions, the server-side `STANDARD` area-type placeholder, bounded dynamic visible-border tolerance generation, create-kingdom map preview UI, and the overview-plus-detail kingdom UI split. Visible-border expansion after land purchases, production map datasets, and area-type buffer variation remain future v0.1 map-hardening work.
+- Active sprint: Sprint 5 - Movement + Scouting + Combat is active. S5-001 (movement order model) and S5-002 (distance-based travel time) are complete.
+- Active task sequence: Sprint 1, Sprint 2, Sprint 3, and Sprint 4 are complete from the documented feature and automated-check standpoint. Sprint 5 has started with the movement storage layer and travel-time formulas. Scout order validation, approximate scout reports, attack order validation, the battle formula, defender bonuses, the siege requirement, war land capture, and battle reports remain to be built. Visible-border expansion after land purchases, production map datasets, and area-type buffer variation remain future v0.1 map-hardening work.
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -255,6 +255,15 @@ v0.1 must include:
 - The Sprint 2 tick worker lives in `workers/tick-worker`; root scripts `tick:once`, `tick:dev`, `tick:test`, and `tick:typecheck` invoke it through existing app-local TypeScript tooling.
 - Tick worker processing uses a 30-second Prisma interactive transaction timeout so remote database latency does not fail otherwise valid multi-step ticks.
 - Shared game logic can be checked with root scripts `game:test` and `game:typecheck`; root `test` and `typecheck` include these checks.
+- Great-circle distance math has one shared home at `packages/game/src/map/distance.ts` (`calculateGreatCircleDistanceMeters`). Map validation and Sprint 5 movement both call it instead of re-implementing haversine.
+- Movement travel-time formulas live in `packages/game/src/movement/travel-time.ts`. An order travels at the pace of its slowest recognized unit, travel time is whole 10-minute ticks with a 1-tick minimum, and `MOVEMENT_BASE_METERS_PER_TICK` is a documented v0.1 balance placeholder rather than a locked decision.
+- `MovementOrder` (S5-001) stores outbound orders with an `orderType` of `SCOUT | ATTACK | RETURN`. A return leg is its own `MovementOrder` row linked by a unique `parentOrderId`, so the outbound row's history is never overwritten.
+- Scout order rules live in one place, `packages/game/src/movement/scout-order-validation.ts` (`validateScoutOrder`), and are shared by both the scout mutation and the scout target read model, so a disabled UI option can never disagree with what the mutation accepts. Validation rule order is fixed and the earliest blocking rule wins.
+- Beginner protection gates the scout TARGET only. A protected source kingdom may still scout an unprotected target, because locked decisions keep protected kingdoms able to build/train/buy land/prepare. Protection is active only while `protectionEndsAt > now` strictly, so an expiry exactly equal to `now` is already over.
+- Order unit reservation is a conditional atomic decrement: `updateMany` guarded by `quantity: { gte: count }`, and a result other than one matched row aborts the transaction and returns a typed reason. Never read-then-write a quantity that two concurrent orders could spend.
+- Scout orders are dispatched through a Server Action in `apps/web/src/app/dashboard/actions.ts` and revalidate `/army` and `/dashboard` on success only.
+- v0.1 UI copy must not imply a result the system cannot yet produce. Dispatched scout orders record an order and nothing else; no report exists until arrival handling ships in S5-004.
+- Prisma migrations in this repo are hand-written from the validated schema because `prisma migrate diff` does not emit SQL in this toolchain.
 
 ## Glossary
 

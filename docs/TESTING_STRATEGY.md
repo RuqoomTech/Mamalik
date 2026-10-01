@@ -88,6 +88,25 @@ The `apps/web` Next.js foundation exists. Root npm scripts delegate to app-local
 - Sprint 4 closure can use helper-level PostGIS smoke when a no-kingdom browser session is not available. The helper smoke should validate safe land, ocean, restricted fixture, existing-kingdom overlap, and at least one returned suggestion through `validateKingdomLocationWithPostgis`.
 - Create-kingdom browser smoke remains recommended before public launch, especially for MapLibre layer rendering and stale-preview clearing, but a blocked browser automation session should be documented rather than worked around unsafely.
 
+## Sprint 5 Testing Priorities
+
+- Great-circle distance tests should verify identical points, a known short distance, a known long inter-city distance, symmetry, and an antipodal half-circumference case.
+- Travel-time tests should verify order/unit type guards, per-unit speed multipliers, slowest-unit pacing, empty and unknown unit fallbacks, more ticks for longer trips, scouts outpacing siege, whole-meter distance, whole-tick travel time, clamping of zero/negative/non-finite distance to the 1-tick minimum, arrival/return date math on 10-minute ticks, and rejection of invalid dates.
+- Travel-time tests should also pin the documented balance placeholder so an unintended retune of `MOVEMENT_BASE_METERS_PER_TICK` is a deliberate, reviewed change.
+- After S5-001, `npm run db:validate` and `npm run db:generate` must pass so the new model and enums compile into the generated Prisma client.
+- S5-003 validator tests should pin the fixed rule order and its boundaries, because the returned reason is part of the contract the UI renders: `INVALID_TARGET` over `SELF_TARGET`, `SELF_TARGET` over `TARGET_PROTECTED`, `TARGET_PROTECTED` over `INVALID_SCOUT_COUNT`, and `INVALID_SCOUT_COUNT` over `NOT_ENOUGH_SCOUTS`. Each precedence pair has its own test.
+- S5-003 validator tests should pin the beginner-protection boundary: protection is active only while `protectionEndsAt > now` strictly, so an expiry exactly equal to `now` (and one millisecond in the past) is already expired and allowed. The boundary must stay pinned because an off-by-one here decides whether a legal scout order is rejected.
+- S5-003 validator tests should pin that protection gates the target only. A beginner-protected source kingdom must still be allowed to scout an unprotected target, per `docs/01_LOCKED_DECISIONS.md`. This is a deliberate rule, not an oversight, so it is locked by test.
+- S5-003 validator tests should also cover normalization of hostile input: blank/whitespace/missing target ids, non-finite coordinates, missing or invalid protection dates, non-positive or fractional scout counts, and fractional/negative/`NaN` garrison counts.
+- S5-003 mutation tests should assert the transactional no-write-on-failure rule: every rejected path must leave both the `SCOUTS`/`GARRISON` stack quantity and the `MovementOrder` row count unchanged. The unauthenticated and blank-target paths must additionally assert that no transaction was opened at all.
+- S5-003 mutation tests should cover the atomic reservation guard by forcing the conditional `updateMany` to report a lost race, then asserting the caller still receives the typed `NOT_ENOUGH_SCOUTS` reason and that nothing was written.
+- S5-003 mutation tests should cover the happy path end to end: exact reserved quantity, `orderType: "SCOUT"`, `status: "IN_TRANSIT"`, the `unitsJson` manifest shape, null `returnAt`/`parentOrderId`/`resolvedAt`/`cancelledAt`, and a server-computed great-circle `distanceM`.
+- S5-003 read-model tests should assert agreement between the target read model and the validator: every rendered option's `canTarget`/`disabledReason` must match what `createScoutOrderForUser` would accept for that target, and the bounded limit, the deterministic `createdAt` ordering, and the pushed-down own-kingdom exclusion should be pinned.
+- The repo has no component test runner, so `ScoutOrderPanel` has zero automated UI coverage. Its verification is manual smoke only under this strategy, and that gap must be recorded rather than implied as tested.
+- After S5-003, `npm run game:test` and `npm --prefix apps/web run test` must both pass so the shared validator, the mutation, and the read model stay in agreement.
+- S5-004 through S5-010 still have no automated coverage for arrival resolution, scout report content, attacks, unit reservation for other order types, or battle resolution until those tasks land; those checks are documented as gaps rather than assumed.
+- Applying `000008_movement_orders` and smoke-testing a real dispatched order row — including the conditional decrement against real rows — requires a reachable PostgreSQL/PostGIS database and is not covered by unit tests. End-to-end scout dispatch is therefore still unverified end to end.
+
 ## Documentation Requirement
 
 Every task must record:

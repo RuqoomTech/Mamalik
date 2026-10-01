@@ -2,6 +2,71 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-10-01 - S5-003 Scout Order Validation
+
+### Added
+
+- Added `packages/game/src/movement/scout-order-validation.ts` with `validateScoutOrder`, `isKingdomUnderBeginnerProtection`, `SCOUT_ORDER_MIN_SCOUTS`, and `SCOUT_ORDER_UNIT_TYPE`, completing S5-003.
+- Exported `movement/scout-order-validation` from `packages/game/src/index.ts`.
+- Added `apps/web/src/lib/kingdom/scout-orders.ts` with the server-side `createScoutOrderForUser` mutation and `getCreateScoutOrderResultMessage`.
+- Added `apps/web/src/lib/kingdom/scout-target-options.ts` with the bounded `getScoutTargetOptionsForUser` read model and `SCOUT_TARGET_OPTION_LIMIT`.
+- Added `ScoutOrderActionState`, `createScoutOrderAction`, and `createScoutOrderFormAction` to `apps/web/src/app/dashboard/actions.ts`.
+- Added `apps/web/src/components/kingdom/ScoutOrderPanel.tsx` and rendered it on the `/army` page.
+- Added 51 tests: 25 in `scout-order-validation.test.ts` (78 -> 103 game tests) and 26 in `apps/web` (`scout-orders.test.ts` 15, `scout-target-options.test.ts` 11; web tests 120 -> 146).
+
+### Changed
+
+- Rewrote the `/army` page intro paragraph to state honestly that scout orders are recorded on dispatch and that nothing resolves on arrival yet.
+- `/army` now also resolves `getCurrentUser()` because the scout target read model is keyed by user id, which `getKingdomPageData()` does not expose.
+
+### Checks
+
+- `apps\web` `tsc --noEmit`: passed. `apps\web` `eslint`: passed. `apps\web` `next build`: passed.
+- `npm --prefix apps/web run test`: 146/146 passed (was 120/120).
+- `npm run game:test`: 103/103 passed (was 78/78).
+- `npm run game:typecheck`: passed. `npm run tick:test`: 8/8 passed, unchanged.
+- `npm run db:validate`: passed. The schema is unchanged by S5-003, so no new migration was added.
+
+### Known issues
+
+- Dispatched scout orders do not resolve. They stay `IN_TRANSIT` with no report, no return leg, no status transition, no return of the reserved scouts, and no tick-worker movement processing. Arrival handling and the approximate scout report are S5-004.
+- The new `ScoutOrderPanel` has zero automated UI coverage. The repo has no component test runner, so its verification is manual smoke only, and no browser smoke was performed.
+- No live database smoke was performed. `npm run db:validate` ran with a dummy `DATABASE_URL`, and migration `000008_movement_orders` still has never been applied to a real PostgreSQL/PostGIS database, so end-to-end dispatch remains unverified against real rows.
+- No alliance check is implemented, because Sprint 6 still has no `Alliance` schema to check against.
+- No `SCOUT_ORDER_MAX_SCOUTS` cap exists; only the correctness floor is enforced. An upper bound is a balance decision and is deferred.
+- `prisma migrate diff` still emits no SQL in this toolchain, and `MOVEMENT_BASE_METERS_PER_TICK` remains a v0.1 balance placeholder.
+
+## 2026-10-01
+
+### Added
+
+- Added the Sprint 5 `MovementOrder` Prisma model with `MovementOrderType` (`SCOUT`, `ATTACK`, `RETURN`) and `MovementOrderStatus` (`IN_TRANSIT`, `ARRIVED`, `RESOLVED`, `RETURNING`, `COMPLETED`, `CANCELLED`) enums, completing S5-001.
+- Added migration `000008_movement_orders` with the `MovementOrder` table, per-kingdom order indexes, a pending-arrival `status` + `arrivalAt` index, and a unique `parentOrderId` self-relation for return legs.
+- Added `Kingdom.outgoingMovementOrders` and `Kingdom.incomingMovementOrders` relations.
+- Added `packages/game/src/map/distance.ts` with shared `calculateGreatCircleDistanceMeters` great-circle math.
+- Added `packages/game/src/movement/travel-time.ts` with order/unit type guards, `calculateMovementDistanceMeters`, `getMovementSpeedMetersPerTick`, `calculateTravelTime`, and `getMovementArrivalAt` / `getMovementReturnAt`, completing S5-002.
+- Added 19 tests covering great-circle distance and travel-time behavior.
+
+### Changed
+
+- Pointed `apps/web/src/lib/kingdom/location-validation.ts` `calculateDistanceMeters` at the shared `calculateGreatCircleDistanceMeters` helper, removing the duplicated haversine implementation.
+
+### Checks
+
+- `npm run db:validate`: passed. `npm run db:generate`: passed.
+- `npm run db:typecheck`, `npm run game:typecheck`: passed.
+- `npm --prefix apps/web run typecheck`: passed. `npm --prefix apps/web run lint`: passed. `npm run build`: passed.
+- `npm run game:test`: 78/78 passed (was 59/59).
+- `npm --prefix apps/web run test`: 120/120 passed, unchanged by the distance de-duplication.
+- `npm run tick:test`: 8/8 passed.
+
+### Known issues
+
+- `prisma migrate diff` again emitted no SQL in this toolchain, so `000008_movement_orders` was hand-written from the validated Prisma schema, consistent with `000002`.
+- Migration `000008_movement_orders` has not been applied to a real database; applying it and smoke-testing a movement order row still needs a reachable PostgreSQL/PostGIS instance.
+- No order creation API, unit reservation, arrival resolution, battle formula, or tick-worker movement processing exists yet; those belong to S5-003 through S5-010.
+- `MOVEMENT_BASE_METERS_PER_TICK` is a v0.1 balance placeholder and needs retuning against real playtest data.
+
 ## 2026-09-29
 
 ### Fixed

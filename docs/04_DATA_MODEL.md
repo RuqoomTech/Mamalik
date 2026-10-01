@@ -15,6 +15,8 @@ This is the canonical v0.1 data-model plan. Sprint 1 Task 6 added the first Pris
 - `ReportType`: `BATTLE`, `SCOUT`, `LAND_PURCHASE`, `DISTRICT_ALLOCATION`, `CONSTRUCTION`, `TRAINING`
 - `TickLogStatus`: `STARTED`, `COMPLETED`, `FAILED`, `SKIPPED`
 - `TrainingQueueStatus`: `ACTIVE`, `COMPLETED`, `CANCELLED`
+- `MovementOrderType`: `SCOUT`, `ATTACK`, `RETURN`
+- `MovementOrderStatus`: `IN_TRANSIT`, `ARRIVED`, `RESOLVED`, `RETURNING`, `COMPLETED`, `CANCELLED`
 
 ## Implemented Prisma Models
 
@@ -77,6 +79,7 @@ Notes:
 - `visibleAreaM2` is an approximate visible-map area and can be `STRICT`, `LOOSE`, or `FALLBACK` relative to the 50,000 m2 target. It is intentionally separate from `usableLandM2`, which remains the exact gameplay land credit.
 - `usedLandM2` starts as the sum of starter building footprints.
 - `AreaType.STANDARD` is the only current persisted area type. S4-006 classifies valid locations as `STANDARD` with source `V0_1_DEFAULT` and low confidence, then kingdom creation stores that server-side value. More persisted area categories require a future enum migration and a real classifier; area-type bonuses remain post-v0.1.
+- S5-001 adds `outgoingMovementOrders` and `incomingMovementOrders` relations so both sides of a movement order can be read without an extra query.
 
 ### District
 
@@ -166,7 +169,7 @@ Notes:
 - One stack per kingdom, unit type, and location type.
 - Starting units remain locked at 100 Infantry and 25 Archers.
 - S2-007 adds completed training quantities to `GARRISON` stacks, incrementing an existing stack or creating one if missing.
-- Movement order tables are deferred until Sprint 5.
+- Movement order storage is added by Sprint 5 Task S5-001 in `MovementOrder`.
 
 ### TrainingQueueItem
 
@@ -208,6 +211,45 @@ Notes:
 - S3-001 through S3-003 reuse this existing model for package cooldown checks; no duplicate cooldown table is added.
 - S3-004 updates this model from the land purchase Server Action. The 500 m2 package has no blocking cooldown and stores `availableAt = now`; 1,000, 5,000, and 10,000 m2 packages store their next available timestamp using the locked 6-hour, 24-hour, and 48-hour cooldowns.
 - Purchase history and price records remain represented by `LAND_PURCHASE` reports for v0.1; a separate `LandPurchase` table is deferred until reporting/query needs require it.
+
+### MovementOrder
+
+- `id`
+- `sourceKingdomId`
+- `sourceKingdom`
+- `targetKingdomId`
+- `targetKingdom`
+- `orderType`
+- `status`
+- `unitsJson`
+- `distanceM`
+- `travelTicks`
+- `departureAt`
+- `arrivalAt`
+- `returnAt`
+- `parentOrderId`
+- `parentOrder`
+- `returnOrder`
+- `resolvedAt`
+- `cancelledAt`
+- `createdAt`
+- `updatedAt`
+
+Notes:
+
+- Added in Sprint 5 Task S5-001 with migration `000008_movement_orders`.
+- `sourceKingdom` and `targetKingdom` are two named relations to `Kingdom`; `Kingdom.outgoingMovementOrders` and `Kingdom.incomingMovementOrders` are the reverse sides.
+- `unitsJson` stores the ordered unit manifest as JSON, matching the `Json` column convention already used by `Kingdom.visibleBorderGeojson` and `Report.bodyJson`. It is read as an opaque payload by the movement layer in v0.1.
+- `distanceM` and `travelTicks` are server-computed from `packages/game` movement helpers and are never accepted from the client.
+- The intended status lifecycle is `IN_TRANSIT` -> `ARRIVED` -> `RESOLVED` -> `RETURNING` -> `COMPLETED`, plus `CANCELLED` for orders recalled before arrival. S5-001 stores the states; the transitions are implemented by later Sprint 5 tasks.
+- `parentOrderId` is unique so a single outbound order can have at most one return leg. The return leg is a separate `MovementOrder` row with `orderType = RETURN` and `parentOrderId` pointing at the outbound order, which keeps the outbound row's history intact.
+- `parentOrderId` uses `onDelete: SetNull` so deleting an order does not cascade-delete an unrelated return leg.
+- Indexes support the two read patterns Sprint 5 needs: per-kingdom order listings and the tick worker's pending-arrival scan via `status` + `arrivalAt`.
+- Sprint 5 S5-001 adds storage and formulas only. Order creation, unit reservation, arrival resolution, and the tick worker processing loop remain owned by S5-003 through S5-010.
+- Sprint 5 Task S5-003 is the first writer of this model. `createScoutOrderForUser` in `apps/web/src/lib/kingdom/scout-orders.ts` writes `orderType: "SCOUT"` and `status: "IN_TRANSIT"` and stores the manifest as `unitsJson: [{ unitType: "SCOUTS", quantity: N }]` — a single-entry scouts-only manifest, because a scout order never carries a mixed army. `returnAt`, `parentOrderId`, `resolvedAt`, and `cancelledAt` are all left null at creation; the return leg row and the resolution timestamps are S5-004 work.
+- Scout reservation decrements the `SCOUTS` / `GARRISON` `UnitStack` through a conditional atomic `updateMany` guarded by `quantity: { gte: scoutCount }` inside the same transaction as the `MovementOrder` insert. A `count !== 1` result means a concurrent order won the race, and the mutation aborts so no order row is written. The reserved scouts stay decremented while the order is `IN_TRANSIT`; returning them is S5-004's responsibility.
+- No `Report` row is written at scout dispatch. The approximate scout report is produced on arrival, which is S5-004.
+- `departureAt` and `arrivalAt` come from the server clock and the shared `packages/game` travel-time helpers; neither is ever accepted from the client.
 
 ### Report
 
@@ -334,6 +376,19 @@ Sprint 3 Task S3-007 expands the dashboard read model with kingdom-level land to
 
 Sprint 3 Task S3-008 adds the allocation mutation that uses the same land totals server-side. The mutation accepts only a target district id and amount, then recomputes the unallocated land from database state before incrementing `District.allocatedLandM2`.
 
+## Scout Target Read Model
+
+Sprint 5 Task S5-003 adds a separate, bounded scout target read model in `apps/web/src/lib/kingdom/scout-target-options.ts`, used by the `/army` page.
+
+The read model reads:
+
+- `Kingdom` (caller's own kingdom by `userId`, plus candidate targets by id)
+- `UnitStack` filtered to `unitType = SCOUTS` and `locationType = GARRISON`
+
+It never reads or writes `MovementOrder`; it is read-only and derived entirely from current database state.
+
+It is deliberately bounded by `SCOUT_TARGET_OPTION_LIMIT = 10` rather than returning every kingdom on the map. The caller's own kingdom is excluded in the query, ordering is deterministic (`createdAt` asc), and the query fetches more rows than the limit so a full page still survives the exclusion. Each option carries distance, travel ticks, arrival time, protection state, and a `canTarget` / `disabledReason` pair produced by running the same shared `validateScoutOrder` the mutation runs, so the UI's disabled state cannot disagree with what the mutation accepts. Options are evaluated at `SCOUT_ORDER_MIN_SCOUTS`; the mutation re-validates against the count actually chosen.
+
 ## Admin Read Model
 
 Sprint 1 Task 17 adds a server-side admin read model in `apps/web/src/lib/admin/admin-data.ts`.
@@ -389,16 +444,7 @@ These remain planned but are not part of the current implemented model:
 
 ### MovementOrder
 
-- `id`
-- `sourceKingdomId`
-- `targetKingdomId`
-- `orderType`: `SCOUT | ATTACK | RETURN`
-- `unitsJson`
-- `status`
-- `distanceM`
-- `travelTicks`
-- `departureAt`
-- `arrivalAt`
+Implemented in Sprint 5 Task S5-001. See the implemented `MovementOrder` section above.
 
 ### Battle
 
@@ -463,6 +509,11 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Initial tick-duration display helpers live in `packages/game/src/time/tick-duration.ts`.
 - Initial land package, pricing, cooldown, and validation helpers live under `packages/game/src/land`.
 - Initial shared area-type parsing, defaulting, and display labels live in `packages/game/src/land/area-type.ts`.
+- Shared great-circle distance math lives in `packages/game/src/map/distance.ts` as `calculateGreatCircleDistanceMeters`. Sprint 5 S5-002 moved the Sprint 1 temporary distance helper in `apps/web/src/lib/kingdom/location-validation.ts` onto this shared implementation so map validation and movement cannot drift apart.
+- Initial movement travel-time helpers live in `packages/game/src/movement/travel-time.ts` (S5-002). They expose order/unit type guards, `calculateMovementDistanceMeters`, `getMovementSpeedMetersPerTick`, `calculateTravelTime`, and the `getMovementArrivalAt` / `getMovementReturnAt` date helpers. An order moves at the pace of its slowest recognized unit, travel time is measured in whole 10-minute ticks with a 1-tick minimum, and the base pace constant is a documented v0.1 balance placeholder rather than a locked decision.
+- Shared scout order validation lives in `packages/game/src/movement/scout-order-validation.ts` (S5-003) as `validateScoutOrder` plus the `isKingdomUnderBeginnerProtection` helper and the `SCOUT_ORDER_MIN_SCOUTS` / `SCOUT_ORDER_UNIT_TYPE` constants. It is the single rule set shared by the scout mutation and the scout target read model.
+- Initial scout order mutation logic lives in `apps/web/src/lib/kingdom/scout-orders.ts` (S5-003), runs inside a `Serializable` Prisma transaction with a 30-second timeout, reserves garrison scouts with a conditional atomic `updateMany`, and returns a typed failure reason instead of throwing to the caller. Its Server Action entry points live in `apps/web/src/app/dashboard/actions.ts` and revalidate `/army` and `/dashboard` on success.
+- Initial scout target read model lives in `apps/web/src/lib/kingdom/scout-target-options.ts` (S5-003) and is consumed by the `/army` page.
 - Initial district unused-land allocation validation lives in `packages/game/src/land/district-reassignment.ts`.
 - Initial land purchase mutation logic lives in `apps/web/src/lib/kingdom/land-purchase.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes price/cooldown/area type from database state before mutating Money, usable land, cooldowns, and reports.
 - Initial district allocation mutation logic lives in `apps/web/src/lib/kingdom/district-allocation.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes unallocated usable land from database state before incrementing the target district allocation.

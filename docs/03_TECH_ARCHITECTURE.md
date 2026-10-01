@@ -94,6 +94,10 @@ S4-010 adds `KingdomBorderMapPreview` as a read-only MapLibre component for stor
 
 Sprint 4 closure keeps this map architecture as the v0.1 foundation: PostGIS-heavy validation stays in server-only helper modules with parameterized raw SQL, stored visible borders remain GeoJSON on `Kingdom`, and production-grade land/restricted datasets plus land-purchase border expansion are deferred map-hardening work.
 
+Sprint 5 S5-003 adds a server-side scout order mutation in `apps/web/src/lib/kingdom/scout-orders.ts`, following the same Server Action pattern as the Sprint 3 land mutations. `apps/web/src/app/dashboard/actions.ts` gains `createScoutOrderAction` / `createScoutOrderFormAction`; the client submits only a target kingdom id and a scout count, and the server reloads kingdom, garrison, and target state, re-runs the shared `packages/game` validator, and recomputes distance, travel ticks, and arrival server-side. The action revalidates `/army` and `/dashboard` on success only. The mutation runs in a `Serializable` Prisma transaction with a 30-second timeout and reserves garrison scouts with a conditional atomic `updateMany`, so two concurrent orders cannot spend the same scout.
+
+Sprint 5 S5-003 adds the scout UI surface to the existing `/army` page via `apps/web/src/components/kingdom/ScoutOrderPanel.tsx`, a Client Component that uses `useActionState` over the form Server Action. It renders the bounded target list from `apps/web/src/lib/kingdom/scout-target-options.ts`, whose options come from the same shared validator the mutation runs, so a disabled option can never be an order the server would accept. The `/army` page resolves `getCurrentUser()` in addition to `getKingdomPageData()` because the read model is keyed by user id. Dispatched orders do not resolve yet; arrival handling and the scout report are S5-004.
+
 Sprint 2 admin tick control uses a Next.js Server Action from `/admin`, re-checks admin authorization inside the action path, and calls the same `runOneTick` worker core used by the CLI. No public tick-execution route is exposed.
 
 ### `packages/db`
@@ -116,7 +120,7 @@ Status: Prisma config, PostgreSQL datasource, package-local dependencies, genera
 - Building definitions
 - Research definitions
 
-Status: Sprint 2 added the first package manifest, TypeScript config, exports, deterministic resource-generation formulas with named population-effect breakdowns, deterministic Food consumption formulas, construction progress helpers, training progress helpers, and tick-duration display helpers. Sprint 3 adds land package, pricing, cooldown, validation, and district unused-land allocation helpers.
+Status: Sprint 2 added the first package manifest, TypeScript config, exports, deterministic resource-generation formulas with named population-effect breakdowns, deterministic Food consumption formulas, construction progress helpers, training progress helpers, and tick-duration display helpers. Sprint 3 adds land package, pricing, cooldown, validation, and district unused-land allocation helpers. Sprint 5 S5-002 adds the shared great-circle distance helper and the first movement travel-time helpers. Sprint 5 S5-003 adds the movement validation layer: `src/movement/scout-order-validation.ts` exports `validateScoutOrder`, `isKingdomUnderBeginnerProtection`, and the scout order constants, and is the single source of truth shared by the server-side scout mutation and the scout target read model. Movement rules stay in `packages/game` rather than in the web app so an order cannot be accepted in one surface and rejected in another.
 
 ### `workers/tick-worker`
 
@@ -127,6 +131,7 @@ Status: Sprint 2 added the first package manifest, TypeScript config, exports, d
 - `/admin` can trigger the same one-tick core through an admin-only Server Action; duplicate processing is still guarded by `TickLog.tickKey`.
 - A richer player-facing construction queue/start-construction flow and player-facing start-training API/UI remain deferred v0.1 tasks outside Sprint 2 closure.
 - Movement, combat, scouting, notifications, and report-center behavior remain later sprint work.
+- Sprint 5 S5-001 adds the `MovementOrder` table so the tick worker can later scan pending arrivals with `status` + `arrivalAt`. S5-001 does not add movement processing to the tick worker; arrival resolution and combat resolution remain owned by S5-003 through S5-010.
 
 ## Spatial strategy
 

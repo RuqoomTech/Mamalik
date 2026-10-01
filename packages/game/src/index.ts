@@ -9,6 +9,7 @@ export * from "./land/land-packages";
 export * from "./land/land-pricing";
 export * from "./land/land-purchase-validation";
 export * from "./map/distance";
+export * from "./movement/scout-order-validation";
 export * from "./movement/travel-time";
 export * from "./time/tick-duration";
 export * from "./units/training-progress";
