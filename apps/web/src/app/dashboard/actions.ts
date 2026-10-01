@@ -1,7 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { AttackArmyEntry, MovementUnitType } from "@mamalik/game";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import {
+  createAttackOrderForUser,
+  getCreateAttackOrderResultMessage,
+  type CreateAttackOrderResult,
+} from "@/lib/kingdom/attack-orders";
 import {
   allocateUnusedLandForUser,
   getAllocateDistrictLandResultMessage,
@@ -134,6 +140,138 @@ export async function createScoutOrderFormAction(
   return {
     status: result.ok ? "success" : "error",
     message: getCreateScoutOrderResultMessage(result),
+    targetKingdomId: result.ok ? result.targetKingdomId : targetKingdomId || null,
+  };
+}
+
+
+
+export type AttackOrderActionState = {
+  status: "idle" | "success" | "error";
+  message: string;
+  targetKingdomId: string | null;
+};
+
+/**
+ * The form field convention for a MIXED attack manifest.
+ *
+ * The panel renders one `unitType` text input and one `quantity` number input
+ * per available garrison stack, in the SAME stack order for both. `FormData`
+ * preserves submission order within a repeated field name, so the two `getAll`
+ * arrays are index-aligned and each pair is one manifest line:
+ *
+ *   unitType=INFANTRY&quantity=40&unitType=ARCHERS&quantity=25
+ *
+ * Repeated paired fields were chosen over a single JSON blob because a JSON
+ * field would need `JSON.parse` on untrusted input before anything else could
+ * be checked, and a parse failure there would be indistinguishable from "no
+ * army". Paired strings let every malformed value be dropped on its own.
+ */
+function readAttackArmyManifest(formData: FormData): AttackArmyEntry[] {
+  const unitTypeValues = formData.getAll("unitType");
+  const quantityValues = formData.getAll("quantity");
+  const entries: AttackArmyEntry[] = [];
+
+  // The shorter array bounds the pairing, so a form that submits one field
+  // without the other cannot produce a half-line manifest entry.
+  const lineCount = Math.min(unitTypeValues.length, quantityValues.length);
+
+  for (let index = 0; index < lineCount; index += 1) {
+    const unitTypeValue = unitTypeValues[index];
+    const quantityValue = quantityValues[index];
+
+    // A File (or any non-string) is not a manifest line, so it is skipped
+    // rather than coerced through String().
+    if (typeof unitTypeValue !== "string" || typeof quantityValue !== "string") {
+      continue;
+    }
+
+    const unitType = unitTypeValue.trim();
+    const quantity = readManifestQuantity(quantityValue);
+
+    // A blank unit type cannot identify a stack. An unrecognized unit type
+    // string is forwarded untouched so the server answers INVALID_UNIT_TYPE
+    // rather than the client guessing which unit types exist.
+    if (!unitType || quantity === null) {
+      continue;
+    }
+
+    entries.push({ unitType: unitType as MovementUnitType, quantity });
+  }
+
+  return entries;
+}
+
+/**
+ * Parse one manifest quantity defensively.
+ *
+ * An absent, blank, non-numeric, zero, negative, or fractional quantity means
+ * "send none of this type" and drops the line. Fractional values are dropped
+ * rather than floored so a half-typed number can never become a real order.
+ * Returns null for every dropped case.
+ */
+function readManifestQuantity(rawValue: string): number | null {
+  const trimmedValue = rawValue.trim();
+
+  if (!trimmedValue) {
+    return null;
+  }
+
+  // Digits only. `Number` alone would also accept "0x10", "1e3", and " 12 ",
+  // which are not quantities a player meant to type into this field.
+  if (!/^\d+$/.test(trimmedValue)) {
+    return null;
+  }
+
+  const quantity = Number(trimmedValue);
+
+  if (!Number.isSafeInteger(quantity) || quantity < 1) {
+    return null;
+  }
+
+  return quantity;
+}
+
+export async function createAttackOrderAction(
+  targetKingdomId: string,
+  units: { unitType: string; quantity: number }[],
+): Promise<CreateAttackOrderResult> {
+  const user = await getCurrentUser();
+  // The client sends a WISH, never a fact. Every unit type, every quantity,
+  // and the garrison itself are re-read and re-normalized server-side by the
+  // shared `validateAttackOrder`, so a tampered or stale manifest here can only
+  // be rejected, never obeyed. The cast is therefore only widening the unit
+  // type string to the enum the shared signature uses: an unrecognized string
+  // still reaches the validator, which answers INVALID_UNIT_TYPE for it.
+  const manifest = units as readonly AttackArmyEntry[];
+  const result = await createAttackOrderForUser(user, { targetKingdomId, units: manifest });
+
+  if (result.ok) {
+    revalidatePath("/army");
+    revalidatePath("/dashboard");
+  }
+
+  return result;
+}
+
+export async function createAttackOrderFormAction(
+  _previousState: AttackOrderActionState,
+  formData: FormData,
+): Promise<AttackOrderActionState> {
+  void _previousState;
+
+  const targetKingdomIdValue = formData.get("targetKingdomId");
+  const targetKingdomId = typeof targetKingdomIdValue === "string" ? targetKingdomIdValue : "";
+  const units = readAttackArmyManifest(formData);
+
+  // An entirely empty manifest is submitted as-is rather than short-circuited
+  // here. The server owns the INVALID_ARMY rule, so the client must not decide
+  // on its own that "nothing composed" means "nothing to send".
+  const result = await createAttackOrderAction(targetKingdomId, units);
+
+  return {
+    status: result.ok ? "success" : "error",
+    message: getCreateAttackOrderResultMessage(result),
     targetKingdomId: result.ok ? result.targetKingdomId : targetKingdomId || null,
   };
 }

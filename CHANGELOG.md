@@ -2,6 +2,46 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-10-01 - S5-005 Attack Order Validation
+
+### Added
+
+- Added `packages/game/src/movement/target-eligibility.ts` with `validateMovementTarget`, `isKingdomUnderBeginnerProtection`, and the `MovementTargetFailureReason` union (`INVALID_TARGET`, `SELF_TARGET`, `TARGET_NOT_FOUND`, `TARGET_PROTECTED`). These are the four target rules S5-003 inlined in the scout validator, now shared by both order types so SCOUT and ATTACK cannot drift apart. Exported from `packages/game/src/index.ts`.
+- Added `packages/game/src/movement/attack-order-validation.ts` with `validateAttackOrder`, the single source of truth for "may this kingdom send this army against that target right now", plus the `AttackArmyEntry` and `AttackOrderValidationFailureReason` types. It returns the normalized manifest, total units, slowest unit type, distance, travel ticks, and arrival.
+- Added `apps/web/src/lib/kingdom/attack-orders.ts` with `createAttackOrderForUser` and `getCreateAttackOrderResultMessage`, the server-side attack dispatch mutation.
+- Added `apps/web/src/lib/kingdom/attack-target-options.ts` with `getAttackTargetOptionsForUser` and `getAttackArmyStacksForUser`, the bounded attack target and unit-picker read models.
+- Added `apps/web/src/components/kingdom/AttackOrderPanel.tsx`, the `/army` attack UI.
+- Added 74 tests: 30 in `attack-order-validation.test.ts` (123 -> 153 game tests), 24 in `attack-orders.test.ts`, and 20 in `attack-target-options.test.ts` (157 -> 201 web tests).
+
+### Changed
+
+- `packages/game/src/movement/scout-order-validation.ts` now DELEGATES its four target-eligibility rules to the shared `validateMovementTarget` instead of implementing them inline. It keeps its exact six-string failure union and its exact return values, and re-exports `isKingdomUnderBeginnerProtection` for backwards compatibility. The implementation of that helper MOVED into `target-eligibility.ts`, because the first pass had the shared module import it back from the scout validator — a circular dependency between a shared base and one of its consumers that happened to work only because the call occurred at call time rather than module-evaluation time. The dependency is now one-way and nothing imports the scout module except its test. The 25 pre-existing scout validator tests were NOT modified and still pass, which is what evidences the refactor was behaviour-preserving.
+- `apps/web/src/app/dashboard/actions.ts` gained `AttackOrderActionState`, `createAttackOrderAction`, and `createAttackOrderFormAction` (additive only).
+- `apps/web/src/app/army/page.tsx` now renders `AttackOrderPanel` alongside the existing scout surface.
+- A dispatched attack writes a `MovementOrder` row with `orderType: "ATTACK"`, `status: "IN_TRANSIT"`, and a MIXED normalized manifest in `unitsJson`, in contrast to the scouts-only scout manifest. `returnAt`, `parentOrderId`, `resolvedAt`, and `cancelledAt` are null, as for a scout dispatch. **A dispatched attack has NO EFFECT: it sits in transit.**
+- The `/army` attack panel copy now states plainly that a dispatched attack has no effect, with a "Dispatch only, no battle yet" badge and a standing notice that no battle is fought, no casualties dealt, no land taken, and no battle report written.
+
+### Checks
+
+- `apps\web` `tsc --noEmit`: passed (exit 0). `apps\web` `eslint`: passed (exit 0).
+- `npm --prefix apps/web run test`: 201/201 passed (was 157/157; 44 new).
+- `npm run game:test`: 153/153 passed (was 123/123; 30 new).
+- `npm run tick:test`: 23/23 passed (unchanged; S5-005 adds no worker code).
+- `npm run game:typecheck`: passed. `npm run tick:typecheck`: passed.
+- `npm run db:validate`: passed. S5-005 adds no migration.
+- `next build` was NOT run for S5-005, unlike S5-003 and S5-004. The web typecheck and lint above are the evidence recorded, and that gap is stated rather than implied as checked.
+
+### Known issues
+
+- A DISPATCHED ATTACK HAS NO EFFECT. The order is written and the units are reserved, but nothing happens at the target: no battle is fought, no casualties are dealt, no land is captured, and no battle report is written. The tick worker has no `ATTACK` arrival branch, no return leg is created, and the reserved units stay decremented for the life of the order. Battle resolution is S5-006, defender bonuses S5-007, siege S5-008, war land capture S5-009, and the battle report S5-010. This is the single most important scope fact about this release.
+- NO live database smoke and NO browser smoke was performed. `npm run db:validate` ran without applying any migration, and migration `000008_movement_orders` still has NEVER been applied to a real PostgreSQL/PostGIS database. The entire attack dispatch path — the mixed-army reservation, the all-or-nothing rollback, the conditional decrement against real rows, and the `ATTACK` order insert — is verified only against a hand-rolled fake client.
+- The repo has NO component test runner, so `AttackOrderPanel` is manual smoke only and has zero automated UI coverage. It was never rendered or clicked.
+- The alliance rule "alliance members cannot attack each other" remains UNENFORCEABLE and is a LIVE LOCKED-RULE GAP that S5-005 does not close: Sprint 6 still has no `Alliance` schema, so there is nothing authoritative to check against.
+- No minimum and no maximum attack army size is enforced. One unit is a legal attack; an upper or lower bound is a balance decision and is deliberately deferred, the same status as `SCOUT_ORDER_MAX_SCOUTS`.
+- The client-side convention of submitting a fully empty manifest so the server rejects it with `INVALID_ARMY` is not covered by any test, because it lives in the form action's plumbing rather than in the validator.
+- `ARRIVED`, `RETURNING`, and `CANCELLED` `MovementOrder` statuses remain unused, and no `Battle` or `WarLandCapture` model exists.
+- All scout band thresholds and `MOVEMENT_BASE_METERS_PER_TICK` remain unretuned v0.1 balance placeholders.
+
 ## 2026-10-01 - S5-004 Approximate Scout Reports
 
 ### Added

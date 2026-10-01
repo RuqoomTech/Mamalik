@@ -4,6 +4,11 @@ import {
   getMovementArrivalAt,
   type MovementUnitType,
 } from "./travel-time";
+import {
+  isKingdomUnderBeginnerProtection,
+  validateMovementTarget,
+  type MovementTargetFailureReason,
+} from "./target-eligibility";
 
 /**
  * Shared scout order validation (S5-003).
@@ -20,11 +25,14 @@ export const SCOUT_ORDER_UNIT_TYPE: MovementUnitType = "SCOUTS";
 /** A scout order always moves at least one scout. */
 export const SCOUT_ORDER_MIN_SCOUTS = 1;
 
+/**
+ * The four target-eligibility reasons are shared verbatim with the attack
+ * validator via `MovementTargetFailureReason`, so the union below is still
+ * exactly: INVALID_TARGET, SELF_TARGET, TARGET_NOT_FOUND, TARGET_PROTECTED,
+ * INVALID_SCOUT_COUNT, NOT_ENOUGH_SCOUTS.
+ */
 export type ScoutOrderValidationFailureReason =
-  | "INVALID_TARGET"
-  | "SELF_TARGET"
-  | "TARGET_NOT_FOUND"
-  | "TARGET_PROTECTED"
+  | MovementTargetFailureReason
   | "INVALID_SCOUT_COUNT"
   | "NOT_ENOUGH_SCOUTS";
 
@@ -53,27 +61,16 @@ export type ScoutOrderValidationResult =
   | { ok: false; reason: ScoutOrderValidationFailureReason };
 
 /**
- * Beginner protection is active while `protectionEndsAt` is strictly in the
- * future. A timestamp exactly equal to `now` has already expired and is
- * therefore NOT protected. A missing or invalid timestamp is not protected.
+ * Re-exported from `./target-eligibility` for backwards compatibility.
  *
- * The duration itself is the locked 3-day value from `BEGINNER_PROTECTION_DAYS`;
- * this helper only judges the stored deadline, which is what callers compare.
+ * S5-003 originally defined `isKingdomUnderBeginnerProtection` here. S5-005 moved
+ * it into `target-eligibility` because beginner protection is a TARGET concern
+ * shared by both scout and attack validation, and leaving the definition here
+ * while `target-eligibility` imported it back would have made the shared module
+ * depend on one of its own consumers. The implementation is unchanged and all
+ * existing importers keep working.
  */
-export function isKingdomUnderBeginnerProtection(
-  protectionEndsAt: Date | null | undefined,
-  now: Date,
-): boolean {
-  if (!protectionEndsAt || !Number.isFinite(protectionEndsAt.getTime())) {
-    return false;
-  }
-
-  if (!Number.isFinite(now.getTime())) {
-    return false;
-  }
-
-  return protectionEndsAt.getTime() > now.getTime();
-}
+export { isKingdomUnderBeginnerProtection };
 
 /**
  * Validate a scout order in a fixed rule order so the returned reason is
@@ -82,37 +79,35 @@ export function isKingdomUnderBeginnerProtection(
 export function validateScoutOrder(
   input: ScoutOrderValidationInput,
 ): ScoutOrderValidationResult {
-  // 1. A scout order needs a target kingdom id at all.
-  const targetKingdomId = normalizeKingdomId(input.targetKingdomId);
+  // 1-4. Target eligibility is shared with the ATTACK validator so the two
+  // cannot drift. `validateMovementTarget` applies INVALID_TARGET, SELF_TARGET,
+  // TARGET_NOT_FOUND, and TARGET_PROTECTED in that fixed order and returns the
+  // trimmed target kingdom id, so this validator keeps its exact prior
+  // behaviour while owning only the scout-specific rules from here down.
+  //
+  // Protection is judged against `departureAt` here, exactly as before.
+  const target = validateMovementTarget({
+    sourceKingdomId: input.sourceKingdomId,
+    targetKingdomId: input.targetKingdomId,
+    targetCenterLat: input.targetCenterLat,
+    targetCenterLng: input.targetCenterLng,
+    targetProtectionEndsAt: input.targetProtectionEndsAt,
+    now: input.departureAt,
+  });
 
-  if (!targetKingdomId) {
-    return { ok: false, reason: "INVALID_TARGET" };
+  if (!target.ok) {
+    return { ok: false, reason: target.reason };
   }
 
-  // 2. A kingdom cannot scout itself.
-  if (targetKingdomId === input.sourceKingdomId) {
-    return { ok: false, reason: "SELF_TARGET" };
-  }
+  const targetKingdomId = target.targetKingdomId;
 
-  // 3. The target must exist on the map and carry a known protection record.
+  // The shared rule only succeeds with finite coordinates, so re-normalizing
+  // here yields the same finite numbers it just validated.
   const targetCenterLat = toFiniteNumber(input.targetCenterLat);
   const targetCenterLng = toFiniteNumber(input.targetCenterLng);
-  const targetProtectionEndsAt = toValidDate(input.targetProtectionEndsAt);
 
-  if (targetCenterLat === null || targetCenterLng === null || targetProtectionEndsAt === null) {
+  if (targetCenterLat === null || targetCenterLng === null) {
     return { ok: false, reason: "TARGET_NOT_FOUND" };
-  }
-
-  // 4. Beginner protection gates the TARGET only, never the attacker.
-  //
-  // Locked decisions (`docs/01_LOCKED_DECISIONS.md`, Beginner Protection) say
-  // protected kingdoms "cannot be scouted by players" while protected kingdoms
-  // "can build/train/buy land/prepare". Preparation includes training and
-  // sending out scouts, so a protected SOURCE kingdom must still be allowed to
-  // scout an unprotected target. Gating the source here would block the one
-  // action the locked decisions explicitly keep available during protection.
-  if (isKingdomUnderBeginnerProtection(targetProtectionEndsAt, input.departureAt)) {
-    return { ok: false, reason: "TARGET_PROTECTED" };
   }
 
   // 5. The requested scout count is client-influenced, so normalize strictly.
@@ -158,26 +153,12 @@ export function validateScoutOrder(
   };
 }
 
-function normalizeKingdomId(value: string | null | undefined): string | null {
-  if (typeof value !== "string") {
-    return null;
-  }
-
-  const trimmed = value.trim();
-
-  return trimmed.length > 0 ? trimmed : null;
-}
-
 function isPositiveInteger(value: number): boolean {
   return Number.isFinite(value) && value >= SCOUT_ORDER_MIN_SCOUTS && Number.isInteger(value);
 }
 
 function toFiniteNumber(value: number | null | undefined): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
-}
-
-function toValidDate(value: Date | null | undefined): Date | null {
-  return value instanceof Date && Number.isFinite(value.getTime()) ? value : null;
 }
 
 function toNonNegativeInteger(value: number): number {
