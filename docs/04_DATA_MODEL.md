@@ -241,15 +241,23 @@ Notes:
 - `sourceKingdom` and `targetKingdom` are two named relations to `Kingdom`; `Kingdom.outgoingMovementOrders` and `Kingdom.incomingMovementOrders` are the reverse sides.
 - `unitsJson` stores the ordered unit manifest as JSON, matching the `Json` column convention already used by `Kingdom.visibleBorderGeojson` and `Report.bodyJson`. It is read as an opaque payload by the movement layer in v0.1.
 - `distanceM` and `travelTicks` are server-computed from `packages/game` movement helpers and are never accepted from the client.
-- The intended status lifecycle is `IN_TRANSIT` -> `ARRIVED` -> `RESOLVED` -> `RETURNING` -> `COMPLETED`, plus `CANCELLED` for orders recalled before arrival. S5-001 stores the states; the transitions are implemented by later Sprint 5 tasks.
+- The intended status lifecycle is `IN_TRANSIT` -> `ARRIVED` -> `RESOLVED` -> `RETURNING` -> `COMPLETED`, plus `CANCELLED` for orders recalled before arrival. S5-001 stores the states; S5-003 and S5-004 now drive the scout path described below, while `ARRIVED`, `RETURNING`, and `CANCELLED` remain unused and arrive with S5-005 through S5-010.
 - `parentOrderId` is unique so a single outbound order can have at most one return leg. The return leg is a separate `MovementOrder` row with `orderType = RETURN` and `parentOrderId` pointing at the outbound order, which keeps the outbound row's history intact.
 - `parentOrderId` uses `onDelete: SetNull` so deleting an order does not cascade-delete an unrelated return leg.
 - Indexes support the two read patterns Sprint 5 needs: per-kingdom order listings and the tick worker's pending-arrival scan via `status` + `arrivalAt`.
-- Sprint 5 S5-001 adds storage and formulas only. Order creation, unit reservation, arrival resolution, and the tick worker processing loop remain owned by S5-003 through S5-010.
-- Sprint 5 Task S5-003 is the first writer of this model. `createScoutOrderForUser` in `apps/web/src/lib/kingdom/scout-orders.ts` writes `orderType: "SCOUT"` and `status: "IN_TRANSIT"` and stores the manifest as `unitsJson: [{ unitType: "SCOUTS", quantity: N }]` — a single-entry scouts-only manifest, because a scout order never carries a mixed army. `returnAt`, `parentOrderId`, `resolvedAt`, and `cancelledAt` are all left null at creation; the return leg row and the resolution timestamps are S5-004 work.
-- Scout reservation decrements the `SCOUTS` / `GARRISON` `UnitStack` through a conditional atomic `updateMany` guarded by `quantity: { gte: scoutCount }` inside the same transaction as the `MovementOrder` insert. A `count !== 1` result means a concurrent order won the race, and the mutation aborts so no order row is written. The reserved scouts stay decremented while the order is `IN_TRANSIT`; returning them is S5-004's responsibility.
-- No `Report` row is written at scout dispatch. The approximate scout report is produced on arrival, which is S5-004.
+- Sprint 5 S5-001 added storage and formulas only; S5-003 added order creation and unit reservation, and S5-004 added arrival resolution. Attack orders and combat resolution remain owned by S5-005 through S5-010.
+- Sprint 5 Task S5-003 is the first writer of this model. `createScoutOrderForUser` in `apps/web/src/lib/kingdom/scout-orders.ts` writes `orderType: "SCOUT"` and `status: "IN_TRANSIT"` and stores the manifest as `unitsJson: [{ unitType: "SCOUTS", quantity: N }]` — a single-entry scouts-only manifest, because a scout order never carries a mixed army. `returnAt`, `parentOrderId`, `resolvedAt`, and `cancelledAt` are all left null at creation.
+- Scout reservation decrements the `SCOUTS` / `GARRISON` `UnitStack` through a conditional atomic `updateMany` guarded by `quantity: { gte: scoutCount }` inside the same transaction as the `MovementOrder` insert. A `count !== 1` result means a concurrent order won the race, and the mutation aborts so no order row is written. The reserved scouts stay decremented while the order is `IN_TRANSIT`, and S5-004 credits them back when the return leg completes.
 - `departureAt` and `arrivalAt` come from the server clock and the shared `packages/game` travel-time helpers; neither is ever accepted from the client.
+
+Live lifecycle for scout orders (S5-004, driven by `processMovementArrivals` in `workers/tick-worker/src/movement-arrival.ts`):
+
+- `IN_TRANSIT` (dispatch, S5-003) -> `RESOLVED` with `resolvedAt` set, at the tick where the outbound order's `arrivalAt` has passed. The `SCOUT` `Report` is written on the SOURCE kingdom in the same step, because that is the kingdom that paid for the scouts and the only one allowed to read the result.
+- The outbound order's own row is never rewritten into a return; a separate `RETURN` row is created with `parentOrderId` pointing at it, `orderType: "RETURN"`, `status: "IN_TRANSIT"`, and the outbound order's `unitsJson`, `distanceM`, and `travelTicks` copied verbatim. Reusing `travelTicks` rather than recomputing it keeps the trip symmetric and avoids re-deriving timing from a different clock. Its `arrivalAt` is `getMovementReturnAt(now, travelTicks)`.
+- `RETURN` row `IN_TRANSIT` -> `COMPLETED` with `returnAt` set, at the tick where its own `arrivalAt` has passed. Its manifest entries are upsert-incremented into the source kingdom's `GARRISON` `UnitStack` first, so units are back in the garrison before the order is closed.
+- `resolvedAt` and `returnAt` are therefore now actually written; they were documented as null-at-creation before S5-004.
+- `ARRIVED`, `RETURNING`, and `CANCELLED` are still unused. S5-004 resolves directly to `RESOLVED` and closes the return leg directly to `COMPLETED`, because an intermediate status a player never observes would add writes without adding meaning.
+- Reports appear to the player on the tick AFTER arrival, since the arrival pass writes the `Report` inside the tick that resolves the order.
 
 ### Report
 
@@ -269,7 +277,12 @@ Notes:
 - S2-007 creates `TRAINING` reports when the tick worker completes an active training queue.
 - S3-004 creates `LAND_PURCHASE` reports from the purchase transaction. Report body JSON includes package key, package size, price paid, area type, previous/new usable land, cooldown timestamp if any, and price breakdown.
 - S3-008 creates `DISTRICT_ALLOCATION` reports when unallocated usable land is assigned into a district. Report body JSON includes amount, district type, previous/new allocated land, and unallocated land before/after.
-- Full report-center behavior is deferred until Sprint 6.
+- S5-004 creates `SCOUT` reports from the tick worker's movement arrival pass, on the SOURCE kingdom of an arriving scout order. The title is `Scout report: <target kingdom name>`.
+- The `SCOUT` body is a FLAT JSON object of strings and numbers, so it round-trips through `JSON.parse(JSON.stringify(body))` unchanged and holds no `Date` and no `undefined`: `movementOrderId`, `targetKingdomId`, `targetKingdomName`, `army`, `defense`, `food`, `wall` (each an uppercase band key), `landBandM2` (the coarse rounded land band, never the enemy's exact land), `arrivedAt` (ISO-8601 string), and `travelTicks`.
+- The `SCOUT` body is approximate by design and carries NO exact enemy value: no exact unit counts, no exact Food, no exact land, no building levels. Only coarse bands plus the coarse land figure are stored. The band shape is produced solely by `buildScoutReportBody` in `packages/game/src/movement/scout-report.ts` and all band display wording comes from `SCOUT_BAND_LABELS`, so the leak surface stays auditable in one file.
+- `apps/web/src/lib/kingdom/scout-report-display.ts` reads `bodyJson` as untyped JSON and never trusts it: `parseScoutReportBody` returns `null` for a missing or malformed body, so a bad row degrades to a title-only report in the UI rather than throwing and taking a page down.
+- `BATTLE` reports are still deferred. No `Battle` or `WarLandCapture` model exists yet, so the battle half of this enum has no writer.
+- Full report-center behavior beyond the read-only report list is still deferred until Sprint 6.
 
 ### TickLog
 
@@ -444,9 +457,11 @@ These remain planned but are not part of the current implemented model:
 
 ### MovementOrder
 
-Implemented in Sprint 5 Task S5-001. See the implemented `MovementOrder` section above.
+Implemented in Sprint 5 Task S5-001. See the implemented `MovementOrder` section above. S5-003 and S5-004 now drive the scout lifecycle through it.
 
 ### Battle
+
+Still deferred to S5-006. No Prisma model, no migration, and no writer exist yet; the fields below are a plan, not a schema.
 
 - `id`
 - `attackerKingdomId`
@@ -458,6 +473,8 @@ Implemented in Sprint 5 Task S5-001. See the implemented `MovementOrder` section
 - `resolvedAt`
 
 ### WarLandCapture
+
+Still deferred to S5-009. No Prisma model, no migration, and no writer exist yet.
 
 - `id`
 - `winnerKingdomId`
@@ -514,6 +531,9 @@ Used to enforce the 1,000 m2 per same enemy per 30 days rule.
 - Shared scout order validation lives in `packages/game/src/movement/scout-order-validation.ts` (S5-003) as `validateScoutOrder` plus the `isKingdomUnderBeginnerProtection` helper and the `SCOUT_ORDER_MIN_SCOUTS` / `SCOUT_ORDER_UNIT_TYPE` constants. It is the single rule set shared by the scout mutation and the scout target read model.
 - Initial scout order mutation logic lives in `apps/web/src/lib/kingdom/scout-orders.ts` (S5-003), runs inside a `Serializable` Prisma transaction with a 30-second timeout, reserves garrison scouts with a conditional atomic `updateMany`, and returns a typed failure reason instead of throwing to the caller. Its Server Action entry points live in `apps/web/src/app/dashboard/actions.ts` and revalidate `/army` and `/dashboard` on success.
 - Initial scout target read model lives in `apps/web/src/lib/kingdom/scout-target-options.ts` (S5-003) and is consumed by the `/army` page.
+- Shared approximate scout report logic lives in `packages/game/src/movement/scout-report.ts` (S5-004). It exposes `approximateScoutObservation`, `buildScoutReportBody`, and `SCOUT_BAND_LABELS` plus the band unions and threshold constants. It is the ONLY place exact enemy state is reduced to coarse bands and the ONLY place those bands become a `Report.bodyJson` payload, which keeps the no-leak rule auditable in one file. All thresholds are v0.1 balance placeholders.
+- Movement arrival resolution lives in `workers/tick-worker/src/movement-arrival.ts` (S5-004) as `processMovementArrivals`, called from `run-one-tick.ts` inside the existing tick transaction. It declares its Prisma surface structurally as `MovementArrivalTransaction` rather than importing the generated client, so the arrival logic can be exercised against a hand-rolled fake without a live database. Tick-log formatting for the `MovementArrivalSummary` it returns lives in `workers/tick-worker/src/tick-log.ts`.
+- Scout report display parsing lives in `apps/web/src/lib/kingdom/scout-report-display.ts` (S5-004) and is consumed by `dashboard-data.ts` and `ReportsPanel`. It is null-safe by construction and never throws.
 - Initial district unused-land allocation validation lives in `packages/game/src/land/district-reassignment.ts`.
 - Initial land purchase mutation logic lives in `apps/web/src/lib/kingdom/land-purchase.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes price/cooldown/area type from database state before mutating Money, usable land, cooldowns, and reports.
 - Initial district allocation mutation logic lives in `apps/web/src/lib/kingdom/district-allocation.ts`, uses a Server Action entry point from `apps/web/src/app/dashboard/actions.ts`, and recomputes unallocated usable land from database state before incrementing the target district allocation.

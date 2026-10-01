@@ -15,9 +15,14 @@ import {
   createLandPurchaseOptions,
   type LandPurchaseOption,
 } from "@/lib/kingdom/land-purchase-options";
+import {
+  formatScoutReportSummary,
+  parseScoutReportBody,
+  type ScoutReportBody,
+} from "@/lib/kingdom/scout-report-display";
 
 export const DASHBOARD_STATUS_NOTE =
-  "Moving land between districts, scouting, combat, alliances, rankings, and player-facing start actions are coming in later v0.1 work.";
+  "Moving land between districts, combat, alliances, rankings, and player-facing start actions are coming in later v0.1 work.";
 
 const LOW_FOOD_TICK_THRESHOLD = 6;
 
@@ -232,6 +237,12 @@ export type KingdomDashboardData = {
     typeLabel: string;
     title: string;
     bodySummary: string | null;
+    /**
+     * Parsed approximate scout body, or `null` for every non-scout report and for
+     * a scout report whose stored body is missing or malformed. The UI treats
+     * `null` as "render the title only" rather than as an error.
+     */
+    scoutBody: ScoutReportBody | null;
     read: boolean;
     createdAt: Date;
   }>;
@@ -634,15 +645,27 @@ export function shapeKingdomDashboardData(
       finishedAt: tickLog.finishedAt,
       errorMessage: tickLog.errorMessage,
     })),
-    reports: sortedReports.map((report) => ({
-      id: report.id,
-      type: report.type,
-      typeLabel: formatEnumLabel(report.type),
-      title: report.title,
-      bodySummary: summarizeReportBody(report.bodyJson),
-      read: report.readAt !== null,
-      createdAt: report.createdAt,
-    })),
+    reports: sortedReports.map((report) => {
+      // Only SCOUT reports carry the shared coarse-band body. The parser returns
+      // `null` for a malformed body, which keeps the generic `bodySummary` path
+      // below and therefore never leaves a report row in an error state.
+      const scoutBody = report.type === "SCOUT" ? parseScoutReportBody(report.bodyJson) : null;
+
+      return {
+        id: report.id,
+        type: report.type,
+        typeLabel: formatEnumLabel(report.type),
+        title: report.title,
+        // A readable scout body gets a player-facing band line instead of the raw
+        // key/value dump, so the compact surfaces never print internal order ids.
+        bodySummary: scoutBody
+          ? formatScoutReportSummary(scoutBody)
+          : summarizeReportBody(report.bodyJson),
+        scoutBody,
+        read: report.readAt !== null,
+        createdAt: report.createdAt,
+      };
+    }),
     landPurchaseOptions: createLandPurchaseOptions({
       kingdom: {
         usableLandM2: source.usableLandM2,
@@ -744,6 +767,9 @@ export async function getKingdomDashboardData(
             createdAt: "desc",
           },
           take: 10,
+          // `bodyJson` was already selected for the generic key/value summary and
+          // now also feeds the SCOUT parser, so the scout work needed no widening
+          // of this select and the row limit stays at 10.
           select: {
             id: true,
             type: true,

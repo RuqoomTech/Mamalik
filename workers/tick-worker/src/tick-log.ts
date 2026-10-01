@@ -1,3 +1,5 @@
+import type { MovementArrivalSummary } from "./movement-arrival";
+
 export type TickRunStatus = "COMPLETED" | "FAILED" | "SKIPPED";
 
 export type ResourceGenerationSummary = {
@@ -37,6 +39,7 @@ export type TickRunResult = {
   foodConsumption?: FoodConsumptionSummary;
   constructionProgress?: ConstructionProgressSummary;
   trainingProgress?: TrainingProgressSummary;
+  movementArrival?: MovementArrivalSummary;
   warnings?: string[];
   startedAt: Date;
   finishedAt: Date;
@@ -105,9 +108,26 @@ export function formatTickRunResult(result: TickRunResult): string {
     );
   }
 
-  if (result.warnings && result.warnings.length > 0) {
+  if (result.movementArrival) {
+    lines.push(
+      `Movement orders arrived: ${result.movementArrival.ordersArrived}`,
+      `Scout reports created: ${result.movementArrival.scoutReportsCreated}`,
+      `Return legs created: ${result.movementArrival.returnLegsCreated}`,
+      `Units returned: ${result.movementArrival.unitsReturned}`,
+      `Movement orders completed: ${result.movementArrival.ordersCompleted}`,
+    );
+  }
+
+  // Arrival warnings ride in the same Warnings block as the kingdom warnings so
+  // an operator sees one ordered list instead of two.
+  const allWarnings = [
+    ...(result.warnings ?? []),
+    ...(result.movementArrival?.warnings ?? []),
+  ];
+
+  if (allWarnings.length > 0) {
     lines.push("Warnings:");
-    lines.push(...result.warnings.map((warning) => `- ${warning}`));
+    lines.push(...allWarnings.map((warning) => `- ${warning}`));
   }
 
   if (result.errorMessage) {

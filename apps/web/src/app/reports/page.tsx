@@ -25,8 +25,10 @@ export default async function ReportsPage() {
           Latest kingdom activity
         </h2>
         <p className="mt-2 max-w-3xl text-sm text-[#5f665d]">
-          This read-only center shows recent land, construction, training, and
-          future scouting or battle reports.
+          This read-only center shows recent land, construction, training, and scout
+          reports. Approximate scout reports are delivered to your kingdom when a
+          dispatched scout order arrives, and they show coarse bands only, never exact
+          enemy figures. Battle reports are still upcoming.
         </p>
       </section>
 

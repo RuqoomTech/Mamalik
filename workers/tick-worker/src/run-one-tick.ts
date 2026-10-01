@@ -6,6 +6,11 @@ import { STARTING_RESOURCES } from "../../../packages/game/src/constants";
 import { calculateFoodAfterTick, calculateFoodConsumption } from "../../../packages/game/src/economy/food-consumption";
 import { calculateResourceGeneration, getResourceGenerationTotals } from "../../../packages/game/src/economy/resource-generation";
 import { progressTraining } from "../../../packages/game/src/units/training-progress";
+import {
+  processMovementArrivals,
+  type MovementArrivalSummary,
+  type MovementArrivalTransaction,
+} from "./movement-arrival";
 import { getTickKey } from "./tick-clock";
 import {
   type ConstructionProgressSummary,
@@ -25,7 +30,10 @@ type RunOneTickOptions = {
 
 export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickRunResult> {
   const prisma = options.prisma ?? getPrismaClient();
-  const tickKey = getTickKey(options.now);
+  // One clock reading for the whole tick: the tick key, the TickLog, and the
+  // movement arrival pass must all agree on what "now" is.
+  const now = options.now ?? new Date();
+  const tickKey = getTickKey(now);
   const startedAt = new Date();
 
   let insertedRows: number;
@@ -60,7 +68,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
   }
 
   try {
-    const { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, constructionProgress, trainingProgress, warnings } = await prisma.$transaction(async (tx) => {
+    const { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, constructionProgress, trainingProgress, movementArrival, warnings } = await prisma.$transaction(async (tx) => {
       const kingdoms = await tx.kingdom.findMany({
         select: {
           id: true,
@@ -133,6 +141,21 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         trainingQueuesStillInProgress: 0,
       };
       const warnings: string[] = [];
+
+      // Movement arrivals resolve before the kingdom loop, inside the same tick
+      // transaction, so units arriving home this tick are settled as part of the
+      // tick that books them. This only ADDS work; no existing tick behaviour
+      // below changes.
+      //
+      // The generated Prisma transaction client exposes generic delegates whose
+      // signatures are not structurally assignable to the narrow slice
+      // `processMovementArrivals` needs, so the cast is confined to this one
+      // call site. Every value the module writes is still a plain literal that
+      // the tick typecheck validates against the real schema.
+      const movementArrival: MovementArrivalSummary = await processMovementArrivals(
+        tx as unknown as MovementArrivalTransaction,
+        { now, tickKey },
+      );
 
       for (const kingdom of kingdoms) {
         const generationBreakdown = calculateResourceGeneration({
@@ -333,7 +356,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
         WHERE "tickKey" = ${tickKey}
       `;
 
-      return { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, constructionProgress, trainingProgress, warnings };
+      return { processedKingdomCount, finishedAt, resourceGeneration, foodConsumption, constructionProgress, trainingProgress, movementArrival, warnings };
     }, { timeout: 30_000 });
 
     return {
@@ -344,6 +367,7 @@ export async function runOneTick(options: RunOneTickOptions = {}): Promise<TickR
       foodConsumption,
       constructionProgress,
       trainingProgress,
+      movementArrival,
       warnings,
       startedAt,
       finishedAt,

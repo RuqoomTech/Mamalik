@@ -97,7 +97,7 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] S5-001: Add movement order model.
 - [x] S5-002: Implement distance-based travel time formula.
 - [x] S5-003: Implement scout order validation.
-- [ ] S5-004: Implement approximate scout reports.
+- [x] S5-004: Implement approximate scout reports.
 - [ ] S5-005: Implement attack order validation.
 - [ ] S5-006: Implement basic battle formula.
 - [ ] S5-007: Implement defender bonuses.
@@ -109,7 +109,8 @@ Canonical Markdown backlog for active v0.1 work.
 
 - S5-001 adds `MovementOrder` with `MovementOrderType` and `MovementOrderStatus` enums plus migration `000008_movement_orders`. Status transitions, order creation, and unit reservation are not implemented yet.
 - S5-002 adds shared great-circle distance math and `packages/game/src/movement/travel-time.ts`. The base pace constant is a documented v0.1 balance placeholder, not a locked decision, and should be retuned against real playtest data.
-- S5-003 adds `validateScoutOrder` in `packages/game/src/movement/scout-order-validation.ts` as the single scout rule set, plus the `createScoutOrderForUser` mutation, the bounded `getScoutTargetOptionsForUser` read model, and the `/army` `ScoutOrderPanel`. A dispatch writes a `MovementOrder` row (`orderType: "SCOUT"`, `status: "IN_TRANSIT"`) and reserves `SCOUTS` from the garrison with a conditional atomic decrement. Dispatched orders do not resolve yet: arrival handling, tick-worker movement processing, the return leg, and the approximate scout report are all S5-004 work. No alliance check is implemented because Sprint 6 still has no `Alliance` schema.
+- S5-003 adds `validateScoutOrder` in `packages/game/src/movement/scout-order-validation.ts` as the single scout rule set, plus the `createScoutOrderForUser` mutation, the bounded `getScoutTargetOptionsForUser` read model, and the `/army` `ScoutOrderPanel`. A dispatch writes a `MovementOrder` row (`orderType: "SCOUT"`, `status: "IN_TRANSIT"`) and reserves `SCOUTS` from the garrison with a conditional atomic decrement. No alliance check is implemented because Sprint 6 still has no `Alliance` schema.
+- S5-004 adds `approximateScoutObservation` / `buildScoutReportBody` / `SCOUT_BAND_LABELS` in `packages/game/src/movement/scout-report.ts`, the tick-worker `processMovementArrivals` pass in `workers/tick-worker/src/movement-arrival.ts`, and the null-safe `apps/web/src/lib/kingdom/scout-report-display.ts` parser used by `ReportsPanel`. The tick worker resolves arrivals in two ordered passes inside the existing transaction, at the start of the transaction before the per-kingdom loop: `RETURN` legs complete first (garrison credited back, order `COMPLETED` with `returnAt`), then arriving `SCOUT` orders write the `SCOUT` `Report` on the source kingdom, set the outbound order `RESOLVED` with `resolvedAt`, and create a `RETURN` leg that reuses the outbound `travelTicks`. The report is approximate by design and leaks no exact enemy value — coarse bands plus a land band rounded to the nearest 10,000 m2 — and every band threshold is a v0.1 balance placeholder that needs playtest tuning. Failures are isolated per order into tick `warnings`, and a failed report or a vanished target kingdom still returns the scouts rather than stranding them. Reports surface on the next tick after arrival. End-to-end arrival remains unverified against a real database, and attack orders, the battle formula, defender bonuses, siege, war land capture, and battle reports (S5-005 through S5-010) do not exist yet.
 
 ## Sprint 6 - Alliances + Reports + Rankings + Admin Polish
 

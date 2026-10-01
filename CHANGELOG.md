@@ -2,6 +2,43 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-10-01 - S5-004 Approximate Scout Reports
+
+### Added
+
+- Added `packages/game/src/movement/scout-report.ts` with `approximateScoutObservation`, `buildScoutReportBody`, `SCOUT_BAND_LABELS`, the band unions, and the band threshold constants, completing S5-004. Exported from `packages/game/src/index.ts`.
+- Added `workers/tick-worker/src/movement-arrival.ts` with `processMovementArrivals`, the tick worker's movement arrival resolution pass.
+- Added `apps/web/src/lib/kingdom/scout-report-display.ts` with the null-safe `parseScoutReportBody` reader, `getScoutReportBandRows`, `formatScoutLandBand`, and `formatScoutReportSummary`.
+- Added scout report rendering to `ReportsPanel` in `apps/web/src/components/kingdom/KingdomPagePanels.tsx`, and a parsed `scoutBody` to the report rows in `apps/web/src/lib/kingdom/dashboard-data.ts`.
+- Added 46 tests: 20 in `scout-report.test.ts` (103 -> 123 game tests), 15 in `movement-arrival.test.ts` (8 -> 23 tick tests), and 11 in `scout-report-display.test.ts` (146 -> 157 web tests).
+
+### Changed
+
+- `runOneTick` now calls `processMovementArrivals(tx, { now, tickKey })` inside the existing `prisma.$transaction` (30-second timeout), at the START of the transaction before the per-kingdom loop. The pass runs two ordered phases: RETURN legs complete first (garrison credited back, order `COMPLETED` with `returnAt`), then arriving SCOUT orders resolve (SCOUT `Report` on the source kingdom, outbound order `RESOLVED` with `resolvedAt`, `RETURN` leg created). The return leg reuses the outbound order's `travelTicks` rather than recomputing it.
+- `workers/tick-worker/src/tick-log.ts` gained the `MovementArrivalSummary` field on the tick result plus the arrival counters and per-order warnings in the printed tick output.
+- Rewrote the `/army` and `/reports` copy to state honestly that a scout report is produced when the tick worker processes the arrival, that it appears on the NEXT TICK and is not immediate, that it shows coarse bands only and never exact enemy figures, and that combat and battle reports are still upcoming.
+- `resolvedAt`, `returnAt`, and `parentOrderId` are now actually written on `MovementOrder`; they were previously documented as null-at-creation.
+
+### Checks
+
+- `apps\web` `tsc --noEmit`: passed (exit 0). `apps\web` `eslint`: passed (exit 0). `apps\web` `next build`: passed (exit 0).
+- `npm --prefix apps/web run test`: 157/157 passed (was 146/146; 11 new).
+- `npm run game:test`: 123/123 passed (was 103/103; 20 new).
+- `npm run tick:test`: 23/23 passed (was 8/8; 15 new).
+- `npm run game:typecheck`: passed. `npm run tick:typecheck`: passed.
+- `npm run db:validate`: passed. The schema is unchanged by S5-004, so no new migration was added.
+
+### Known issues
+
+- NO live database smoke and NO browser smoke was performed. `npm run db:validate` ran with a dummy `DATABASE_URL`, and migration `000008_movement_orders` still has NEVER been applied to a real PostgreSQL/PostGIS database. The entire arrival path is therefore unverified against real rows and is covered only by unit tests against a hand-rolled fake transaction client.
+- The repo has NO component test runner, so the `ReportsPanel` scout report rendering is manual smoke only and has zero automated UI coverage. It was never rendered or clicked.
+- All scout band thresholds (army 50/200, food 1,000/5,000, wall levels 1/3, defence score 6/16, land 10,000 m2 step) and `MOVEMENT_BASE_METERS_PER_TICK` remain unretuned v0.1 balance placeholders and need real playtest data.
+- Attack orders, the battle formula, defender bonuses, the siege requirement, war land capture, and battle reports DO NOT EXIST yet (S5-005 through S5-010). No `Battle` or `WarLandCapture` model exists.
+- No alliance check exists, because Sprint 6 still has no `Alliance` schema to check against.
+- `ARRIVED`, `RETURNING`, and `CANCELLED` `MovementOrder` statuses remain unused.
+- `prisma migrate diff` still emits no SQL in this toolchain; migrations remain hand-written from the validated schema.
+- S5-004 is on branch `sprint-5-movement-scouting` and is not yet committed. The branch carries two prior commits: `5e7093b` (S5-001/S5-002) and `55754a1` (S5-003).
+
 ## 2026-10-01 - S5-003 Scout Order Validation
 
 ### Added

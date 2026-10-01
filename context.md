@@ -11,8 +11,8 @@ Mamalik is inspired by the genre of tick-based web strategy games, but it must n
 ## Active Release
 
 - Active milestone: v0.1
-- Active sprint: Sprint 5 - Movement + Scouting + Combat is active. S5-001 (movement order model) and S5-002 (distance-based travel time) are complete.
-- Active task sequence: Sprint 1, Sprint 2, Sprint 3, and Sprint 4 are complete from the documented feature and automated-check standpoint. Sprint 5 has started with the movement storage layer and travel-time formulas. Scout order validation, approximate scout reports, attack order validation, the battle formula, defender bonuses, the siege requirement, war land capture, and battle reports remain to be built. Visible-border expansion after land purchases, production map datasets, and area-type buffer variation remain future v0.1 map-hardening work.
+- Active sprint: Sprint 5 - Movement + Scouting + Combat is active. S5-001 (movement order model), S5-002 (distance-based travel time), S5-003 (scout order validation), and S5-004 (approximate scout reports) are complete.
+- Active task sequence: Sprint 1, Sprint 2, Sprint 3, and Sprint 4 are complete from the documented feature and automated-check standpoint. Sprint 5 has a working scout round trip: dispatch, distance-based travel, arrival, an approximate scout report, and the return of the scouts. Attack order validation, the battle formula, defender bonuses, the siege requirement, war land capture, and battle reports remain to be built. Visible-border expansion after land purchases, production map datasets, and area-type buffer variation remain future v0.1 map-hardening work.
 - v0.2 material in this repository is future-only and must not drive implementation until v0.1 is complete
 
 ## Locked v0.1 Scope
@@ -262,7 +262,12 @@ v0.1 must include:
 - Beginner protection gates the scout TARGET only. A protected source kingdom may still scout an unprotected target, because locked decisions keep protected kingdoms able to build/train/buy land/prepare. Protection is active only while `protectionEndsAt > now` strictly, so an expiry exactly equal to `now` is already over.
 - Order unit reservation is a conditional atomic decrement: `updateMany` guarded by `quantity: { gte: count }`, and a result other than one matched row aborts the transaction and returns a typed reason. Never read-then-write a quantity that two concurrent orders could spend.
 - Scout orders are dispatched through a Server Action in `apps/web/src/app/dashboard/actions.ts` and revalidate `/army` and `/dashboard` on success only.
-- v0.1 UI copy must not imply a result the system cannot yet produce. Dispatched scout orders record an order and nothing else; no report exists until arrival handling ships in S5-004.
+- v0.1 UI copy must not imply a result the system cannot yet produce. Scout reports are now produced by the tick worker's arrival pass and appear on the tick after arrival, so the `/army` and `/reports` copy says "next tick" rather than implying instant results.
+- Approximate scouting lives in `packages/game/src/movement/scout-report.ts`. Scout reports are COARSE BANDS BY DESIGN and must never carry an exact enemy unit count, Food total, land total, or building level; only bands plus a coarse land band are stored. All band thresholds are v0.1 balance placeholders, not locked decisions, and `approximateScoutObservation` must stay deterministic because a tick can be retried.
+- The tick worker resolves movement arrivals in two ordered phases inside the single tick transaction, at the start of the transaction before the per-kingdom loop, RETURN before outbound SCOUT, so a unit coming home this tick is in its garrison before the economy loop reads Food consumption and army totals. Every arrival is isolated per order into tick `warnings`, and a failed report or a vanished target still returns the scouts — no order may be left `IN_TRANSIT` past its `arrivalAt`.
+- A return leg reuses the outbound order's own `travelTicks` rather than recomputing it, so a round trip is symmetric. `MovementOrder.parentOrderId` is UNIQUE, which makes return-leg creation single-shot and lets the worker be idempotent on re-runs.
+- Report bodies are stored as flat JSON in `Report.bodyJson` (`Record<string, string | number>` for `SCOUT`), matching the existing `Json` column convention. The web app must parse that column defensively and never trust it; a malformed body degrades to a title-only row rather than a thrown render.
+- Band display wording is authored once, in `SCOUT_BAND_LABELS` in `packages/game`. Never re-author band labels in a UI component.
 - Prisma migrations in this repo are hand-written from the validated schema because `prisma migrate diff` does not emit SQL in this toolchain.
 
 ## Glossary

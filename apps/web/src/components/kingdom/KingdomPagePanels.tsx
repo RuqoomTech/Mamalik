@@ -5,6 +5,11 @@ import type {
   FoodStatusLevel,
   KingdomDashboardData,
 } from "@/lib/kingdom/dashboard-data";
+import {
+  formatScoutLandBand,
+  getScoutReportBandRows,
+  getScoutReportTargetName,
+} from "@/lib/kingdom/scout-report-display";
 
 const numberFormatter = new Intl.NumberFormat("en-US");
 const coordinateFormatter = new Intl.NumberFormat("en-US", {
@@ -580,7 +585,9 @@ export function ReportsPanel({
               <tr key={report.id}>
                 <td className="font-medium text-[#10140f]">{report.typeLabel}</td>
                 <td className="text-[#5f665d]">{report.title}</td>
-                <td className="text-[#5f665d]">{report.bodySummary ?? "No summary"}</td>
+                <td className="text-[#5f665d]">
+                  <ReportBodyCell report={report} />
+                </td>
                 <td className="text-[#5f665d]">{formatDateTime(report.createdAt)}</td>
                 <td className="text-[#5f665d]">{report.read ? "Read" : "Unread"}</td>
               </tr>
@@ -591,5 +598,46 @@ export function ReportsPanel({
         <p className="mamalik-card p-4 text-sm text-[#5f665d]">No reports yet.</p>
       )}
     </Section>
+  );
+}
+
+/**
+ * Renders the Summary cell.
+ *
+ * A scout report with a readable body shows the coarse bands the scout contract
+ * allows. A scout report whose stored body is missing or malformed falls back to
+ * its title alone, so a bad row never prints a raw key/value dump and never shows
+ * an error. Every other report type renders exactly the generic summary it always
+ * has.
+ */
+function ReportBodyCell({ report }: { report: KingdomDashboardData["reports"][number] }) {
+  const { scoutBody } = report;
+
+  if (!scoutBody) {
+    return report.type === "SCOUT" ? null : <>{report.bodySummary ?? "No summary"}</>;
+  }
+
+  return (
+    <div className="space-y-1">
+      <p>
+        Scouted{" "}
+        <span className="font-medium text-[#10140f]">{getScoutReportTargetName(scoutBody)}</span>
+      </p>
+      {getScoutReportBandRows(scoutBody).map((row) => (
+        <p key={row.key}>
+          {row.label}: <span className="text-[#10140f]">{row.value}</span>
+        </p>
+      ))}
+      <p>
+        Land: <span className="text-[#10140f]">{formatScoutLandBand(scoutBody.landBandM2)}</span>{" "}
+        <span className="text-xs">(approximate)</span>
+      </p>
+      {scoutBody.travelTicks !== null ? (
+        <p className="text-xs">Travel time: {formatTicks(scoutBody.travelTicks)}</p>
+      ) : null}
+      <p className="text-xs text-[#9f3030]">
+        Coarse bands only, never exact enemy figures.
+      </p>
+    </div>
   );
 }

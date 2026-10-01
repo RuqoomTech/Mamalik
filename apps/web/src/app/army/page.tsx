@@ -46,9 +46,12 @@ export default async function ArmyPage() {
         </h2>
         <p className="mt-2 max-w-3xl text-sm text-[#5f665d]">
           This page shows current unit stacks and active training. You can dispatch a scout
-          order to a nearby kingdom below. Orders are recorded on dispatch and the scouts
-          stay in transit until arrival handling ships, so nothing is reported yet. Combat,
-          battle reports, and army movement orders are still upcoming Sprint 5 systems.
+          order to a nearby kingdom below. Orders are recorded on dispatch and your scouts
+          stay in transit for the order&apos;s travel time. Once the tick worker processes the
+          arrival, that order produces an approximate scout report on the Reports page.
+          The report appears on the next tick, so it is not immediate, and it carries coarse
+          bands only rather than exact enemy figures. Combat, battle reports, and army
+          movement orders are still upcoming Sprint 5 systems.
         </p>
       </section>
 
