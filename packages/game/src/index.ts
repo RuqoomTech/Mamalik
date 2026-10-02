@@ -10,6 +10,7 @@ export * from "./land/land-pricing";
 export * from "./land/land-purchase-validation";
 export * from "./map/distance";
 export * from "./movement/attack-order-validation";
+export * from "./movement/battle-formula";
 export * from "./movement/scout-order-validation";
 export * from "./movement/scout-report";
 export * from "./movement/target-eligibility";

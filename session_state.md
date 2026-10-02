@@ -2,11 +2,11 @@
 
 ## Current Session
 
-- Current date/time: 2026-10-01 14:40:00 +03:00
-- Current sprint: Sprint 5 is active. S5-001, S5-002, S5-003, S5-004, and S5-005 complete; S5-006 is next.
+- Current date/time: 2026-10-02 15:00:00 +03:00
+- Current sprint: Sprint 5 is active. S5-001 through S5-006 complete; S5-007 is next.
 - Current sprint file: `docs/sprints/SPRINT_05_COMBAT_SCOUTING.md`
-- Current task: S5-005 attack order dispatch complete and fully checked. S5-005 ships DISPATCH ONLY: a dispatched attack currently has NO EFFECT.
-- Working branch: `sprint-5-movement-scouting`. It carries three prior commits, `5e7093b` (S5-001/S5-002), `55754a1` (S5-003), and `722111` (S5-004). S5-005 is currently UNCOMMITTED on top of them, so the branch holds four commits' worth of Sprint 5 work with the newest not yet committed. All Sprint 5 work lives on this branch, not on the default branch.
+- Current task: S5-006 base battle formula complete via agents (research + plan + implement) and fully checked. Attacks now resolve with base-power casualties and survivors return; bonuses/siege/land/reports still deferred.
+- Working branch: `sprint-5-movement-scouting`. S5-005 and S5-006 are UNCOMMITTED on top of prior commits. All Sprint 5 work lives on this branch, not on the default branch.
 
 ## Last Completed Task
 

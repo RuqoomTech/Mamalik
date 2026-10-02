@@ -11,7 +11,7 @@ Players can scout and attack valid targets with distance-based travel and report
 - [x] S5-003: Implement scout order validation.
 - [x] S5-004: Implement approximate scout reports.
 - [x] S5-005: Implement attack order validation.
-- [ ] S5-006: Implement basic battle formula.
+- [x] S5-006: Implement basic battle formula.
 - [ ] S5-007: Implement defender bonuses.
 - [ ] S5-008: Implement siege requirement.
 - [ ] S5-009: Implement war land capture limit.
@@ -23,7 +23,7 @@ Players can scout and attack valid targets with distance-based travel and report
 - [ ] Alliance members cannot attack each other.
 - [x] Movement uses distance-based travel time.
 - [x] Scout reports are approximate.
-- [ ] Battles resolve with the simple formula.
+- [x] Battles resolve with the simple formula (base power only; defender bonuses/siege deferred to S5-007/S5-008, no land capture, no battle report yet).
 - [ ] Defender bonuses and siege rules are applied.
 - [ ] Battle reports are created.
 

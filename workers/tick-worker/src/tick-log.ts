@@ -115,6 +115,11 @@ export function formatTickRunResult(result: TickRunResult): string {
       `Return legs created: ${result.movementArrival.returnLegsCreated}`,
       `Units returned: ${result.movementArrival.unitsReturned}`,
       `Movement orders completed: ${result.movementArrival.ordersCompleted}`,
+      `Battles resolved: ${result.movementArrival.battlesResolved}`,
+      `Attacker wins: ${result.movementArrival.attackerWins}`,
+      `Defender holds: ${result.movementArrival.defenderHolds}`,
+      `Attacker units lost: ${result.movementArrival.attackerUnitsLost}`,
+      `Defender units lost: ${result.movementArrival.defenderUnitsLost}`,
     );
   }
 

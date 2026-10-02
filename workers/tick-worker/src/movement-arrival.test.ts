@@ -6,6 +6,7 @@ import { getMovementReturnAt } from "../../../packages/game/src/movement/travel-
 import {
   processMovementArrivals,
   type ArrivingMovementOrder,
+  type AttackDefenderGarrisonState,
   type MovementArrivalTransaction,
   type ScoutTargetObservationState,
 } from "./movement-arrival";
@@ -16,7 +17,7 @@ const SOURCE_KINGDOM_ID = "kingdom-source";
 const TARGET_KINGDOM_ID = "kingdom-target";
 
 type FakeOrder = ArrivingMovementOrder & {
-  orderType: "SCOUT" | "RETURN";
+  orderType: "SCOUT" | "RETURN" | "ATTACK";
   status: string;
   parentOrderId: string | null;
   resolvedAt: Date | null;
@@ -45,9 +46,10 @@ type FakeUnitStack = {
  */
 function createFakeTransaction(options: {
   orders?: FakeOrder[];
-  kingdoms?: Record<string, ScoutTargetObservationState>;
+  kingdoms?: Record<string, ScoutTargetObservationState | AttackDefenderGarrisonState>;
   failingOrderIds?: string[];
   failReportForOrderIds?: string[];
+  initialUnitStacks?: FakeUnitStack[];
 } = {}) {
   const orders: FakeOrder[] = [...(options.orders ?? [])];
   const kingdoms = options.kingdoms ?? {};
@@ -55,7 +57,7 @@ function createFakeTransaction(options: {
   const failReportForOrderIds = new Set(options.failReportForOrderIds ?? []);
 
   const reports: FakeReport[] = [];
-  const unitStacks: FakeUnitStack[] = [];
+  const unitStacks: FakeUnitStack[] = [...(options.initialUnitStacks ?? [])];
   const callLog: string[] = [];
 
   const tx: MovementArrivalTransaction = {
@@ -152,6 +154,24 @@ function createFakeTransaction(options: {
 
         return created;
       },
+      async update(args) {
+        const { kingdomId, unitType, locationType } = args.where.kingdomId_unitType_locationType;
+        const existing = unitStacks.find(
+          (stack) =>
+            stack.kingdomId === kingdomId &&
+            stack.unitType === unitType &&
+            stack.locationType === locationType,
+        );
+
+        if (!existing) {
+          throw new Error(`Unit stack not found for ${kingdomId} ${unitType}`);
+        }
+
+        existing.quantity = args.data.quantity;
+        callLog.push(`update-stack:${kingdomId}:${unitType}:${existing.quantity}`);
+
+        return existing;
+      },
     },
     report: {
       async create(args) {
@@ -232,6 +252,31 @@ function createReturnLegOrder(overrides: Partial<FakeOrder> = {}): FakeOrder {
     departureAt: new Date(NOW.getTime() - 4 * TICK_DURATION_MS),
     arrivalAt: NOW,
     parentOrderId: "order-scout-1",
+    resolvedAt: null,
+    returnAt: null,
+    ...overrides,
+  };
+}
+
+function createDefenderKingdom(
+  unitStacks: { unitType: string; quantity: number }[],
+): AttackDefenderGarrisonState {
+  return { unitStacks };
+}
+
+function createOutboundAttackOrder(overrides: Partial<FakeOrder> = {}): FakeOrder {
+  return {
+    id: "order-attack-1",
+    orderType: "ATTACK",
+    status: "IN_TRANSIT",
+    sourceKingdomId: SOURCE_KINGDOM_ID,
+    targetKingdomId: TARGET_KINGDOM_ID,
+    unitsJson: [{ unitType: "INFANTRY", quantity: 100 }],
+    distanceM: 240_000,
+    travelTicks: 4,
+    departureAt: new Date(NOW.getTime() - 4 * TICK_DURATION_MS),
+    arrivalAt: NOW,
+    parentOrderId: null,
     resolvedAt: null,
     returnAt: null,
     ...overrides,
@@ -393,6 +438,11 @@ it("credits a returning leg into the source garrison and completes the order", a
       returnLegsCreated: 0,
       unitsReturned: 0,
       ordersCompleted: 0,
+      battlesResolved: 0,
+      attackerWins: 0,
+      defenderHolds: 0,
+      attackerUnitsLost: 0,
+      defenderUnitsLost: 0,
       warnings: [],
     });
     assert.equal(fake.reports.length, 0);
@@ -424,6 +474,11 @@ it("is a no-op on a second pass over already resolved and completed orders", asy
       returnLegsCreated: 0,
       unitsReturned: 0,
       ordersCompleted: 0,
+      battlesResolved: 0,
+      attackerWins: 0,
+      defenderHolds: 0,
+      attackerUnitsLost: 0,
+      defenderUnitsLost: 0,
       warnings: [],
     });
     assert.equal(fake.orders.length, ordersAfterFirstPass);
@@ -662,11 +717,317 @@ it("never drives a garrison negative from a bad unit manifest", async () => {
       returnLegsCreated: 2,
       unitsReturned: 14,
       ordersCompleted: 2,
+      battlesResolved: 0,
+      attackerWins: 0,
+      defenderHolds: 0,
+      attackerUnitsLost: 0,
+      defenderUnitsLost: 0,
       warnings: [],
     });
 
     assert.equal(fake.reports.length, 2);
     assert.equal(fake.unitStacks.length, 2);
     assert.equal(fake.orders.length, 6);
+  });
+
+  it("resolves a winning attack, applies defender losses, and returns the survivors", async () => {
+    const fake = createFakeTransaction({
+      orders: [createOutboundAttackOrder()],
+      kingdoms: { [TARGET_KINGDOM_ID]: createDefenderKingdom([{ unitType: "INFANTRY", quantity: 10 }]) },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 10 },
+      ],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    // 100 INFANTRY attack (500) beats 10 INFANTRY defense (60).
+    assert.equal(summary.ordersArrived, 1);
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.attackerWins, 1);
+    assert.equal(summary.defenderHolds, 0);
+    assert.equal(summary.attackerUnitsLost, 10);
+    assert.equal(summary.defenderUnitsLost, 3);
+    assert.equal(summary.scoutReportsCreated, 0);
+    assert.equal(summary.returnLegsCreated, 1);
+    assert.deepEqual(summary.warnings, []);
+
+    const defenderStack = fake.unitStacks.find(
+      (stack) => stack.kingdomId === TARGET_KINGDOM_ID && stack.unitType === "INFANTRY",
+    );
+    assert.equal(defenderStack?.quantity, 7);
+
+    const outbound = fake.orders.find((order) => order.id === "order-attack-1");
+    assert.equal(outbound?.status, "RESOLVED");
+    assert.equal(outbound?.resolvedAt?.toISOString(), NOW.toISOString());
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.equal(returnLegs.length, 1);
+    assert.equal(returnLegs[0].orderType, "RETURN");
+    assert.equal(returnLegs[0].status, "IN_TRANSIT");
+    assert.equal(returnLegs[0].travelTicks, 4);
+    assert.deepEqual(returnLegs[0].unitsJson, [{ unitType: "INFANTRY", quantity: 90 }]);
+    assert.equal(
+      returnLegs[0].arrivalAt.toISOString(),
+      getMovementReturnAt(NOW, 4).toISOString(),
+    );
+  });
+
+  it("lets the defender hold on a tie and takes 30 percent from the attacker", async () => {
+    const fake = createFakeTransaction({
+      orders: [
+        createOutboundAttackOrder({
+          unitsJson: [{ unitType: "INFANTRY", quantity: 6 }],
+        }),
+      ],
+      kingdoms: { [TARGET_KINGDOM_ID]: createDefenderKingdom([{ unitType: "INFANTRY", quantity: 5 }]) },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 5 },
+      ],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    // 6 INFANTRY attack (30) ties 5 INFANTRY defense (30): the tie holds.
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.attackerWins, 0);
+    assert.equal(summary.defenderHolds, 1);
+    assert.equal(summary.attackerUnitsLost, 1);
+    assert.equal(summary.defenderUnitsLost, 0);
+
+    const defenderStack = fake.unitStacks.find(
+      (stack) => stack.kingdomId === TARGET_KINGDOM_ID && stack.unitType === "INFANTRY",
+    );
+    assert.equal(defenderStack?.quantity, 5);
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.equal(returnLegs.length, 1);
+    assert.deepEqual(returnLegs[0].unitsJson, [{ unitType: "INFANTRY", quantity: 5 }]);
+  });
+
+  it("lets a lone attacker take an empty garrison", async () => {
+    const fake = createFakeTransaction({
+      orders: [
+        createOutboundAttackOrder({
+          unitsJson: [{ unitType: "INFANTRY", quantity: 10 }],
+        }),
+      ],
+      kingdoms: { [TARGET_KINGDOM_ID]: createDefenderKingdom([]) },
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.attackerWins, 1);
+    assert.equal(summary.defenderHolds, 0);
+    assert.equal(summary.attackerUnitsLost, 1);
+    assert.equal(summary.defenderUnitsLost, 0);
+    assert.deepEqual(summary.warnings, []);
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.equal(returnLegs.length, 1);
+    assert.deepEqual(returnLegs[0].unitsJson, [{ unitType: "INFANTRY", quantity: 9 }]);
+  });
+
+  it("drops a malformed attack manifest before the battle and still resolves", async () => {
+    const fake = createFakeTransaction({
+      orders: [
+        createOutboundAttackOrder({
+          unitsJson: [
+            { unitType: "INFANTRY", quantity: 10 },
+            { unitType: "DRAGONS", quantity: 9 },
+            { unitType: "INFANTRY", quantity: -4 },
+            null,
+          ],
+        }),
+      ],
+      kingdoms: { [TARGET_KINGDOM_ID]: createDefenderKingdom([{ unitType: "INFANTRY", quantity: 1 }]) },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 1 },
+      ],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    // Only the 10 INFANTRY fight: 50 attack beats 6 defense.
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.attackerWins, 1);
+    assert.equal(summary.attackerUnitsLost, 1);
+    assert.equal(summary.warnings.length, 1);
+    assert.match(summary.warnings[0], /unusable unit manifest/);
+    assert.match(summary.warnings[0], /order-attack-1/);
+
+    const outbound = fake.orders.find((order) => order.id === "order-attack-1");
+    assert.equal(outbound?.status, "RESOLVED");
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.equal(returnLegs.length, 1);
+    assert.deepEqual(returnLegs[0].unitsJson, [{ unitType: "INFANTRY", quantity: 9 }]);
+  });
+
+  it("resolves and returns the full army when the attack target has vanished", async () => {
+    const fake = createFakeTransaction({
+      orders: [createOutboundAttackOrder()],
+      kingdoms: {},
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    assert.equal(summary.ordersArrived, 1);
+    assert.equal(summary.battlesResolved, 0);
+    assert.equal(summary.attackerWins, 0);
+    assert.equal(summary.defenderHolds, 0);
+    assert.equal(summary.returnLegsCreated, 1);
+
+    const outbound = fake.orders.find((order) => order.id === "order-attack-1");
+    assert.equal(outbound?.status, "RESOLVED");
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.equal(returnLegs.length, 1);
+    assert.deepEqual(returnLegs[0].unitsJson, [{ unitType: "INFANTRY", quantity: 100 }]);
+
+    assert.equal(summary.warnings.length, 1);
+    assert.match(summary.warnings[0], /no longer exists/);
+    assert.match(summary.warnings[0], /order-attack-1/);
+  });
+
+  it("is idempotent across a second pass over a resolved attack", async () => {
+    const fake = createFakeTransaction({
+      orders: [createOutboundAttackOrder()],
+      kingdoms: { [TARGET_KINGDOM_ID]: createDefenderKingdom([{ unitType: "INFANTRY", quantity: 10 }]) },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 10 },
+      ],
+    });
+
+    const first = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+    assert.equal(first.battlesResolved, 1);
+    const defenderAfterFirst = fake.unitStacks.find(
+      (stack) => stack.kingdomId === TARGET_KINGDOM_ID,
+    )?.quantity;
+    const ordersAfterFirst = fake.orders.length;
+
+    const second = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    assert.deepEqual(second, {
+      ordersArrived: 0,
+      scoutReportsCreated: 0,
+      returnLegsCreated: 0,
+      unitsReturned: 0,
+      ordersCompleted: 0,
+      battlesResolved: 0,
+      attackerWins: 0,
+      defenderHolds: 0,
+      attackerUnitsLost: 0,
+      defenderUnitsLost: 0,
+      warnings: [],
+    });
+    assert.equal(fake.orders.length, ordersAfterFirst);
+    assert.equal(
+      fake.unitStacks.find((stack) => stack.kingdomId === TARGET_KINGDOM_ID)?.quantity,
+      defenderAfterFirst,
+    );
+  });
+
+  it("isolates one failing attack order without blocking the others", async () => {
+    const fake = createFakeTransaction({
+      orders: [
+        createOutboundAttackOrder({ id: "attack-broken" }),
+        createOutboundAttackOrder({
+          id: "attack-healthy",
+          unitsJson: [{ unitType: "INFANTRY", quantity: 50 }],
+        }),
+      ],
+      kingdoms: {
+        [TARGET_KINGDOM_ID]: createDefenderKingdom([{ unitType: "INFANTRY", quantity: 10 }]),
+      },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 10 },
+      ],
+      failingOrderIds: ["attack-broken"],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    assert.equal(summary.ordersArrived, 2);
+    assert.equal(summary.battlesResolved, 2);
+    assert.equal(summary.returnLegsCreated, 2);
+    assert.equal(summary.warnings.length, 1);
+    assert.match(summary.warnings[0], /could not be marked RESOLVED/);
+    assert.match(summary.warnings[0], /attack-broken/);
+
+    const healthy = fake.orders.find((order) => order.id === "attack-healthy");
+    assert.equal(healthy?.status, "RESOLVED");
+    assert.equal(
+      fake.orders.some((order) => order.parentOrderId === "attack-healthy"),
+      true,
+    );
+
+    // Even the broken order still got its survivors sent home.
+    assert.equal(
+      fake.orders.some((order) => order.parentOrderId === "attack-broken"),
+      true,
+    );
+  });
+
+  it("never drives a defender garrison negative from a small battle", async () => {
+    const fake = createFakeTransaction({
+      orders: [
+        createOutboundAttackOrder({
+          unitsJson: [{ unitType: "INFANTRY", quantity: 1 }],
+        }),
+      ],
+      kingdoms: { [TARGET_KINGDOM_ID]: createDefenderKingdom([{ unitType: "INFANTRY", quantity: 1 }]) },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 1 },
+      ],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.defenderHolds, 1);
+
+    for (const stack of fake.unitStacks) {
+      assert.equal(stack.quantity >= 0, true);
+    }
+
+    const defenderStack = fake.unitStacks.find(
+      (stack) => stack.kingdomId === TARGET_KINGDOM_ID,
+    );
+    assert.equal(defenderStack?.quantity, 1);
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.equal(returnLegs.length, 1);
+
+    for (const entry of returnLegs[0].unitsJson as { quantity: number }[]) {
+      assert.equal(entry.quantity >= 0, true);
+    }
+  });
+
+  it("completes returning legs before resolving an attack in the same tick", async () => {
+    const fake = createFakeTransaction({
+      orders: [
+        createOutboundAttackOrder(),
+        createReturnLegOrder({ id: "order-return-earlier", parentOrderId: "order-scout-earlier" }),
+      ],
+      kingdoms: { [TARGET_KINGDOM_ID]: createDefenderKingdom([{ unitType: "INFANTRY", quantity: 10 }]) },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 10 },
+      ],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    assert.equal(summary.ordersArrived, 2);
+    assert.equal(summary.ordersCompleted, 1);
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.returnLegsCreated, 1);
+
+    const completedIndex = fake.callLog.indexOf("update:order-return-earlier:COMPLETED");
+    const resolvedIndex = fake.callLog.indexOf("update:order-attack-1:RESOLVED");
+    assert.equal(completedIndex >= 0, true);
+    assert.equal(resolvedIndex >= 0, true);
+    assert.equal(completedIndex < resolvedIndex, true);
   });
 });

@@ -1,13 +1,17 @@
 /**
- * Movement arrival resolution for the tick worker (S5-004).
+ * Movement arrival resolution for the tick worker (S5-004 through S5-006).
  *
- * Two ordered passes run inside the caller's tick transaction:
+ * Three ordered passes run inside the caller's tick transaction:
  *
  *   PASS 1 - RETURN legs that reached their `arrivalAt` put their units back
  *            into the source kingdom garrison and close out.
  *   PASS 2 - SCOUT orders that reached their `arrivalAt` write the scout report
  *            on the SOURCE kingdom, resolve the outbound order, and spawn the
  *            RETURN leg that carries the scouts home.
+ *   PASS 3 - ATTACK orders that reached their `arrivalAt` resolve the S5-006
+ *            basic battle against the defender garrison, apply defender
+ *            losses, resolve the outbound order, and spawn the RETURN leg that
+ *            carries the surviving attackers home.
  *
  * ORDERING IS LOAD-BEARING: the RETURN pass runs FIRST so a unit coming home
  * this tick is back in its garrison before any same-tick bookkeeping observes
@@ -19,6 +23,10 @@
  * `warnings` on the returned summary.
  */
 
+import {
+  resolveBasicBattle,
+  type BattleArmyEntry,
+} from "../../../packages/game/src/movement/battle-formula";
 import {
   approximateScoutObservation,
   buildScoutReportBody,
@@ -32,7 +40,7 @@ import {
 import { toErrorMessage } from "./tick-log";
 
 export type MovementArrivalSummary = {
-  /** Due orders picked up this tick, across both passes. */
+  /** Due orders picked up this tick, across all passes. */
   ordersArrived: number;
   scoutReportsCreated: number;
   returnLegsCreated: number;
@@ -40,6 +48,12 @@ export type MovementArrivalSummary = {
   unitsReturned: number;
   /** RETURN legs closed out as COMPLETED this tick. */
   ordersCompleted: number;
+  /** ATTACK orders that fought a battle this tick (vanished targets excluded). */
+  battlesResolved: number;
+  attackerWins: number;
+  defenderHolds: number;
+  attackerUnitsLost: number;
+  defenderUnitsLost: number;
   warnings: string[];
 };
 
@@ -49,7 +63,7 @@ export type MovementUnitManifestEntry = {
   quantity: number;
 };
 
-/** The columns an arriving order needs, from either pass. */
+/** The columns an arriving order needs, from any pass. */
 export type ArrivingMovementOrder = {
   id: string;
   sourceKingdomId: string;
@@ -69,6 +83,11 @@ export type ScoutTargetObservationState = {
   unitStacks: { quantity: number }[];
   buildings: { type: string; level: number }[];
   districts: { allocatedLandM2: number }[];
+};
+
+/** Defender garrison state for an ATTACK arrival (S5-006, no buildings). */
+export type AttackDefenderGarrisonState = {
+  unitStacks: { unitType: string; quantity: number }[];
 };
 
 const MOVEMENT_ARRIVAL_ORDER_SELECT = {
@@ -119,8 +138,20 @@ const SCOUT_TARGET_SELECT = {
   },
 } as const;
 
+const ATTACK_DEFENDER_SELECT = {
+  unitStacks: {
+    where: {
+      locationType: "GARRISON",
+    },
+    select: {
+      unitType: true,
+      quantity: true,
+    },
+  },
+} as const;
+
 type DueMovementOrderWhere = {
-  orderType: "SCOUT" | "RETURN";
+  orderType: "SCOUT" | "RETURN" | "ATTACK";
   status: "IN_TRANSIT";
   arrivalAt: { lte: Date };
 };
@@ -177,8 +208,8 @@ export type MovementArrivalTransaction = {
   kingdom: {
     findUnique(args: {
       where: { id: string };
-      select: typeof SCOUT_TARGET_SELECT;
-    }): Promise<ScoutTargetObservationState | null>;
+      select: typeof SCOUT_TARGET_SELECT | typeof ATTACK_DEFENDER_SELECT;
+    }): Promise<ScoutTargetObservationState | AttackDefenderGarrisonState | null>;
   };
   unitStack: {
     upsert(args: {
@@ -196,6 +227,16 @@ export type MovementArrivalTransaction = {
         locationType: "GARRISON";
       };
       update: { quantity: { increment: number } };
+    }): Promise<unknown>;
+    update(args: {
+      where: {
+        kingdomId_unitType_locationType: {
+          kingdomId: string;
+          unitType: MovementUnitType;
+          locationType: "GARRISON";
+        };
+      };
+      data: { quantity: number };
     }): Promise<unknown>;
   };
   report: {
@@ -228,6 +269,11 @@ export async function processMovementArrivals(
     returnLegsCreated: 0,
     unitsReturned: 0,
     ordersCompleted: 0,
+    battlesResolved: 0,
+    attackerWins: 0,
+    defenderHolds: 0,
+    attackerUnitsLost: 0,
+    defenderUnitsLost: 0,
     warnings: [],
   };
 
@@ -235,6 +281,7 @@ export async function processMovementArrivals(
   // before PASS 2 (and before the rest of the tick) reads any army total.
   await processReturningOrders(tx, now, tickKey, summary);
   await processArrivingScoutOrders(tx, now, tickKey, summary);
+  await processArrivingAttackOrders(tx, now, tickKey, summary);
 
   return summary;
 }
@@ -385,6 +432,175 @@ async function processArrivingScoutOrders(
     }
   }
 }
+/**
+ * PASS 3 - ATTACK orders reaching their target (S5-006).
+ *
+ * The S5-006 basic battle reads only raw unit power: no WALL, WATCHTOWER,
+ * district, or tech multipliers (S5-007), no siege rules (S5-008), no land
+ * capture (S5-009), and no battle report (S5-010). Defender losses are applied
+ * as absolute `unitStack.update` writes clamped at zero, the outbound order
+ * is marked RESOLVED, and the surviving attackers get a RETURN leg home.
+ */
+async function processArrivingAttackOrders(
+  tx: MovementArrivalTransaction,
+  now: Date,
+  tickKey: string,
+  summary: MovementArrivalSummary,
+): Promise<void> {
+  const arrivingAttackOrders = await tx.movementOrder.findMany({
+    where: {
+      orderType: "ATTACK",
+      status: "IN_TRANSIT",
+      arrivalAt: { lte: now },
+    },
+    select: MOVEMENT_ARRIVAL_ORDER_SELECT,
+    orderBy: { arrivalAt: "asc" },
+  });
+
+  for (const order of arrivingAttackOrders) {
+    summary.ordersArrived += 1;
+
+    // SAFETY: per-order isolation, same reasoning as the other passes.
+    try {
+      await resolveAttackOrder(tx, order, now, tickKey, summary);
+    } catch (error) {
+      summary.warnings.push(
+        `Movement order ${order.id} (ATTACK) failed to resolve its battle: ${toErrorMessage(error)} (tick ${tickKey})`,
+      );
+    }
+  }
+}
+
+async function resolveAttackOrder(
+  tx: MovementArrivalTransaction,
+  order: ArrivingMovementOrder,
+  now: Date,
+  tickKey: string,
+  summary: MovementArrivalSummary,
+): Promise<void> {
+  const { manifest, invalidEntryCount } = parseUnitManifest(order.unitsJson);
+
+  if (invalidEntryCount > 0) {
+    summary.warnings.push(
+      `Movement order ${order.id} (ATTACK) had ${invalidEntryCount} unusable unit manifest entr${invalidEntryCount === 1 ? "y" : "ies"}; those units were dropped before the battle. (tick ${tickKey})`,
+    );
+  }
+
+  const defender = (await tx.kingdom.findUnique({
+    where: { id: order.targetKingdomId },
+    select: ATTACK_DEFENDER_SELECT,
+  })) as AttackDefenderGarrisonState | null;
+
+  if (!defender) {
+    // SAFETY: a vanished target must not strand the attackers. No battle is
+    // fought, so no battle counters move, but the order still resolves and
+    // the full surviving manifest still comes home.
+    summary.warnings.push(
+      `Movement order ${order.id} (ATTACK) target kingdom ${order.targetKingdomId} no longer exists; no battle was fought and the full army was returned instead. (tick ${tickKey})`,
+    );
+
+    try {
+      await tx.movementOrder.update({
+        where: { id: order.id },
+        data: {
+          status: "RESOLVED",
+          resolvedAt: now,
+        },
+      });
+    } catch (error) {
+      summary.warnings.push(
+        `Movement order ${order.id} (ATTACK) could not be marked RESOLVED: ${toErrorMessage(error)} (tick ${tickKey})`,
+      );
+    }
+
+    try {
+      await createReturnLegForOrder(tx, order, now, tickKey, summary, {
+        unitsJson: manifest,
+        orderLabel: "ATTACK",
+      });
+    } catch (error) {
+      summary.warnings.push(
+        `Movement order ${order.id} (ATTACK) failed to create its RETURN leg: ${toErrorMessage(error)} (tick ${tickKey})`,
+      );
+    }
+
+    return;
+  }
+
+  const defenderEntries = toBattleEntries(defender.unitStacks);
+  const battle = resolveBasicBattle({ attackers: manifest, defenders: defenderEntries });
+
+  // Apply defender losses as absolute writes clamped at zero. Each stack gets
+  // its own try/catch so one missing row cannot skip the remaining types and
+  // cannot skip resolving the order or sending the survivors home.
+  const defenderQuantityByType = aggregateManifestQuantities(defenderEntries);
+
+  for (const loss of battle.defenderLosses) {
+    if (loss.quantity <= 0) {
+      continue;
+    }
+
+    if (!isMovementUnitType(loss.unitType)) {
+      continue;
+    }
+
+    const currentQuantity = defenderQuantityByType.get(loss.unitType) ?? 0;
+    const nextQuantity = Math.max(0, currentQuantity - loss.quantity);
+
+    try {
+      await tx.unitStack.update({
+        where: {
+          kingdomId_unitType_locationType: {
+            kingdomId: order.targetKingdomId,
+            unitType: loss.unitType,
+            locationType: "GARRISON",
+          },
+        },
+        data: { quantity: nextQuantity },
+      });
+    } catch (error) {
+      summary.warnings.push(
+        `Movement order ${order.id} (ATTACK) could not apply ${loss.quantity} ${loss.unitType} losses to the defender: ${toErrorMessage(error)} (tick ${tickKey})`,
+      );
+    }
+  }
+
+  summary.battlesResolved += 1;
+
+  if (battle.winner === "ATTACKER") {
+    summary.attackerWins += 1;
+  } else {
+    summary.defenderHolds += 1;
+  }
+
+  summary.attackerUnitsLost += battle.attackerUnitsLost;
+  summary.defenderUnitsLost += battle.defenderUnitsLost;
+
+  try {
+    await tx.movementOrder.update({
+      where: { id: order.id },
+      data: {
+        status: "RESOLVED",
+        resolvedAt: now,
+      },
+    });
+  } catch (error) {
+    summary.warnings.push(
+      `Movement order ${order.id} (ATTACK) could not be marked RESOLVED: ${toErrorMessage(error)} (tick ${tickKey})`,
+    );
+  }
+
+  try {
+    await createReturnLegForOrder(tx, order, now, tickKey, summary, {
+      unitsJson: battle.attackerSurvivors,
+      orderLabel: "ATTACK",
+    });
+  } catch (error) {
+    summary.warnings.push(
+      `Movement order ${order.id} (ATTACK) failed to create its RETURN leg: ${toErrorMessage(error)} (tick ${tickKey})`,
+    );
+  }
+}
 async function createScoutReportForOrder(
   tx: MovementArrivalTransaction,
   order: ArrivingMovementOrder,
@@ -392,10 +608,10 @@ async function createScoutReportForOrder(
   tickKey: string,
   summary: MovementArrivalSummary,
 ): Promise<void> {
-  const target = await tx.kingdom.findUnique({
+  const target = (await tx.kingdom.findUnique({
     where: { id: order.targetKingdomId },
     select: SCOUT_TARGET_SELECT,
-  });
+  })) as ScoutTargetObservationState | null;
 
   if (!target) {
     // SAFETY: a vanished target must not strand the scouts. The report is
@@ -434,7 +650,11 @@ async function createReturnLegForOrder(
   now: Date,
   tickKey: string,
   summary: MovementArrivalSummary,
+  options?: { unitsJson?: unknown; orderLabel?: "SCOUT" | "ATTACK" },
 ): Promise<void> {
+  const orderLabel = options?.orderLabel ?? "SCOUT";
+  const unitsJson = options?.unitsJson ?? order.unitsJson;
+
   // SAFETY: `parentOrderId` is UNIQUE, so return-leg creation is single-shot by
   // schema. The inbound query filters IN_TRANSIT and the outbound order is
   // resolved in this same transaction, but if the resolve above failed the
@@ -447,7 +667,7 @@ async function createReturnLegForOrder(
 
   if (existingReturnLeg) {
     summary.warnings.push(
-      `Movement order ${order.id} (SCOUT) already has RETURN leg ${existingReturnLeg.id}; no second return leg was created. (tick ${tickKey})`,
+      `Movement order ${order.id} (${orderLabel}) already has RETURN leg ${existingReturnLeg.id}; no second return leg was created. (tick ${tickKey})`,
     );
     return;
   }
@@ -461,7 +681,7 @@ async function createReturnLegForOrder(
       targetKingdomId: order.targetKingdomId,
       orderType: "RETURN",
       status: "IN_TRANSIT",
-      unitsJson: order.unitsJson,
+      unitsJson,
       distanceM: order.distanceM,
       travelTicks: order.travelTicks,
       departureAt: now,
@@ -500,6 +720,49 @@ function highestBuildingLevel(buildings: { type: string; level: number }[], type
 
     return Math.max(highest, toNonNegativeInteger(building.level));
   }, 0);
+}
+
+/**
+ * Convert defender garrison rows into battle entries.
+ *
+ * The battle formula already drops hostile rows, so this helper only needs to
+ * pass the stored rows through without inventing units.
+ */
+function toBattleEntries(
+  unitStacks: AttackDefenderGarrisonState["unitStacks"] | null | undefined,
+): BattleArmyEntry[] {
+  if (!Array.isArray(unitStacks)) {
+    return [];
+  }
+
+  return unitStacks.map((stack) => ({
+    unitType: typeof stack?.unitType === "string" ? stack.unitType : "",
+    quantity: typeof stack?.quantity === "number" ? stack.quantity : 0,
+  }));
+}
+
+function aggregateManifestQuantities(entries: readonly BattleArmyEntry[]): Map<string, number> {
+  const totals = new Map<string, number>();
+
+  for (const entry of entries) {
+    if (typeof entry !== "object" || entry === null) {
+      continue;
+    }
+
+    if (typeof entry.unitType !== "string" || !isMovementUnitType(entry.unitType)) {
+      continue;
+    }
+
+    const quantity = toNonNegativeInteger(entry.quantity);
+
+    if (quantity <= 0) {
+      continue;
+    }
+
+    totals.set(entry.unitType, (totals.get(entry.unitType) ?? 0) + quantity);
+  }
+
+  return totals;
 }
 
 /**

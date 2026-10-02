@@ -2,6 +2,22 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-10-02 - S5-006 Basic Battle Formula
+
+### Added
+
+- Added `packages/game/src/movement/battle-formula.ts` with base attack/defense tables, `calculateArmyPower`, and `resolveBasicBattle` (strict `>` wins, tie holds, winner 10% / loser 30% casualties, deterministic).
+- Added worker PASS 3 ATTACK arrival resolution in `workers/tick-worker/src/movement-arrival.ts`: defender GARRISON read, base-power battle, defender loss writes, outbound `RESOLVED`, survivors RETURN leg with `parentOrderId` guard. No battle report, no land capture, no bonuses.
+
+### Checks
+
+- `npm run game:test`: 172/172 passed. `npm run tick:test`: 32/32 passed.
+- Web typecheck/lint, game/tick typecheck: passed.
+
+### Deferred
+
+- Defender bonuses (S5-007), siege (S5-008), war land capture (S5-009), battle report (S5-010), alliance check (Sprint 6) remain untouched.
+
 ## 2026-10-01 - S5-005 Attack Order Validation
 
 ### Added

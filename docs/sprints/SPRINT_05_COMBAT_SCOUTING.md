@@ -61,7 +61,7 @@ Defender Power = unit defense * count * wall/watchtower/defensive district/defen
 - [x] Attack order uses distance-based travel time.
 - [x] Protected kingdoms cannot be attacked.
 - [ ] Alliance members cannot be attacked.
-- [ ] Battle resolves with simple power formula.
+- [x] Battle resolves with simple power formula (base power only; bonuses/siege/land/reports deferred).
 - [ ] Defender bonuses are applied.
 - [ ] Siege requirement works for high-level walls.
 - [ ] War land capture limit is enforced per enemy per 30 days.
@@ -138,11 +138,16 @@ Defender Power = unit defense * count * wall/watchtower/defensive district/defen
 - DELIBERATELY ABSENT: no alliance check (Sprint 6 has no `Alliance` schema, so "alliance members cannot attack each other" still cannot be enforced and this remains a live locked-rule gap), no minimum or maximum army-size rule (one unit is a legal attack; a bound is a balance decision, deferred exactly as `SCOUT_ORDER_MAX_SCOUTS` was in S5-003), no battle resolution, no defender bonuses, no siege, no war land capture, and no battle report.
 - 30 tests in `packages/game/src/movement/attack-order-validation.test.ts` (123 -> 153 game tests), 24 in `apps/web/src/lib/kingdom/attack-orders.test.ts` and 20 in `apps/web/src/lib/kingdom/attack-target-options.test.ts` (157 -> 201 web tests). `npm run tick:test` is unchanged at 23/23 because S5-005 adds no worker code.
 
+### S5-006 - Basic battle formula (complete)
+
+- NEW `packages/game/src/movement/battle-formula.ts`: `UNIT_BASE_ATTACK` / `UNIT_BASE_DEFENSE` v0.1 BALANCE PLACEHOLDERS (INF 5/6, ARCH 6/3, CAV 9/5, SCOUT 2/2, SIEGE 14/3), `calculateArmyPower` / `resolveBasicBattle`. Winner is strict `attackerPower > defenderPower`, tie holds, 0v0 holds. Casualties winner `floor(10%)` / loser `floor(30%)` per aggregated type, deterministic, no clock/random. WALL/WATCHTOWER/DISTRICT/TECH belong to S5-007, siege to S5-008.
+- Worker PASS 3 `processArrivingAttackOrders` after RETURN+SCOUT: parses manifest, reads defender GARRISON stacks only, resolves base battle, applies defender losses via absolute update (clamped >=0), marks outbound `RESOLVED+resolvedAt`, creates RETURN leg with `attackerSurvivors` (reused travelTicks, `parentOrderId` UNIQUE guard). Vanished target resolves + returns full manifest. No `BATTLE` report, no land writes, no bonus reads. Per-order try/catch isolation preserved.
+- 19 game tests (172/172), 9 new arrival tests (32/32 tick). Web typecheck/lint, game/tick typecheck pass.
+
 ### Remaining
 
-
-- Attack DISPATCH now exists: a player can pick a valid target, compose a mixed army, and the server validates it, reserves the units, and writes an `ATTACK` `MovementOrder` in `IN_TRANSIT`.
-- A dispatched attack has NO EFFECT. The order sits in transit. No battle is fought, no casualties are dealt, no land is captured, and no battle report is written. The tick worker still has no `ATTACK` arrival branch. Battle resolution is S5-006, defender bonuses S5-007, siege S5-008, war land capture S5-009, and the battle report S5-010.
+- Attack dispatch AND base resolution now exist: a dispatched attack resolves on arrival with base-power casualties and survivors return home. Defender bonuses (S5-007), siege (S5-008), war land capture (S5-009), and battle report (S5-010) are still absent — treat casualty numbers as base-formula only.
+- A dispatched attack has an EFFECT (casualties + survivors) but still no bonuses, no siege gate, no land capture, and no battle report.
 - Arrival handling for scout orders is code-complete: a dispatched scout order resolves on arrival, writes a `SCOUT` `Report` on the source kingdom, and gets a `RETURN` leg that brings the scouts home. The scout round trip works; the attack round trip does not exist yet.
 - The whole movement path is still UNVERIFIED against a real database. No live PostgreSQL/PostGIS database was available for S5-003, S5-004, or S5-005, no browser session was opened, and migration `000008_movement_orders` still has never been applied to a real database. Dispatch and arrival are covered only by unit tests against hand-rolled fake clients.
 - The alliance-dependent rule "alliance members cannot attack each other" still cannot be enforced: Sprint 6 has no `Alliance` schema, so there is nothing authoritative to check. Both validators document that the check belongs as one extra rule after the protection rule and before the army and supply rules, addable later without rewriting either validator or its callers.
