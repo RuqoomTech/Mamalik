@@ -25,6 +25,7 @@ import {
   formatValidationReason,
   getLocationValidationUiStatus,
 } from "@/lib/map/location-ui";
+import { getDocumentMapTheme, getThemedMapStyleUrl, prepareMap } from "@/lib/map/map-style";
 
 type SelectedLocation = {
   latitude: number;
@@ -242,12 +243,13 @@ export function KingdomLocationMap({
 
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
-      style: mapStyleUrl,
+      style: getThemedMapStyleUrl(mapStyleUrl, getDocumentMapTheme()),
       center: RIYADH_CENTER,
       zoom: 4,
       attributionControl: { compact: true },
     });
 
+    prepareMap(map);
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "top-right");
 

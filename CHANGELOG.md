@@ -2,6 +2,17 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-10-09 (3)
+
+### Fixed
+
+- Arabic map labels now render with joined letters and right-to-left order (vendored RTL text plugin).
+- Map labels show a single language instead of stacked Latin and native names.
+
+### Changed
+
+- The Israel country label is hidden on all maps.
+
 ## 2026-10-09 (2)
 
 ### Added

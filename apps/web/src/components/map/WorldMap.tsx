@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { type Map } from "maplibre-gl";
 import type { FeatureCollection, Point, Polygon } from "geojson";
+import { getDocumentMapTheme, getThemedMapStyleUrl, prepareMap } from "@/lib/map/map-style";
 
 export type WorldKingdom = {
   id: string;
@@ -74,10 +75,11 @@ export function WorldMap({
       attributionControl: { compact: true },
       center: [focus.lng, focus.lat],
       container: containerRef.current,
-      style: mapStyleUrl,
+      style: getThemedMapStyleUrl(mapStyleUrl, getDocumentMapTheme()),
       zoom: focus.zoom,
     });
 
+    prepareMap(map);
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 

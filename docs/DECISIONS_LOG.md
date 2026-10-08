@@ -359,3 +359,9 @@
 - Decision: The world map shows all kingdoms publicly by name, location, border, and land; no owner names or emails.
 - Decision: The production map style is OpenFreeMap Liberty (free, no API key), replacing MapLibre demo tiles.
 - Decision: The public site and app share the minimal ledger style. The landing hero is a generated pen-and-ink atlas illustration and the logo is a generated citadel-in-territory mark, both stored locally.
+
+## 2026-10-09 - Map Labels For Arabic Players
+
+- Decision: Map labels show one language at a time (English names in English, `name:ar` in Arabic) instead of stacked Latin + native names.
+- Decision: MapLibre loads a vendored `@mapbox/mapbox-gl-rtl-text` 0.3.0 plugin (`apps/web/public/vendor/`) so Arabic labels are shaped and ordered correctly.
+- Decision: The Israel country label is hidden on every Mamalik map (filtered by `iso_a2 = IL` and its names in `apps/web/src/lib/map/map-label-policy.ts`). Boundary lines from the base map are unchanged.
