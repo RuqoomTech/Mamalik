@@ -82,7 +82,7 @@ export default function TermsPage() {
       <LegalSection title="Contact">
         <p>
           For terms or account questions, contact{" "}
-          <a className="font-semibold text-[#183f35] underline" href={`mailto:${contactEmail}`}>
+          <a className="font-semibold text-mk-green underline" href={`mailto:${contactEmail}`}>
             {contactEmail}
           </a>
           .

@@ -123,13 +123,13 @@ export function KingdomConfirmationPanel({
           <p className="mamalik-eyebrow">
             Validation passed
           </p>
-          <h2 className="mt-1 text-xl font-semibold text-[#10140f]">
+          <h2 className="mt-1 text-xl font-semibold text-mk-ink">
             Confirm Kingdom
           </h2>
         </div>
 
         <label className="block space-y-2">
-          <span className="text-sm font-medium text-[#10140f]">Kingdom name</span>
+          <span className="text-sm font-medium text-mk-ink">Kingdom name</span>
           <input
             className="mamalik-input px-3 py-2"
             maxLength={32}
@@ -148,49 +148,49 @@ export function KingdomConfirmationPanel({
 
         <dl className="grid grid-cols-2 gap-3 text-sm">
           <div>
-            <dt className="text-[#5f665d]">Latitude</dt>
-            <dd className="font-semibold text-[#10140f]">
+            <dt className="text-mk-muted">Latitude</dt>
+            <dd className="font-semibold text-mk-ink">
               {formatCoordinate(selectedLocation.latitude)}
             </dd>
           </div>
           <div>
-            <dt className="text-[#5f665d]">Longitude</dt>
-            <dd className="font-semibold text-[#10140f]">
+            <dt className="text-mk-muted">Longitude</dt>
+            <dd className="font-semibold text-mk-ink">
               {formatCoordinate(selectedLocation.longitude)}
             </dd>
           </div>
           <div>
-            <dt className="text-[#5f665d]">Usable land</dt>
-            <dd className="font-semibold text-[#10140f]">
+            <dt className="text-mk-muted">Usable land</dt>
+            <dd className="font-semibold text-mk-ink">
               {formatSquareMeters(validationResult.usableLandM2)}
             </dd>
           </div>
           <div>
-            <dt className="text-[#5f665d]">Visible area</dt>
-            <dd className="font-semibold text-[#10140f]">
+            <dt className="text-mk-muted">Visible area</dt>
+            <dd className="font-semibold text-mk-ink">
               {formatSquareMeters(validationResult.visibleAreaM2)}
             </dd>
           </div>
           <div>
-            <dt className="text-[#5f665d]">Target area</dt>
-            <dd className="font-semibold text-[#10140f]">
+            <dt className="text-mk-muted">Target area</dt>
+            <dd className="font-semibold text-mk-ink">
               {formatSquareMeters(validationResult.targetAreaM2)}
             </dd>
           </div>
           <div>
-            <dt className="text-[#5f665d]">Tolerance</dt>
-            <dd className="font-semibold text-[#10140f]">
+            <dt className="text-mk-muted">Tolerance</dt>
+            <dd className="font-semibold text-mk-ink">
               {formatToleranceStatus(validationResult.toleranceStatus)}
               {validationResult.toleranceStatus ? (
-                <span className="ml-1 text-xs font-medium text-[#5f665d]">
+                <span className="ml-1 text-xs font-medium text-mk-muted">
                   ({validationResult.toleranceStatus})
                 </span>
               ) : null}
             </dd>
           </div>
           <div>
-            <dt className="text-[#5f665d]">Area type</dt>
-            <dd className="font-semibold text-[#10140f]">
+            <dt className="text-mk-muted">Area type</dt>
+            <dd className="font-semibold text-mk-ink">
               {validationResult.areaType
                 ? getLandAreaTypeLabel(validationResult.areaType)
                 : "Standard"}
@@ -198,9 +198,9 @@ export function KingdomConfirmationPanel({
           </div>
         </dl>
 
-        <section className="rounded-md border border-[#dfe5dc] bg-[#f7f8f4] p-3">
-          <p className="text-sm font-semibold text-[#10140f]">Preview polygon</p>
-          <p className="mt-1 text-sm text-[#5f665d]">
+        <section className="rounded-md border border-mk-line bg-mk-canvas p-3">
+          <p className="text-sm font-semibold text-mk-ink">Preview polygon</p>
+          <p className="mt-1 text-sm text-mk-muted">
             {validationResult.previewPolygon
               ? `${validationResult.previewPolygon.type} with ${getPolygonPointCount(
                   validationResult,
@@ -210,41 +210,41 @@ export function KingdomConfirmationPanel({
         </section>
 
         <section>
-          <p className="text-sm font-semibold text-[#10140f]">Starter resources</p>
+          <p className="text-sm font-semibold text-mk-ink">Starter resources</p>
           <dl className="mt-2 grid grid-cols-2 gap-2 text-sm">
             <div>
-              <dt className="text-[#5f665d]">Money</dt>
-              <dd className="font-semibold text-[#10140f]">
+              <dt className="text-mk-muted">Money</dt>
+              <dd className="font-semibold text-mk-ink">
                 {formatNumber(STARTING_RESOURCES.money)}
               </dd>
             </div>
             <div>
-              <dt className="text-[#5f665d]">Food</dt>
-              <dd className="font-semibold text-[#10140f]">
+              <dt className="text-mk-muted">Food</dt>
+              <dd className="font-semibold text-mk-ink">
                 {formatNumber(STARTING_RESOURCES.food)}
               </dd>
             </div>
             <div>
-              <dt className="text-[#5f665d]">Manpower</dt>
-              <dd className="font-semibold text-[#10140f]">
+              <dt className="text-mk-muted">Manpower</dt>
+              <dd className="font-semibold text-mk-ink">
                 {formatNumber(STARTING_RESOURCES.manpower)}
               </dd>
             </div>
             <div>
-              <dt className="text-[#5f665d]">Knowledge</dt>
-              <dd className="font-semibold text-[#10140f]">
+              <dt className="text-mk-muted">Knowledge</dt>
+              <dd className="font-semibold text-mk-ink">
                 {formatNumber(STARTING_RESOURCES.knowledge)}
               </dd>
             </div>
             <div>
-              <dt className="text-[#5f665d]">Population</dt>
-              <dd className="font-semibold text-[#10140f]">
+              <dt className="text-mk-muted">Population</dt>
+              <dd className="font-semibold text-mk-ink">
                 {formatNumber(STARTING_POPULATION)}
               </dd>
             </div>
             <div>
-              <dt className="text-[#5f665d]">Protection</dt>
-              <dd className="font-semibold text-[#10140f]">
+              <dt className="text-mk-muted">Protection</dt>
+              <dd className="font-semibold text-mk-ink">
                 {BEGINNER_PROTECTION_DAYS} days
               </dd>
             </div>
@@ -252,12 +252,12 @@ export function KingdomConfirmationPanel({
         </section>
 
         <section>
-          <p className="text-sm font-semibold text-[#10140f]">Starting districts</p>
-          <ul className="mt-2 space-y-1 text-sm text-[#5f665d]">
+          <p className="text-sm font-semibold text-mk-ink">Starting districts</p>
+          <ul className="mt-2 space-y-1 text-sm text-mk-muted">
             {STARTING_DISTRICTS.map((district) => (
               <li className="flex justify-between gap-3" key={district.type}>
                 <span>{district.label}</span>
-                <span className="font-semibold text-[#10140f]">
+                <span className="font-semibold text-mk-ink">
                   {formatNumber(district.allocatedLandM2)} m2
                 </span>
               </li>
@@ -266,8 +266,8 @@ export function KingdomConfirmationPanel({
         </section>
 
         <section>
-          <p className="text-sm font-semibold text-[#10140f]">Starter buildings</p>
-          <ul className="mt-2 grid grid-cols-2 gap-1 text-sm text-[#5f665d]">
+          <p className="text-sm font-semibold text-mk-ink">Starter buildings</p>
+          <ul className="mt-2 grid grid-cols-2 gap-1 text-sm text-mk-muted">
             {STARTER_BUILDINGS.map((building) => (
               <li key={building.type}>{building.label}</li>
             ))}
@@ -275,12 +275,12 @@ export function KingdomConfirmationPanel({
         </section>
 
         <section>
-          <p className="text-sm font-semibold text-[#10140f]">Starter army</p>
-          <ul className="mt-2 space-y-1 text-sm text-[#5f665d]">
+          <p className="text-sm font-semibold text-mk-ink">Starter army</p>
+          <ul className="mt-2 space-y-1 text-sm text-mk-muted">
             {STARTER_UNITS.map((unit) => (
               <li className="flex justify-between gap-3" key={unit.type}>
                 <span>{unit.label}</span>
-                <span className="font-semibold text-[#10140f]">
+                <span className="font-semibold text-mk-ink">
                   {formatNumber(unit.quantity)}
                 </span>
               </li>

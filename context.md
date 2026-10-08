@@ -249,6 +249,8 @@ v0.1 must include:
 - The current v0.1 logo mark is a text-free raster asset at `apps/web/public/brand/mamalik-logo.png`; render `Mamalik / ممالك` as real UI text.
 - Public marketing pages use the shared `MarketingChrome` shell and the local hero asset `apps/web/public/brand/mamalik-hero-world.png`. Public copy must distinguish completed v0.1 systems from roadmap systems.
 - The public landing page follows the supplied compact parchment-frame reference: the hero image already includes the kingdom-stat card, so do not add a duplicate rendered stat overlay unless the hero asset changes.
+- The kingdom app uses a minimal ledger style: Tailwind `mk-*` color tokens defined in `apps/web/src/app/globals.css`, hairline-ruled `.mamalik-table` ledgers with `.num` right-aligned numeric cells, one green for primary actions, and green/red only for +/- values. Do not add raw hex colors in TSX; add or reuse a token.
+- Kingdom pages render inside `KingdomAppShell`, which takes the full `KingdomDashboardData` and shows the resource bar on every page. Player-facing copy must not mention sprints, v0.1, or internal systems.
 - Existing Sprint 1 web surfaces use shared Mamalik UI primitives in `apps/web/src/app/globals.css` for page backgrounds, cards, form inputs, action buttons, and data tables; keep future Sprint 1/Sprint 2 UI work aligned with those primitives unless a dedicated design-system task replaces them.
 - Canonical v0.1 documentation sources are listed in `AGENTS.md`; duplicate historical docs and task artifacts live under `docs/archive/` and `tasks/archive/` as read-only references.
 - Active Sprint 1-6 task tracking uses `tasks/backlog.md` and `tasks/sprint_01.md` through `tasks/sprint_06.md`; JSON/CSV exports are reference artifacts only.

@@ -33,15 +33,15 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
                 width={64}
                 height={64}
                 priority
-                className="size-16 rounded-md border border-[#dfe5dc] bg-white object-cover shadow-sm"
+                className="size-16 rounded-md border border-mk-line bg-white object-cover shadow-sm"
               />
               <div>
                 <p className="mamalik-eyebrow">Mamalik</p>
-                <h1 className="text-3xl font-semibold text-[#10140f]">Register</h1>
+                <h1 className="text-3xl font-semibold text-mk-ink">Register</h1>
               </div>
             </div>
 
-            <p className="text-sm leading-6 text-[#5f665d]">
+            <p className="text-sm leading-6 text-mk-muted">
               Create the account that will own your first kingdom.
             </p>
 
@@ -51,17 +51,17 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
               </div>
             ) : null}
 
-            <Link
+            <a
               className="mamalik-action-secondary flex w-full items-center justify-center px-4 py-2.5"
               href="/api/auth/google"
             >
               Continue with Google
-            </Link>
+            </a>
             <GoogleLegalNotice />
 
             <form action="/api/auth/register" method="post" className="space-y-4">
               <label className="block space-y-2">
-                <span className="text-sm font-medium text-[#10140f]">
+                <span className="text-sm font-medium text-mk-ink">
                   Display name
                 </span>
                 <input
@@ -76,7 +76,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
               </label>
 
               <label className="block space-y-2">
-                <span className="text-sm font-medium text-[#10140f]">Email</span>
+                <span className="text-sm font-medium text-mk-ink">Email</span>
                 <input
                   className="mamalik-input px-3 py-2"
                   name="email"
@@ -87,7 +87,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
               </label>
 
               <label className="block space-y-2">
-                <span className="text-sm font-medium text-[#10140f]">Password</span>
+                <span className="text-sm font-medium text-mk-ink">Password</span>
                 <input
                   className="mamalik-input px-3 py-2"
                   name="password"
@@ -107,9 +107,9 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
               </button>
             </form>
 
-            <p className="text-sm text-[#5f665d]">
+            <p className="text-sm text-mk-muted">
               Already have an account?{" "}
-              <Link className="font-semibold text-[#183f35] underline" href="/login">
+              <Link className="font-semibold text-mk-green underline" href="/login">
                 Log in
               </Link>
             </p>

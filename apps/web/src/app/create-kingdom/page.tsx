@@ -14,10 +14,10 @@ export default async function CreateKingdomPage() {
         <header className="mamalik-card flex flex-wrap items-center justify-between gap-4 p-5">
           <div>
             <p className="mamalik-eyebrow">Mamalik</p>
-            <h1 className="mt-1 text-3xl font-semibold text-[#10140f]">
+            <h1 className="mt-1 text-3xl font-semibold text-mk-ink">
               Choose Your Kingdom Location
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#5f665d]">
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-mk-muted">
               Start by selecting a point on the world map. New kingdoms begin with
               50,000 m2 usable land, and the final location must be valid land.
             </p>
@@ -40,7 +40,7 @@ export default async function CreateKingdomPage() {
 
         <div>
           <Link
-            className="font-semibold text-[#183f35] underline"
+            className="font-semibold text-mk-green underline"
             href="/"
           >
             Back to home

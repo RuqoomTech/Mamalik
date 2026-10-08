@@ -286,10 +286,10 @@ export function KingdomLocationMap({
 
   return (
     <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <div className="mamalik-card relative min-h-[520px] overflow-hidden bg-[#eef3ec]">
+      <div className="mamalik-card relative min-h-[520px] overflow-hidden bg-mk-sunken">
         <div ref={mapContainerRef} className="h-[520px] w-full" />
         {!mapError && !isMapReady ? (
-          <div className="absolute inset-x-4 top-4 rounded-md border border-[#dfe5dc] bg-white/90 px-3 py-2 text-sm font-medium text-[#183f35] shadow-sm">
+          <div className="absolute inset-x-4 top-4 rounded-md border border-mk-line bg-white/90 px-3 py-2 text-sm font-medium text-mk-green shadow-sm">
             Loading map...
           </div>
         ) : null}
@@ -302,16 +302,16 @@ export function KingdomLocationMap({
 
       <aside className="space-y-4">
         <section className="mamalik-card p-5">
-          <p className="text-sm text-[#5f665d]">Signed in</p>
-          <p className="mt-1 text-lg font-semibold text-[#10140f]">
+          <p className="text-sm text-mk-muted">Signed in</p>
+          <p className="mt-1 text-lg font-semibold text-mk-ink">
             {playerDisplayName}
           </p>
-          <p className="text-sm text-[#5f665d]">{playerEmail}</p>
+          <p className="text-sm text-mk-muted">{playerEmail}</p>
         </section>
 
         <section className="mamalik-card p-5">
           <label className="block space-y-2">
-            <span className="text-sm font-medium text-[#10140f]">Search</span>
+            <span className="text-sm font-medium text-mk-ink">Search</span>
             <input
               className="mamalik-input px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-70"
               disabled
@@ -324,12 +324,12 @@ export function KingdomLocationMap({
         <section className="mamalik-card p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-[#10140f]">Location validation</h2>
-              <p className="mt-1 text-sm text-[#5f665d]">
+              <h2 className="text-lg font-semibold text-mk-ink">Location validation</h2>
+              <p className="mt-1 text-sm text-mk-muted">
                 {describeLocationValidationStatus(validationStatus)}
               </p>
             </div>
-            <span className="shrink-0 rounded-full border border-[#dfe5dc] bg-[#f7f8f4] px-2.5 py-1 text-xs font-semibold text-[#183f35]">
+            <span className="shrink-0 rounded-full border border-mk-line bg-mk-canvas px-2.5 py-1 text-xs font-semibold text-mk-green">
               {formatLocationValidationStatus(validationStatus)}
             </span>
           </div>
@@ -337,20 +337,20 @@ export function KingdomLocationMap({
           {selectedLocation ? (
             <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
               <div>
-                <dt className="text-[#5f665d]">Latitude</dt>
-                <dd className="font-semibold text-[#10140f]">
+                <dt className="text-mk-muted">Latitude</dt>
+                <dd className="font-semibold text-mk-ink">
                   {formatCoordinate(selectedLocation.latitude)}
                 </dd>
               </div>
               <div>
-                <dt className="text-[#5f665d]">Longitude</dt>
-                <dd className="font-semibold text-[#10140f]">
+                <dt className="text-mk-muted">Longitude</dt>
+                <dd className="font-semibold text-mk-ink">
                   {formatCoordinate(selectedLocation.longitude)}
                 </dd>
               </div>
             </dl>
           ) : (
-            <p className="mt-3 text-sm text-[#5f665d]">
+            <p className="mt-3 text-sm text-mk-muted">
               Click the map to choose a starting point.
             </p>
           )}
@@ -466,8 +466,8 @@ export function KingdomLocationMap({
         ) : null}
 
         <section className="mamalik-card p-5">
-          <h2 className="text-lg font-semibold text-[#10140f]">Starting Rules</h2>
-          <ul className="mt-3 space-y-2 text-sm text-[#5f665d]">
+          <h2 className="text-lg font-semibold text-mk-ink">Starting Rules</h2>
+          <ul className="mt-3 space-y-2 text-sm text-mk-muted">
             <li>Kingdoms start with 50,000 m2 usable land.</li>
             <li>The selected location must be valid land.</li>
             <li>Visible borders are generated separately from gameplay usable land.</li>

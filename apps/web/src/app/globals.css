@@ -1,155 +1,221 @@
 @import "tailwindcss";
 
+/*
+ * Mamalik app tokens. Deliberately quiet: white surfaces, hairline rules, ink and
+ * grey text, one green for primary actions, green/red only for +/- values.
+ * Components use these through Tailwind (`text-mk-ink`, `border-mk-line`).
+ */
 :root {
   color-scheme: light;
-  --mamalik-ink: #10140f;
-  --mamalik-muted: #5f665d;
-  --mamalik-border: #dfe5dc;
+  --mamalik-ink: #161816;
+  --mamalik-muted: #6b6e69;
+  --mamalik-border: #e6e6e3;
   --mamalik-surface: #ffffff;
-  --mamalik-surface-soft: #f7f8f4;
-  --mamalik-map-green: #183f35;
+  --mamalik-surface-soft: #fafaf8;
+  --mamalik-map-green: #17493b;
   --mamalik-gold: #b88a2c;
-  --mamalik-sky: #e8f0f4;
+  --mamalik-font-display: Georgia, "Times New Roman", serif;
+  --mamalik-font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+@theme {
+  --color-mk-ink: #161816;
+  --color-mk-muted: #6b6e69;
+  --color-mk-faint: #9a9c97;
+  --color-mk-canvas: #fafaf8;
+  --color-mk-surface: #ffffff;
+  --color-mk-sunken: #f3f3f1;
+  --color-mk-line: #e6e6e3;
+  --color-mk-line-strong: #d4d4d0;
+  --color-mk-green: #17493b;
+  --color-mk-green-hover: #0f3a2e;
+  --color-mk-success: #1f6b45;
+  --color-mk-success-bg: #ffffff;
+  --color-mk-success-line: #e6e6e3;
+  --color-mk-warn: #8a5a00;
+  --color-mk-warn-bg: #ffffff;
+  --color-mk-warn-line: #e6e6e3;
+  --color-mk-danger: #a12a2a;
+  --color-mk-danger-bg: #ffffff;
+  --color-mk-danger-line: #e6e6e3;
+  --font-display: Georgia, "Times New Roman", serif;
 }
 
 body {
   margin: 0;
-  background:
-    linear-gradient(180deg, rgba(232, 240, 244, 0.58), transparent 340px),
-    #f7f8f4;
+  background: var(--mamalik-surface-soft);
   color: var(--mamalik-ink);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--mamalik-font-body);
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
 a,
-input {
+input,
+select {
   transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    color 160ms ease;
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
 }
 
 button:focus-visible,
 a:focus-visible,
-input:focus-visible {
-  outline: 3px solid rgba(184, 138, 44, 0.35);
-  outline-offset: 3px;
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--mamalik-map-green);
+  outline-offset: 2px;
 }
 
 input:-webkit-autofill {
   -webkit-text-fill-color: var(--mamalik-ink);
-  box-shadow: 0 0 0 1000px #f4f7ef inset;
+  box-shadow: 0 0 0 1000px #ffffff inset;
 }
 
 .mamalik-page {
   min-height: 100vh;
-  background:
-    linear-gradient(180deg, rgba(232, 240, 244, 0.72), transparent 360px),
-    #f7f8f4;
+  background: var(--mamalik-surface-soft);
 }
 
 .mamalik-container {
   margin-inline: auto;
   width: 100%;
-  max-width: 80rem;
-  padding: 2rem 1.5rem;
+  max-width: 68rem;
+  padding: 1.25rem 1rem 3rem;
+}
+
+@media (min-width: 640px) {
+  .mamalik-container {
+    padding: 1.75rem 1.5rem 4rem;
+  }
 }
 
 .mamalik-card {
   border: 1px solid var(--mamalik-border);
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 1px 2px rgba(16, 20, 15, 0.04);
+  border-radius: 0.375rem;
+  background: var(--mamalik-surface);
 }
 
 .mamalik-eyebrow {
-  color: var(--mamalik-map-green);
+  color: var(--mamalik-muted);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.mamalik-display {
+  font-family: var(--mamalik-font-display);
+  font-weight: 700;
 }
 
 .mamalik-action-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
   background: var(--mamalik-map-green);
   color: #ffffff;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.25;
 }
 
 .mamalik-action-primary:hover {
-  background: #0f3028;
+  background: var(--color-mk-green-hover);
 }
 
 .mamalik-action-primary:disabled {
   cursor: not-allowed;
-  background: #c7cfc4;
-  color: #6d746a;
+  background: var(--color-mk-sunken);
+  color: var(--color-mk-faint);
 }
 
 .mamalik-action-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--mamalik-border);
-  border-radius: 0.5rem;
-  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--color-mk-line-strong);
+  border-radius: 0.375rem;
+  background: var(--mamalik-surface);
   color: var(--mamalik-ink);
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.25;
 }
 
 .mamalik-action-secondary:hover {
-  border-color: #c5cfc1;
-  background: #f0f4ee;
+  background: var(--color-mk-sunken);
 }
 
 .mamalik-input {
   width: 100%;
-  border: 1px solid #cfd8cc;
-  border-radius: 0.5rem;
-  background: #fbfcf8;
+  border: 1px solid var(--color-mk-line-strong);
+  border-radius: 0.375rem;
+  background: #ffffff;
   color: var(--mamalik-ink);
 }
 
 .mamalik-input:focus {
-  border-color: var(--mamalik-map-green);
+  border-color: var(--mamalik-ink);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(24, 63, 53, 0.14);
 }
 
+/* Ledger: the default way to show game data. Hairline rows, right-aligned numbers. */
 .mamalik-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse;
+  font-size: 0.875rem;
 }
 
 .mamalik-table th {
-  background: #f3f6f0;
+  border-bottom: 1px solid var(--color-mk-line-strong);
+  padding: 0.5rem 0.75rem;
   color: var(--mamalik-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-.mamalik-table td,
-.mamalik-table th {
-  border-bottom: 1px solid #edf0ea;
-  padding: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.mamalik-table tbody tr:hover {
-  background: #fafbf7;
+.mamalik-table td {
+  border-bottom: 1px solid var(--mamalik-border);
+  padding: 0.625rem 0.75rem;
+  vertical-align: middle;
+}
+
+.mamalik-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.mamalik-table th:first-child,
+.mamalik-table td:first-child {
+  padding-left: 1rem;
+}
+
+.mamalik-table th:last-child,
+.mamalik-table td:last-child {
+  padding-right: 1rem;
+}
+
+.mamalik-table .num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.mamalik-table tr.subtotal td {
+  font-weight: 600;
+}
+
+.mamalik-scroll-x {
+  scrollbar-width: none;
+}
+
+.mamalik-scroll-x::-webkit-scrollbar {
+  display: none;
 }
 
 .marketing-page {
@@ -311,7 +377,7 @@ input:-webkit-autofill {
   display: inline-flex;
   align-items: center;
   gap: 0.95rem;
-  color: #b67f19;
+  color: #8a6414;
   font-size: 0.78rem;
   font-weight: 850;
   letter-spacing: 0.07em;

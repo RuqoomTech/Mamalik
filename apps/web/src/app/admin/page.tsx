@@ -56,8 +56,8 @@ function AdminSection({
   return (
     <section className="mamalik-card space-y-3 p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-lg font-semibold text-[#10140f]">{title}</h2>
-        {limitLabel ? <p className="text-xs text-[#5f665d]">{limitLabel}</p> : null}
+        <h2 className="text-lg font-semibold text-mk-ink">{title}</h2>
+        {limitLabel ? <p className="text-xs text-mk-muted">{limitLabel}</p> : null}
       </div>
       {children}
     </section>
@@ -76,7 +76,7 @@ function AdminTable({
   const hasRows = Children.count(children) > 0;
 
   return (
-    <div className="overflow-x-auto rounded-md border border-[#dfe5dc]">
+    <div className="overflow-x-auto rounded-md border border-mk-line">
       <table className="mamalik-table min-w-full text-sm">
         <thead>
           <tr>
@@ -96,7 +96,7 @@ function AdminTable({
             children
           ) : (
             <tr>
-              <td className="px-3 py-4 text-[#5f665d]" colSpan={headers.length}>
+              <td className="px-3 py-4 text-mk-muted" colSpan={headers.length}>
                 {emptyMessage}
               </td>
             </tr>
@@ -109,9 +109,9 @@ function AdminTable({
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md border border-[#dfe5dc] bg-[#f7f8f4] p-4">
+    <div className="rounded-md border border-mk-line bg-mk-canvas p-4">
       <p className="mamalik-eyebrow">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-[#10140f]">
+      <p className="mt-2 text-2xl font-semibold text-mk-ink">
         {formatNumber(value)}
       </p>
     </div>
@@ -128,10 +128,10 @@ export default async function AdminPage() {
         <header className="mamalik-card flex flex-wrap items-center justify-between gap-4 p-5">
           <div>
             <p className="mamalik-eyebrow">Mamalik</p>
-            <h1 className="mt-1 text-3xl font-semibold text-[#10140f]">
+            <h1 className="mt-1 text-3xl font-semibold text-mk-ink">
               Admin Panel
             </h1>
-            <p className="mt-2 text-sm text-[#5f665d]">
+            <p className="mt-2 text-sm text-mk-muted">
               Signed in as {user.displayName} ({user.email})
             </p>
           </div>
@@ -203,7 +203,7 @@ export default async function AdminPage() {
                 <td className="whitespace-nowrap px-3 py-2 text-neutral-700">
                   {formatOptionalDate(row.finishedAt)}
                 </td>
-                <td className="max-w-[280px] whitespace-normal px-3 py-2 text-[#9f3030]">
+                <td className="max-w-[280px] whitespace-normal px-3 py-2 text-mk-danger">
                   {row.status === "FAILED" ? row.errorMessage ?? "Tick failed" : ""}
                 </td>
               </tr>

@@ -16,10 +16,8 @@ import {
   type LandPurchaseOption,
 } from "@/lib/kingdom/land-purchase-options";
 
-export const DASHBOARD_STATUS_NOTE =
-  "Moving land between districts, scouting, combat, alliances, rankings, and player-facing start actions are coming in later v0.1 work.";
-
 const LOW_FOOD_TICK_THRESHOLD = 6;
+const numberFormatter = new Intl.NumberFormat("en-US");
 
 type JsonObject = { [key: string]: unknown };
 
@@ -357,7 +355,7 @@ export function getFoodStatus(
     return {
       level: "shortage",
       label: "Shortage",
-      detail: "Food is empty. Sprint 2 currently clamps Food at zero without starvation penalties.",
+      detail: "Food has run out. Build or upgrade Farms to feed your people and army.",
       ticksUntilEmpty: 0,
       estimatedTimeUntilEmpty: "~0 minutes",
     };
@@ -639,7 +637,7 @@ export function shapeKingdomDashboardData(
       type: report.type,
       typeLabel: formatEnumLabel(report.type),
       title: report.title,
-      bodySummary: summarizeReportBody(report.bodyJson),
+      bodySummary: describeReport(report.type, report.bodyJson),
       read: report.readAt !== null,
       createdAt: report.createdAt,
     })),
@@ -776,6 +774,61 @@ export async function getKingdomDashboardData(
   ]);
 
   return kingdom ? shapeKingdomDashboardData(kingdom, new Date(), latestTickLogs) : null;
+}
+
+function describeReport(type: string, bodyJson: unknown): string | null {
+  if (isJsonObject(bodyJson)) {
+    const sentence = describeKnownReport(type, bodyJson);
+
+    if (sentence) {
+      return sentence;
+    }
+  }
+
+  return summarizeReportBody(bodyJson);
+}
+
+function describeKnownReport(type: string, body: JsonObject): string | null {
+  const number = (key: string) => (typeof body[key] === "number" ? (body[key] as number) : null);
+  const text = (key: string) => (typeof body[key] === "string" ? (body[key] as string) : null);
+  const format = (value: number) => numberFormatter.format(value);
+
+  switch (type) {
+    case "LAND_PURCHASE": {
+      const size = number("packageSizeM2");
+      const price = number("pricePaid");
+
+      return size !== null && price !== null
+        ? `Bought ${format(size)} m² of land for ${format(price)} Money.`
+        : null;
+    }
+    case "DISTRICT_ALLOCATION": {
+      const amount = number("amountM2");
+      const district = text("districtType");
+
+      return amount !== null && district
+        ? `Added ${format(amount)} m² to the ${getDistrictLabel(district)} district.`
+        : null;
+    }
+    case "CONSTRUCTION": {
+      const building = text("buildingType");
+      const level = number("level");
+
+      return building && level !== null
+        ? `${getBuildingLabel(building)} is now level ${level}.`
+        : null;
+    }
+    case "TRAINING": {
+      const unit = text("unitType");
+      const quantity = number("quantity");
+
+      return unit && quantity !== null
+        ? `${format(quantity)} ${getUnitLabel(unit)} joined your garrison.`
+        : null;
+    }
+    default:
+      return null;
+  }
 }
 
 function summarizeReportBody(bodyJson: unknown): string | null {

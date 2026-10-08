@@ -92,6 +92,12 @@ Canonical Markdown backlog for active v0.1 work.
 - [x] 2026-09-29: Harden foundation batch 2 — deterministic `en-US` number formatting, stricter session verification, full `npm install` + typecheck/lint/test baseline (web 120/120, game 59/59, tick 8/8).
 - [ ] Future foundation hardening: tick STARTED lease/retry + per-kingdom isolation, login rate-limit, session revocation/rotation, Google PKCE + ID-token validation, polygon water checks, visible-border expansion, Movement/Alliance schema for Sprint 5/6.
 
+## UI Maintenance
+
+- [x] 2026-10-09: Redesign kingdom UI in a minimal ledger style with shared design tokens, resource bar, simplified Overview, table-based pages, and readable report sentences.
+- [ ] Switch production `NEXT_PUBLIC_MAP_STYLE_URL` from MapLibre demo tiles to a detailed style.
+- [ ] Add player-facing construction/upgrade/training actions and automatic tick scheduling (v0.1 follow-ups from Sprint 2).
+
 ## Sprint 5 - Movement + Scouting + Combat
 
 - [ ] See `tasks/sprint_05.md`.

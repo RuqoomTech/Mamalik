@@ -369,7 +369,7 @@ test("shapes dashboard data with economy and tick read models", () => {
   assert.equal(dashboardData.reports[0].read, false);
   assert.equal(
     dashboardData.reports[0].bodySummary,
-    "Unit Type: Infantry - Quantity: 10 - Completed Tick Key: 2026-06-17T00:10:00.000Z",
+    "10 Infantry joined your garrison.",
   );
   assert.deepEqual(
     dashboardData.landPurchaseOptions.map((option) => ({

@@ -2,68 +2,48 @@
 
 ## Current Session
 
-- Current date/time: 2026-09-29 15:25:00 +03:00
-- Current sprint: Sprint 4 is closed; foundation batches 1+2 done with green tests, ready for Sprint 5.
+- Current date/time: 2026-10-09
+- Current sprint: Sprint 4 is closed; ready for Sprint 5. UI maintenance pass completed.
 - Current sprint file: `docs/sprints/SPRINT_04_MAP_VALIDATION_BORDERS.md`
-- Current task: None; npm install + tests + second hardening pass complete.
+- Current task: None; kingdom UI ledger redesign complete.
 
 ## Last Completed Task
 
-- Installed `apps/web` (382 pkgs) and `packages/db` (121 pkgs); generated Prisma client with dummy DATABASE_URL.
-- Baseline: web typecheck/lint pass, web test 118/119 (1 Arabic-locale digit failure), game 59/59, tick 8/8, db validate + game/tick typecheck pass.
-- Fixed locale bug by pinning `formatSquareMeters` and confirmation `formatNumber` to `en-US`; web tests now 120/120.
-- Hardened `verifySessionToken` to reject unknown roles, future issuedAt >5min skew, malformed expiry; added regression test.
-- Preserved v0.1 scope; tick isolation, rate-limit, revocation, PKCE, polygon water checks remain deferred.
+- Reviewed the live site and in-game pages, then redesigned the kingdom UI in a minimal ledger style (tokens, resource bar, simplified Overview, table-based pages, readable report sentences, player-facing copy cleanup).
+- Fixed the Google login link prefetch (CORS errors) and marketing kicker contrast.
 
 ## Files Changed Recently
 
-- `CHANGELOG.md`
-- `apps/web/src/lib/auth/session.ts`
-- `apps/web/src/lib/auth/auth.test.ts`
-- `apps/web/src/lib/map/location-ui.ts`
-- `apps/web/src/components/create-kingdom/KingdomConfirmationPanel.tsx`
-- `docs/DECISIONS_LOG.md`
-- `session_state.md`
-- `tasks/backlog.md`
-- `context.md`
+- `apps/web/src/app/globals.css`
+- `apps/web/src/components/kingdom/KingdomAppShell.tsx`, `KingdomPagePanels.tsx`, `LandPurchasePanel.tsx`, `DistrictLandAllocationPanel.tsx`
+- `apps/web/src/app/{dashboard,world,economy,land,buildings,army,reports}/page.tsx`
+- `apps/web/src/app/login/page.tsx`, `apps/web/src/app/register/page.tsx`
+- `apps/web/src/lib/kingdom/dashboard-data.ts` (+ test), `apps/web/src/lib/map/location-ui.ts`
+- Token replacement touched other TSX files (admin, create-kingdom, legal, map components) without layout changes.
 
 ## Commands Run
 
-- `npm install --prefix apps/web` (382 pkgs) and `--prefix packages/db` (121 pkgs)
-- `$env:DATABASE_URL=dummy; npm --prefix packages/db run db:generate` (passed)
-- `npm --prefix apps/web run typecheck` (passed), `run lint` (passed)
-- `npm --prefix apps/web run test` (120/120 passed after locale pin)
-- `npm run game:test` (59/59), `npm run tick:test` (8/8)
-- `$env:DATABASE_URL=dummy; npm run db:validate`, `game:typecheck`, `tick:typecheck` (passed)
+- `npm run typecheck`, `npm run lint`, `npm run build`: passed.
+- `npm run test`: web 120/120, game 59/59, tick 8/8.
 
 ## Test And Check Status
 
-- Web typecheck: passed. Lint: passed.
-- Web test: 120/120 passed. Fixed prior 118/119 Arabic-locale failure via `en-US` pin.
-- Game test: 59/59 passed. Tick test: 8/8 passed.
-- DB validate, game/tick typecheck: passed.
-- New regression tests: clamped free-land, prod land-mask block, session invalid role/future issuedAt.
+- All automated checks pass.
 
 ## Manual Smoke Status
 
-- No live DB/browser smoke — code-only hardening, no happy-path route change except reserved-email 403 and deterministic number formatting.
-
-## Tracker Updates
-
-- Extended Foundation Maintenance in `tasks/backlog.md` with batch 2.
-- Updated `CHANGELOG.md` with checks + batch 2 fixes.
-- Updated `docs/DECISIONS_LOG.md` with locale pin, session hardening, tick deferral.
-- Updated `context.md` with locale + session conventions.
+- Pre-redesign production pages reviewed in the browser while signed in. Post-deploy visual check pending.
 
 ## Known Issues
 
+- Production map style uses MapLibre demo tiles (solid blue at kingdom zoom); needs a Vercel env change.
+- Player-facing build/upgrade/train actions and automatic tick scheduling are missing; `packages/game/src/buildings/building-catalog.ts` is an uncommitted draft for that work.
 - Tick STARTED lease/retry, per-kingdom isolation, login rate-limit, session revocation, Google PKCE/ID-token, polygon water checks, visible-border expansion, Movement/Alliance schema remain deferred.
-- Live DB smoke still needs reachable PostgreSQL/PostGIS.
 
 ## Open Questions
 
-- None for this checkpoint.
+- None.
 
 ## Next Recommended Task
 
-- Start Sprint 5 S5-001 movement order model (Prisma model + migration design).
+- Add player-facing construction/upgrade/training actions plus scheduled ticks, then start Sprint 5 S5-001.

@@ -86,7 +86,7 @@ export default function PrivacyPage() {
       <LegalSection title="Contact">
         <p>
           For privacy questions or deletion requests, contact{" "}
-          <a className="font-semibold text-[#183f35] underline" href={`mailto:${contactEmail}`}>
+          <a className="font-semibold text-mk-green underline" href={`mailto:${contactEmail}`}>
             {contactEmail}
           </a>
           .

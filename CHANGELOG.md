@@ -2,6 +2,33 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-10-09
+
+### Changed
+
+- Redesigned the authenticated kingdom UI in a minimal "ledger" style: white surfaces, hairline rules, ink/grey text, one green for primary actions, and green/red only for +/- values.
+- Added Tailwind design tokens (`mk-ink`, `mk-muted`, `mk-line`, `mk-surface`, `mk-success`, `mk-danger`, ...) in `globals.css` and replaced ~330 hardcoded hex colors in TSX with them.
+- Replaced the kingdom header with a compact top bar and a resource bar (stock plus per-tick change) shown on every kingdom page.
+- Simplified Overview to map, a kingdom facts table, and recent activity; removed duplicate cards, coordinates, and the developer status banner.
+- Converted Buildings, Army, Economy, Land districts, land packages, and Reports to compact tables.
+- Reports now render readable sentences per type (for example "10 Infantry joined your garrison.").
+- Removed sprint/v0.1 developer wording from player-facing copy; the district assign-land form hides when no free land exists.
+
+### Fixed
+
+- "Continue with Google" on login/register is now a plain anchor so Next.js no longer prefetches the OAuth redirect (CORS console errors).
+- Darkened the marketing gold kicker text to pass WCAG AA contrast.
+
+### Checks
+
+- `npm run typecheck`, `npm run lint`, `npm run build`: passed.
+- `npm run test`: web 120/120, game 59/59, tick 8/8.
+
+### Known issues
+
+- Production `NEXT_PUBLIC_MAP_STYLE_URL` points at MapLibre demo tiles, which render solid blue at kingdom zoom; switch to a detailed style (for example OpenFreeMap `https://tiles.openfreemap.org/styles/liberty`).
+- Player-facing construction, upgrade, and training actions and automatic tick scheduling are still missing.
+
 ## 2026-09-29
 
 ### Fixed

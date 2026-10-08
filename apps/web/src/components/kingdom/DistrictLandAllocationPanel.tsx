@@ -28,7 +28,7 @@ function formatNumber(value: number): string {
 }
 
 function formatLand(value: number): string {
-  return `${formatNumber(value)} m2`;
+  return `${formatNumber(value)} m²`;
 }
 
 function AllocationButton({ disabled }: { disabled: boolean }) {
@@ -56,42 +56,39 @@ export function DistrictLandAllocationPanel({
   const hasUnallocatedLand = unallocatedLandM2 > 0;
   const defaultAmount = Math.min(unallocatedLandM2, 500);
 
+  if (!hasUnallocatedLand && state.status === "idle") {
+    return null;
+  }
+
   return (
     <div className="mamalik-card space-y-4 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-base font-semibold text-[#10140f]">Allocate unused land</h3>
-          <p className="mt-1 text-sm text-[#5f665d]">
-            Add unallocated usable land into one existing district.
+          <h3 className="text-base font-semibold text-mk-ink">Assign free land</h3>
+          <p className="mt-1 text-sm text-mk-muted">
+            Move land you own into a district so you can build there.
           </p>
         </div>
-        <span
-          className={
-            hasUnallocatedLand
-              ? "rounded-full border border-[#cbd8cd] bg-[#eff6ed] px-3 py-1 text-xs font-semibold text-[#183f35]"
-              : "rounded-full border border-[#e7d6a0] bg-[#fff9e7] px-3 py-1 text-xs font-semibold text-[#6a4a0a]"
-          }
-        >
-          {formatLand(unallocatedLandM2)} unallocated
+        <span className="text-sm tabular-nums text-mk-muted">
+          {formatLand(unallocatedLandM2)} free
         </span>
       </div>
 
       {hasUnallocatedLand ? (
         <form action={formAction} className="grid gap-3 lg:grid-cols-[1fr_180px_auto] lg:items-end">
           <label className="grid gap-1 text-sm">
-            <span className="font-medium text-[#10140f]">District</span>
+            <span className="font-medium text-mk-ink">District</span>
             <select className="mamalik-input" name="districtId" required>
               {districts.map((district) => (
                 <option key={district.id} value={district.id}>
-                  {district.label} - {formatLand(district.allocatedLandM2)} allocated,{" "}
-                  {formatLand(district.freeLandM2)} free
+                  {district.label} ({formatLand(district.freeLandM2)} free)
                 </option>
               ))}
             </select>
           </label>
 
           <label className="grid gap-1 text-sm">
-            <span className="font-medium text-[#10140f]">Amount m2</span>
+            <span className="font-medium text-mk-ink">Amount (m²)</span>
             <input
               className="mamalik-input"
               defaultValue={defaultAmount}
@@ -108,7 +105,7 @@ export function DistrictLandAllocationPanel({
           <AllocationButton disabled={districts.length === 0} />
         </form>
       ) : (
-        <p className="rounded-md border border-[#e7d6a0] bg-[#fff9e7] px-4 py-3 text-sm text-[#6a4a0a]">
+        <p className="text-sm text-mk-muted">
           Buy land first to allocate more district land.
         </p>
       )}
@@ -117,12 +114,12 @@ export function DistrictLandAllocationPanel({
         <div
           className={
             state.status === "success"
-              ? "rounded-md border border-[#cbd8cd] bg-[#eff6ed] px-4 py-3 text-sm text-[#183f35]"
-              : "rounded-md border border-[#e1b8b8] bg-[#fff0f0] px-4 py-3 text-sm text-[#7a1d1d]"
+              ? "text-sm text-mk-success"
+              : "text-sm text-mk-danger"
           }
         >
           <p className="font-semibold">
-            {state.status === "success" ? "District land allocated" : "Allocation failed"}
+            {state.status === "success" ? "Land assigned" : "Allocation failed"}
           </p>
           <p className="mt-1">{state.message}</p>
         </div>

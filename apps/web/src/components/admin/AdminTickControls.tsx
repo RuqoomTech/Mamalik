@@ -48,7 +48,7 @@ export function AdminTickControls() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border border-[#e7d6a0] bg-[#fff9e7] px-4 py-3 text-sm text-[#6a4a0a]">
+      <div className="rounded-md border border-mk-warn-line bg-mk-warn-bg px-4 py-3 text-sm text-mk-warn">
         This runs one real 10-minute tick against the configured database. Duplicate clicks in the
         same tick slot should return skipped through the TickLog duplicate guard.
       </div>
@@ -61,8 +61,8 @@ export function AdminTickControls() {
         <div
           className={
             state.status === "success"
-              ? "rounded-md border border-[#cbd8cd] bg-[#eff6ed] px-4 py-3 text-sm text-[#183f35]"
-              : "rounded-md border border-[#e1b8b8] bg-[#fff0f0] px-4 py-3 text-sm text-[#7a1d1d]"
+              ? "rounded-md border border-mk-success-line bg-mk-success-bg px-4 py-3 text-sm text-mk-green"
+              : "rounded-md border border-mk-danger-line bg-mk-danger-bg px-4 py-3 text-sm text-mk-danger"
           }
         >
           <p className="font-semibold">{state.message}</p>

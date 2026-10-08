@@ -215,15 +215,15 @@ export function KingdomBorderMapPreview({
   }, [borderGeometry]);
 
   return (
-    <div className={`mamalik-card relative overflow-hidden bg-[#e8f0f4] ${className ?? ""}`}>
+    <div className={`mamalik-card relative overflow-hidden bg-mk-canvas ${className ?? ""}`}>
       <div ref={mapContainerRef} className="h-full min-h-[260px] w-full" />
       {!borderGeometry ? (
-        <div className="absolute inset-x-4 bottom-4 rounded-md border border-[#e7d6a0] bg-[#fff9e7] px-3 py-2 text-sm text-[#6a4a0a]">
+        <div className="absolute inset-x-4 bottom-4 rounded-md border border-mk-warn-line bg-mk-warn-bg px-3 py-2 text-sm text-mk-warn">
           No visible border polygon is stored for this kingdom yet.
         </div>
       ) : null}
       {mapError ? (
-        <div className="absolute inset-x-4 top-4 rounded-md border border-[#e1b8b8] bg-[#fff0f0] px-3 py-2 text-sm text-[#7a1d1d]">
+        <div className="absolute inset-x-4 top-4 rounded-md border border-mk-danger-line bg-mk-danger-bg px-3 py-2 text-sm text-mk-danger">
           {mapError}
         </div>
       ) : null}

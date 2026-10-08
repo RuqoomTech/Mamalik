@@ -68,7 +68,7 @@ export function describeLocationValidationStatus(status: LocationValidationUiSta
     case "VALIDATING":
       return "Checking land, restricted zones, spacing, and border preview.";
     case "VALID":
-      return "This point passed the current v0.1 server validation.";
+      return "This spot is free. You can build your kingdom here.";
     case "INVALID":
       return "Choose a different point or use a server-suggested nearby location.";
     case "REQUEST_FAILED":
@@ -118,7 +118,7 @@ export function formatValidationReason(
     case "user-already-has-kingdom":
       return {
         title: "This account already has a kingdom.",
-        description: "Each v0.1 player account can create one kingdom.",
+        description: "Each player can rule one kingdom.",
       };
     case "missing-coordinates":
       return {
