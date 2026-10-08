@@ -1,3 +1,4 @@
+import { generateKingdomShape } from "@mamalik/game";
 import type { PreviewPolygon } from "@/lib/kingdom/location-validation";
 import {
   appendUniqueBorderRadius,
@@ -108,12 +109,17 @@ async function generateVisibleBorderPreviewAtRadius(
     radiusM: number;
   },
 ): Promise<BorderPreviewCandidate> {
+  // Organic kingdom outline whose area equals a circle of this radius; PostGIS measures it.
+  const shapeJson = JSON.stringify(
+    generateKingdomShape({
+      lat: input.lat,
+      lng: input.lng,
+      areaM2: Math.PI * input.radiusM * input.radiusM,
+    }),
+  );
   const rows = await db.$queryRaw<BorderPreviewRow[]>`
     WITH generated AS (
-      SELECT ST_Buffer(
-        ST_SetSRID(ST_MakePoint(${input.lng}, ${input.lat}), 4326)::geography,
-        ${input.radiusM}
-      )::geometry AS geom
+      SELECT ST_MakeValid(ST_SetSRID(ST_GeomFromGeoJSON(${shapeJson}), 4326)) AS geom
     )
     SELECT
       ST_AsGeoJSON(geom)::json AS "geojson",
@@ -190,7 +196,7 @@ export async function doesBorderOverlapExistingKingdoms(
   };
 }
 
-function parsePreviewPolygon(value: unknown): PreviewPolygon {
+export function parsePreviewPolygon(value: unknown): PreviewPolygon {
   const parsedValue = typeof value === "string" ? JSON.parse(value) : value;
 
   if (!isPreviewPolygon(parsedValue)) {

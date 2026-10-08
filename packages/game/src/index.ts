@@ -10,3 +10,7 @@ export * from "./land/land-pricing";
 export * from "./land/land-purchase-validation";
 export * from "./time/tick-duration";
 export * from "./units/training-progress";
+export * from "./buildings/building-catalog";
+export * from "./buildings/construction-rules";
+export * from "./map/kingdom-shape";
+export * from "./units/unit-catalog";

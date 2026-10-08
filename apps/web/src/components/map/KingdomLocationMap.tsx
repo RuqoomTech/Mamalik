@@ -31,7 +31,15 @@ type SelectedLocation = {
   longitude: number;
 };
 
+export type ExistingKingdomMarker = {
+  name: string;
+  lat: number;
+  lng: number;
+  border: PreviewPolygon | null;
+};
+
 type KingdomLocationMapProps = {
+  existingKingdoms?: ExistingKingdomMarker[];
   mapStyleUrl: string;
   playerDisplayName: string;
   playerEmail: string;
@@ -77,7 +85,7 @@ function ensurePreviewLayers(map: Map) {
       type: "fill",
       source: PREVIEW_SOURCE_ID,
       paint: {
-        "fill-color": "#183f35",
+        "fill-color": "#17493b",
         "fill-opacity": 0.22,
       },
     });
@@ -89,12 +97,81 @@ function ensurePreviewLayers(map: Map) {
       type: "line",
       source: PREVIEW_SOURCE_ID,
       paint: {
-        "line-color": "#f0b45d",
+        "line-color": "#17493b",
         "line-opacity": 0.95,
         "line-width": 3,
       },
     });
   }
+}
+
+// Shows kingdoms that already exist so new players can see where their neighbours are.
+function addExistingKingdomLayers(map: Map, kingdoms: ExistingKingdomMarker[]) {
+  if (kingdoms.length === 0 || map.getSource("mamalik-existing-kingdoms")) {
+    return;
+  }
+
+  map.addSource("mamalik-existing-borders", {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: kingdoms
+        .filter((kingdom) => kingdom.border)
+        .map((kingdom) => ({ type: "Feature" as const, properties: {}, geometry: kingdom.border as PreviewPolygon })),
+    },
+  });
+  map.addSource("mamalik-existing-kingdoms", {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: kingdoms.map((kingdom) => ({
+        type: "Feature" as const,
+        properties: { name: kingdom.name },
+        geometry: { type: "Point" as const, coordinates: [kingdom.lng, kingdom.lat] },
+      })),
+    },
+  });
+  map.addLayer({
+    id: "mamalik-existing-border-fill",
+    type: "fill",
+    source: "mamalik-existing-borders",
+    minzoom: 10,
+    paint: { "fill-color": "#1f2421", "fill-opacity": 0.14 },
+  });
+  map.addLayer({
+    id: "mamalik-existing-border-line",
+    type: "line",
+    source: "mamalik-existing-borders",
+    minzoom: 10,
+    paint: { "line-color": "#1f2421", "line-width": 1.5 },
+  });
+  map.addLayer({
+    id: "mamalik-existing-kingdom-dot",
+    type: "circle",
+    source: "mamalik-existing-kingdoms",
+    maxzoom: 11,
+    paint: {
+      "circle-color": "#1f2421",
+      "circle-radius": 5,
+      "circle-stroke-color": "#ffffff",
+      "circle-stroke-width": 2,
+    },
+  });
+  map.addLayer({
+    id: "mamalik-existing-kingdom-label",
+    type: "symbol",
+    source: "mamalik-existing-kingdoms",
+    minzoom: 4,
+    layout: {
+      "text-field": ["get", "name"],
+      "text-size": 12,
+      "text-offset": [0, 1.2],
+      "text-anchor": "top",
+      "text-font": ["Noto Sans Bold"],
+      "text-optional": true,
+    },
+    paint: { "text-color": "#161816", "text-halo-color": "#ffffff", "text-halo-width": 1.5 },
+  });
 }
 
 function setPreviewPolygon(map: Map, previewPolygon: PreviewPolygon) {
@@ -117,6 +194,7 @@ function clearPreviewPolygon(map: Map | null) {
 }
 
 export function KingdomLocationMap({
+  existingKingdoms = [],
   mapStyleUrl,
   playerDisplayName,
   playerEmail,
@@ -134,6 +212,7 @@ export function KingdomLocationMap({
   );
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
+  const existingKingdomsRef = useRef(existingKingdoms);
 
   const selectLocation = useCallback((nextLocation: SelectedLocation) => {
     setSelectedLocation(nextLocation);
@@ -174,6 +253,7 @@ export function KingdomLocationMap({
 
     map.on("load", () => {
       setIsMapReady(true);
+      addExistingKingdomLayers(map, existingKingdomsRef.current);
       clearPreviewPolygon(map);
     });
 
@@ -187,7 +267,10 @@ export function KingdomLocationMap({
     });
 
     map.on("error", () => {
-      setMapError("Map style could not be loaded. Check NEXT_PUBLIC_MAP_STYLE_URL.");
+      // Individual tile failures are normal; only report when the style itself never loaded.
+      if (!map.isStyleLoaded()) {
+        setMapError("The map could not be loaded. Try again later.");
+      }
     });
 
     return () => {

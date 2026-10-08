@@ -3,233 +3,142 @@ import Link from "next/link";
 import { MarketingChrome } from "@/components/marketing/MarketingChrome";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getPostLoginDestination } from "@/lib/auth/route-destinations";
+import { getPrismaClient } from "@/lib/db/client";
 
-const featureCards = [
+export const dynamic = "force-dynamic";
+
+const steps = [
   {
-    icon: "castle",
-    title: "Create & Customize",
-    body: "Design your kingdom, choose your crest, and shape your realm.",
-    href: "/features",
+    title: "Claim a place on the real map",
+    body: "Search any city or coast, pick a free spot, and found your kingdom with 50,000 m² of land.",
   },
   {
-    icon: "shield",
-    title: "Expand & Conquer",
-    body: "Claim new territories and grow your influence across the map.",
-    href: "/how-to-play",
+    title: "Grow every ten minutes",
+    body: "Farms, markets, and houses pay out each tick. Build, upgrade, and train while you are away.",
   },
   {
-    icon: "alliance",
-    title: "Alliance & Strategize",
-    body: "Prepare alliances, trade plans, and war paths as the v0.1 roadmap opens.",
-    href: "/roadmap",
+    title: "Push your borders outward",
+    body: "Buy land and watch your territory spread across the map, right up to your neighbours.",
   },
 ] as const;
 
-const trustItems = [
-  {
-    icon: "fair",
-    title: "Secure & Fair",
-    body: "Built for a positive and inclusive experience.",
-  },
-  {
-    icon: "trophy",
-    title: "Strategic Depth",
-    body: "Every decision shapes your legacy.",
-  },
-  {
-    icon: "world",
-    title: "A Living World",
-    body: "A persistent world that evolves.",
-  },
-  {
-    icon: "community",
-    title: "Community First",
-    body: "Active players, fair rules, and updates driven by you.",
-  },
+const facts = [
+  ["10 min", "per tick"],
+  ["4", "resources"],
+  ["10", "building types"],
+  ["5", "unit types"],
 ] as const;
 
-export default function Home() {
-  return <HomeContent />;
+async function countKingdoms(): Promise<number | null> {
+  try {
+    return await getPrismaClient().kingdom.count();
+  } catch {
+    return null;
+  }
 }
 
-async function HomeContent() {
-  const user = await getCurrentUser();
+export default async function Home() {
+  const [user, kingdomCount] = await Promise.all([getCurrentUser(), countKingdoms()]);
   const appDestination = user ? getPostLoginDestination(user) : "/register";
-  const primaryLabel = user?.kingdom ? "Open dashboard" : "Start your kingdom";
+  const primaryLabel = user?.kingdom ? "Open your kingdom" : "Start your kingdom";
   const secondaryHref = user ? appDestination : "/login";
   const secondaryLabel = user ? "Enter game" : "Log in";
 
   return (
     <MarketingChrome
       primaryHref={appDestination}
-      primaryLabel={primaryLabel}
+      primaryLabel={user?.kingdom ? "Play" : "Play free"}
       secondaryHref={secondaryHref}
       secondaryLabel={secondaryLabel}
     >
-      <section className="marketing-hero">
-        <div className="marketing-hero-copy">
-          <p className="marketing-kicker">Rule your world</p>
-          <h1>Build your kingdom on the world map.</h1>
-          <p>
-            Create your kingdom, expand across territories, manage your
-            districts, and lead your realm to glory in a living world of strategy
-            and alliances.
-          </p>
-
-          <div className="marketing-hero-actions">
-            <Link className="marketing-button marketing-button-primary" href={appDestination}>
-              {primaryLabel}
-              <ArrowIcon />
-            </Link>
-            <Link className="marketing-button marketing-button-secondary" href={secondaryHref}>
-              {secondaryLabel}
-            </Link>
+      <section className="relative overflow-hidden border-b border-mk-line bg-[#efe9dc]">
+        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-10 pt-12 sm:px-6 md:pb-28 md:pt-24">
+          <div className="max-w-xl">
+            <p className="mamalik-eyebrow">A strategy game on the real world map</p>
+            <h1 className="mamalik-display mt-4 text-5xl leading-[1.05] text-mk-ink sm:text-6xl">
+              Claim your land.
+              <br />
+              Build your kingdom.
+            </h1>
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-[#3d413b]">
+              Found a kingdom anywhere on Earth, grow it every ten minutes, and push your
+              borders out across the map.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link className="mamalik-action-primary px-5 py-3 text-base" href={appDestination}>
+                {primaryLabel}
+              </Link>
+              <Link
+                className="rounded-md px-4 py-3 text-base font-semibold text-mk-ink underline-offset-4 hover:underline"
+                href={secondaryHref}
+              >
+                {secondaryLabel}
+              </Link>
+            </div>
+            <p className="mt-6 text-sm text-mk-muted">
+              Free · Plays in your browser
+              {kingdomCount ? ` · ${kingdomCount} kingdom${kingdomCount === 1 ? "" : "s"} founded` : ""}
+            </p>
           </div>
-
-          <p className="marketing-hero-note">
-            <span aria-hidden="true">
-              <TrustIcon kind="fair" />
-            </span>
-            Free to start. Strategy forever.
-          </p>
         </div>
 
-        <div className="marketing-hero-art" aria-label="Illustrated kingdom world">
+        <div className="relative aspect-[16/10] w-full md:absolute md:inset-0 md:aspect-auto">
           <Image
-            src="/brand/mamalik-hero-world.png"
-            alt="A fantasy kingdom overlooking coast, forests, rivers, and mountains"
+            alt="Hand-drawn map of a coast with three walled cities inside their territory borders"
+            className="object-cover object-[75%_50%] md:object-right"
             fill
             priority
-            sizes="(max-width: 980px) 100vw, 58vw"
-            className="marketing-hero-image"
+            sizes="100vw"
+            src="/brand/mamalik-atlas-hero.jpg"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 hidden bg-gradient-to-r from-[#efe9dc] via-[#efe9dc]/70 to-transparent md:block md:w-[55%]"
           />
         </div>
       </section>
 
-      <section className="marketing-feature-band" aria-label="Mamalik features">
-        {featureCards.map((card) => (
-          <article className="marketing-feature-card" key={card.title}>
-            <span className="marketing-card-icon" aria-hidden="true">
-              <FeatureIcon kind={card.icon} />
-            </span>
-            <div>
-              <h2>{card.title}</h2>
-              <p>{card.body}</p>
-              <Link href={card.href}>
-                Learn more
-                <ArrowIcon />
-              </Link>
-            </div>
-          </article>
-        ))}
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <h2 className="mamalik-display text-3xl">How it works</h2>
+        <ol className="mt-8 grid gap-8 border-t border-mk-line pt-8 md:grid-cols-3 md:gap-10">
+          {steps.map((step, index) => (
+            <li key={step.title}>
+              <span className="text-sm tabular-nums text-mk-muted">0{index + 1}</span>
+              <h3 className="mt-2 text-lg font-semibold">{step.title}</h3>
+              <p className="mt-2 leading-relaxed text-mk-muted">{step.body}</p>
+            </li>
+          ))}
+        </ol>
       </section>
 
-      <section className="marketing-trust-band" aria-label="Mamalik principles">
-        {trustItems.map((item) => (
-          <article className="marketing-trust-item" key={item.title}>
-            <span aria-hidden="true">
-              <TrustIcon kind={item.icon} />
-            </span>
-            <div>
-              <h2>{item.title}</h2>
-              <p>{item.body}</p>
+      <section className="border-y border-mk-line bg-mk-canvas">
+        <dl className="mx-auto grid max-w-6xl grid-cols-2 px-4 sm:px-6 md:grid-cols-4">
+          {facts.map(([value, label], index) => (
+            <div
+              className={`py-8 ${index % 2 === 1 ? "pl-6 border-l border-mk-line" : ""} ${
+                index === 2 ? "md:border-l md:border-mk-line md:pl-6" : ""
+              } ${index > 1 ? "border-t border-mk-line md:border-t-0" : ""}`}
+              key={label}
+            >
+              <dt className="sr-only">{label}</dt>
+              <dd>
+                <span className="mamalik-display block text-3xl">{value}</span>
+                <span className="text-sm text-mk-muted">{label}</span>
+              </dd>
             </div>
-          </article>
-        ))}
+          ))}
+        </dl>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 sm:py-20">
+        <h2 className="mamalik-display text-3xl sm:text-4xl">The map is open. Pick your spot.</h2>
+        <p className="mx-auto mt-3 max-w-md text-mk-muted">
+          New kingdoms get three days of protection to build before rivals can strike.
+        </p>
+        <Link className="mamalik-action-primary mt-8 px-6 py-3 text-base" href={appDestination}>
+          {primaryLabel}
+        </Link>
       </section>
     </MarketingChrome>
-  );
-}
-
-type FeatureIconKind = (typeof featureCards)[number]["icon"];
-type TrustIconKind = (typeof trustItems)[number]["icon"];
-
-function FeatureIcon({ kind }: { kind: FeatureIconKind }) {
-  if (kind === "shield") {
-    return (
-      <svg viewBox="0 0 64 64">
-        <path d="M32 6 52 14v16c0 13-8 23-20 28C20 53 12 43 12 30V14L32 6Z" />
-        <path d="M32 13v38" />
-        <path d="M22 29h20" />
-      </svg>
-    );
-  }
-
-  if (kind === "alliance") {
-    return (
-      <svg viewBox="0 0 64 64">
-        <circle cx="24" cy="22" r="8" />
-        <circle cx="43" cy="24" r="7" />
-        <path d="M9 52c2-12 10-18 18-18s15 6 17 18H9Z" />
-        <path d="M35 52c1-8 7-13 14-13 5 0 9 4 11 13H35Z" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 64 64">
-      <path d="M14 52h36" />
-      <path d="M18 52V27l14-13 14 13v25" />
-      <path d="M10 52V34l8-7" />
-      <path d="M54 52V34l-8-7" />
-      <path d="M27 52V38h10v14" />
-      <path d="M24 29h5" />
-      <path d="M35 29h5" />
-      <path d="M32 14V7" />
-    </svg>
-  );
-}
-
-function TrustIcon({ kind }: { kind: TrustIconKind }) {
-  if (kind === "trophy") {
-    return (
-      <svg viewBox="0 0 48 48">
-        <path d="M16 7h16v9c0 8-3 13-8 15-5-2-8-7-8-15V7Z" />
-        <path d="M16 12H8c0 7 3 11 9 12" />
-        <path d="M32 12h8c0 7-3 11-9 12" />
-        <path d="M24 31v8" />
-        <path d="M15 41h18" />
-      </svg>
-    );
-  }
-
-  if (kind === "world") {
-    return (
-      <svg viewBox="0 0 48 48">
-        <circle cx="24" cy="24" r="17" />
-        <path d="M7 24h34" />
-        <path d="M24 7c5 5 7 11 7 17s-2 12-7 17" />
-        <path d="M24 7c-5 5-7 11-7 17s2 12 7 17" />
-      </svg>
-    );
-  }
-
-  if (kind === "community") {
-    return (
-      <svg viewBox="0 0 48 48">
-        <circle cx="24" cy="16" r="6" />
-        <circle cx="12" cy="21" r="5" />
-        <circle cx="36" cy="21" r="5" />
-        <path d="M12 39c1-8 6-12 12-12s11 4 12 12" />
-        <path d="M3 38c1-6 4-9 9-9" />
-        <path d="M45 38c-1-6-4-9-9-9" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 48 48">
-      <path d="M24 5 38 10v12c0 10-6 17-14 21-8-4-14-11-14-21V10l14-5Z" />
-      <path d="m17 24 5 5 10-12" />
-    </svg>
-  );
-}
-
-function ArrowIcon() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden="true">
-      <path d="M3 8h9" />
-      <path d="m9 4 4 4-4 4" />
-    </svg>
   );
 }

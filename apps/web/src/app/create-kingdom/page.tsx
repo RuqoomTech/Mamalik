@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { requireUserWithoutKingdom } from "@/lib/auth/guards";
 import { KingdomLocationMap } from "@/components/map/KingdomLocationMap";
+import { getWorldKingdoms } from "@/lib/map/world-kingdoms";
 
 export const dynamic = "force-dynamic";
 
 export default async function CreateKingdomPage() {
   const user = await requireUserWithoutKingdom();
   const mapStyleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "";
+  const existingKingdoms = (await getWorldKingdoms(null)).map((kingdom) => ({
+    name: kingdom.name,
+    lat: kingdom.centerLat,
+    lng: kingdom.centerLng,
+    border: kingdom.border as { type: "Polygon"; coordinates: number[][][] } | null,
+  }));
 
   return (
     <main className="mamalik-page">
@@ -33,6 +40,7 @@ export default async function CreateKingdomPage() {
         </header>
 
         <KingdomLocationMap
+          existingKingdoms={existingKingdoms}
           mapStyleUrl={mapStyleUrl}
           playerDisplayName={user.displayName}
           playerEmail={user.email}

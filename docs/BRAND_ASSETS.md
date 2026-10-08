@@ -4,7 +4,7 @@ This file records project-bound visual assets for Mamalik v0.1.
 
 ## Logo Mark
 
-- Asset path: `apps/web/public/brand/mamalik-logo.png`
+- Asset path: `apps/web/public/brand/mamalik-mark.png`
 - Source mode: built-in `image_gen` tool through the `imagegen` skill.
 - Generated source kept by Codex outside the repo at `C:\Users\user\.codex\generated_images\019e898d-10da-7792-9b85-f066e1b8bea4\ig_0b2a05c465fed017016a25b8cccddc8191976b767f774f4c7a.png`.
 - Usage: app metadata icon and home page brand mark.

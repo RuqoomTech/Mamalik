@@ -27,7 +27,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <Image
-                src="/brand/mamalik-logo.png"
+                src="/brand/mamalik-mark.png"
                 alt="Mamalik emblem"
                 width={64}
                 height={64}

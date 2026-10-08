@@ -4,11 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Mamalik",
-  description: "A browser-based tick strategy MMO on a real-world map.",
-  icons: {
-    icon: "/brand/mamalik-logo.png",
-    apple: "/brand/mamalik-logo.png",
-  },
+  description: "Found a kingdom anywhere on the real world map, grow it every ten minutes, and push your borders outward.",
 };
 
 export default function RootLayout({

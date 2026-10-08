@@ -39,7 +39,7 @@ A logged-in player can open Mamalik, search/pan the map, click a test location, 
 
 ## Brand Asset Status
 
-- A v0.1 logo mark exists at `apps/web/public/brand/mamalik-logo.png`.
+- A v0.1 logo mark exists at `apps/web/public/brand/mamalik-mark.png`.
 - The mark is text-free; `Mamalik / ممالك` is rendered as real UI text.
 
 ## Map Selection Status

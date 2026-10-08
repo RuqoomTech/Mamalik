@@ -8,6 +8,7 @@ import {
   type AllocateDistrictLandResult,
 } from "@/lib/kingdom/district-allocation";
 import { getPurchaseLandResultMessage } from "@/lib/kingdom/land-purchase-display";
+import { recalculateKingdomBorderForUser } from "@/lib/map/kingdom-border";
 import {
   purchaseLandForUser,
   type PurchaseLandResult,
@@ -28,6 +29,12 @@ export type AllocateDistrictLandActionState = {
 export async function purchaseLandAction(packageKey: string): Promise<PurchaseLandResult> {
   const user = await getCurrentUser();
   const result = await purchaseLandForUser(user, packageKey);
+
+  if (result.ok && user) {
+    // Grow the visible border to match the new land; a failure here must not undo the purchase.
+    await recalculateKingdomBorderForUser(user.id).catch(() => null);
+    revalidatePath("/world");
+  }
 
   if (result.ok) {
     revalidatePath("/dashboard");

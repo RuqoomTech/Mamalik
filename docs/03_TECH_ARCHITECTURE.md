@@ -183,7 +183,8 @@ S4-007 dynamic visible-border generation remains circular and v0.1-simple, but t
 ## Public Marketing UI
 
 - Public marketing pages use a shared App Router shell in `apps/web/src/components/marketing/MarketingChrome.tsx`.
-- The landing hero uses the local asset `apps/web/public/brand/mamalik-hero-world.png`; public pages must not depend on runtime external image fetches for the main visual.
+- The landing hero uses the local asset `apps/web/public/brand/mamalik-atlas-hero.jpg` (pen-and-ink atlas illustration); public pages must not depend on runtime external image fetches for the main visual.
+- Scheduled ticks: Supabase `pg_cron` + `pg_net` call `/api/cron/tick` every 10 minutes with a bearer `CRON_SECRET`; the route reuses the worker `runOneTick` core.
 - Marketing copy should distinguish completed v0.1 systems from roadmap systems so public pages do not imply Sprint 5/Sprint 6 gameplay is already live.
 
 ## Realtime strategy

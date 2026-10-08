@@ -350,3 +350,12 @@
 - Decision: Map number formatting is pinned to `en-US` (`formatSquareMeters`, confirmation numbers) so UI and tests are deterministic across system locales.
 - Decision: Session verification rejects unknown roles, future `issuedAt` beyond 5-minute clock skew, and malformed expiry windows while preserving 7-day expiry behavior.
 - Decision: Tick per-kingdom isolation and STARTED lease/retry remain deferred; the single-transaction worker is accepted for v0.1 scale until Sprint 5 movement load requires the refactor.
+
+## 2026-10-09 - Playable Core Loop, Living Map, and Public Redesign
+
+- Decision: Ticks are scheduled by Supabase `pg_cron` (job `mamalik-tick`, every 10 minutes) calling `/api/cron/tick` through `pg_net` with a bearer `CRON_SECRET` stored in Supabase Vault. Vercel Hobby cron only allows daily jobs.
+- Decision: Player-facing construction, upgrades, and training ship as v0.1 follow-ups from Sprint 2 with a linear balance baseline in the game catalogs. Starting construction or training does not create a report; completion reports come from the tick worker.
+- Decision: Kingdom borders use deterministic organic polygons (20 smoothed vertices) instead of circles. Land purchases regrow the border to the new usable land and clip it against neighbours and the land mask; the oldest kingdom wins when an admin recalculates all borders.
+- Decision: The world map shows all kingdoms publicly by name, location, border, and land; no owner names or emails.
+- Decision: The production map style is OpenFreeMap Liberty (free, no API key), replacing MapLibre demo tiles.
+- Decision: The public site and app share the minimal ledger style. The landing hero is a generated pen-and-ink atlas illustration and the logo is a generated citadel-in-territory mark, both stored locally.

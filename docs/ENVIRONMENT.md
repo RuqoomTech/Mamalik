@@ -20,7 +20,8 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 | `NEXT_PUBLIC_MAP_STYLE_URL` | Public map | MapLibre style URL used by the `/create-kingdom` map-selection page. |
 | `ALLOW_MISSING_LAND_MASK` | Server/map validation | Optional local-development fallback. Set to `true` only when land-mask seed data is missing and local map work must continue. Leave false/empty in production. |
 | `ADMIN_EMAILS` | Server/admin | Optional comma-separated email allowlist for v0.1 `/admin` access. `User.role === "ADMIN"` is checked first. |
-| `TICK_WORKER_SECRET` | Server/worker | Reserved for future protected external tick calls. The current Sprint 2 admin Server Action does not require a public tick secret. |
+| `TICK_WORKER_SECRET` | Server/worker | Reserved; unused. Scheduled ticks use `CRON_SECRET`. |
+| `CRON_SECRET` | Server | Bearer secret for `GET/POST /api/cron/tick`. At least 16 characters. Production value also lives in Supabase Vault as `mamalik_cron_secret`, which the `mamalik-tick` pg_cron job reads. |
 
 ## Secret Handling
 
@@ -35,7 +36,9 @@ This file documents the v0.1 environment variables. Real secrets must not be com
 - `SESSION_SECRET` is active for email/password auth.
 - Google OAuth variables are active for `GET /api/auth/google` and `GET /api/auth/google/callback`.
 - `NEXT_PUBLIC_MAP_STYLE_URL` is active for the `/create-kingdom` MapLibre page.
-- `TICK_WORKER_SECRET` is reserved for future protected external tick flows. Sprint 2 admin ticks run through a server-only action and current-user admin authorization.
+- Scheduled ticks: Supabase `pg_cron` job `mamalik-tick` runs every 10 minutes and calls `https://mamalik.vercel.app/api/cron/tick` through `pg_net` with `Authorization: Bearer <CRON_SECRET>`. Rotate by updating both the Vercel `CRON_SECRET` and the Vault secret `mamalik_cron_secret`, then redeploy.
+- The admin "Run one tick" action still works for manual ticks; duplicate calls within one 10-minute slot are skipped.
+- `NEXT_PUBLIC_MAP_STYLE_URL` production value: `https://tiles.openfreemap.org/styles/liberty` (free OpenFreeMap style, no key). It is inlined at build time, so changes need a redeploy.
 
 ## Tick Worker Environment
 

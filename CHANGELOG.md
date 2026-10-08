@@ -2,6 +2,26 @@
 
 All notable Mamalik project changes are recorded here.
 
+## 2026-10-09 (2)
+
+### Added
+
+- Player actions: build new buildings, upgrade buildings, and train units from the Buildings and Army pages, validated by shared game rules and executed in row-locked transactions.
+- Building and unit catalogs with costs, times, barracks requirements, and attack/defense stats in `packages/game`.
+- `GET/POST /api/cron/tick` protected by `CRON_SECRET`; Supabase `pg_cron` schedules it every 10 minutes.
+- Organic, deterministic kingdom border shapes that regrow after land purchases and are clipped against neighbours and water; admin "Recalculate all borders" action.
+- World map showing every kingdom (dots and names when zoomed out, borders when zoomed in) plus a "Kingdoms by land" ranking; neighbours also appear on the create-kingdom map.
+- New home page with a pen-and-ink atlas hero, "How it works", and key facts; new logo mark and favicons.
+
+### Changed
+
+- Marketing chrome rebuilt in the minimal style with a mobile-friendly header; about 660 lines of old marketing CSS removed.
+- Production map style switched to OpenFreeMap Liberty.
+
+### Checks
+
+- `npm run typecheck`, `npm run lint`: passed. `npm run test`: web 123/123, game 74/74, tick 8/8.
+
 ## 2026-10-09
 
 ### Changed

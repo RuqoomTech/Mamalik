@@ -1,5 +1,7 @@
 import { KingdomAppShell, PageIntro } from "@/components/kingdom/KingdomAppShell";
-import { ArmyPanel, TrainingProgressPanel } from "@/components/kingdom/KingdomPagePanels";
+import { TrainTable } from "@/components/kingdom/KingdomActionTables";
+import { ArmyPanel, Section, TrainingProgressPanel } from "@/components/kingdom/KingdomPagePanels";
+import { createTrainOptions } from "@/lib/kingdom/action-options";
 import { getKingdomPageData } from "@/lib/kingdom/kingdom-page-data";
 
 export const dynamic = "force-dynamic";
@@ -10,12 +12,18 @@ export default async function ArmyPage() {
   return (
     <KingdomAppShell activeSection="army" data={dashboardData} isAdmin={userIsAdmin}>
       <PageIntro title="Army">
-        Soldiers defend your kingdom and eat Food every tick. Scouting and battles are coming soon.
+        Soldiers defend your kingdom and eat Food every tick. Train one batch at a time;
+        stronger units need a higher Barracks level.
       </PageIntro>
-      <ArmyPanel army={dashboardData.army} />
       {dashboardData.trainingQueues.length > 0 ? (
         <TrainingProgressPanel trainingQueues={dashboardData.trainingQueues} />
       ) : null}
+      <Section title="Garrison">
+        <ArmyPanel army={dashboardData.army} />
+      </Section>
+      <Section title="Train">
+        <TrainTable options={createTrainOptions(dashboardData)} />
+      </Section>
     </KingdomAppShell>
   );
 }

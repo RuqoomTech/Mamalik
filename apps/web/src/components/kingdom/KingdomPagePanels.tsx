@@ -258,47 +258,6 @@ export function LandPurchaseSection({
   );
 }
 
-export function BuildingPanel({
-  buildings,
-}: {
-  buildings: KingdomDashboardData["buildings"];
-}) {
-  if (buildings.length === 0) {
-    return <EmptyState>No buildings yet.</EmptyState>;
-  }
-
-  return (
-    <Ledger>
-      <thead>
-        <tr>
-          <th>Building</th>
-          <th>District</th>
-          <th className="num">Level</th>
-          <th className="num">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {buildings.map((building) => (
-          <tr key={building.id}>
-            <td className="font-medium">{building.label}</td>
-            <td className="text-mk-muted">{building.districtLabel}</td>
-            <td className="num">{building.level}</td>
-            <td className="num text-mk-muted">
-              {building.status === "ACTIVE" ? (
-                "Active"
-              ) : (
-                <span className="text-mk-warn">
-                  {building.statusLabel}, {formatTicks(building.constructionRemainingTicks)}
-                </span>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </Ledger>
-  );
-}
-
 export function ConstructionProgressPanel({
   activeConstruction,
 }: {

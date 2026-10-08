@@ -8,8 +8,9 @@ import {
   formatLand,
   formatNumber,
 } from "@/components/kingdom/KingdomPagePanels";
-import { KingdomBorderMapPreview } from "@/components/map/KingdomBorderMapPreview";
+import { WorldMap } from "@/components/map/WorldMap";
 import { getKingdomPageData } from "@/lib/kingdom/kingdom-page-data";
+import { getWorldKingdoms } from "@/lib/map/world-kingdoms";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,7 @@ export default async function DashboardPage() {
   const totalUnits = dashboardData.army.reduce((total, unitStack) => total + unitStack.quantity, 0);
   const unitsInTraining = dashboardData.trainingQueues.reduce((total, queue) => total + queue.quantity, 0);
   const isProtected = kingdom.protectionRemaining !== "Protection ended";
+  const worldKingdoms = await getWorldKingdoms(kingdom.id);
 
   return (
     <KingdomAppShell activeSection="dashboard" data={dashboardData} isAdmin={userIsAdmin}>
@@ -45,19 +47,18 @@ export default async function DashboardPage() {
       ) : null}
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem]">
-        <div className="relative overflow-hidden rounded-md border border-mk-line">
-          <KingdomBorderMapPreview
-            centerLat={kingdom.centerLat}
-            centerLng={kingdom.centerLng}
+        <div className="relative">
+          <WorldMap
             className="h-[260px] sm:h-[340px]"
+            focus={{ lat: kingdom.centerLat, lng: kingdom.centerLng, zoom: 15 }}
+            kingdoms={worldKingdoms}
             mapStyleUrl={mapStyleUrl}
-            visibleBorderGeojson={kingdom.visibleBorderGeojson}
           />
           <Link
             className="mamalik-action-secondary absolute bottom-3 left-3 px-3 py-1.5"
             href="/world"
           >
-            Open map
+            World map
           </Link>
         </div>
 

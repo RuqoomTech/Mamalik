@@ -82,7 +82,7 @@ export function KingdomAppShell({
         <div className="mx-auto flex max-w-[68rem] items-center justify-between gap-4 px-4 pt-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <Link aria-label="Mamalik home" className="shrink-0" href="/">
-              <Image alt="" height={32} src="/brand/mamalik-logo.png" width={32} />
+              <Image alt="" height={32} src="/brand/mamalik-mark.png" width={32} />
             </Link>
             <h1 className="truncate text-base font-semibold text-mk-ink">{data.kingdom.name}</h1>
           </div>

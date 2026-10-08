@@ -1,6 +1,7 @@
 import { Children, type ReactNode } from "react";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/guards";
+import { AdminBorderControls } from "@/components/admin/AdminBorderControls";
 import { AdminTickControls } from "@/components/admin/AdminTickControls";
 import {
   ADMIN_DETAIL_TABLE_LIMIT,
@@ -169,6 +170,10 @@ export default async function AdminPage() {
 
         <AdminSection title="Tick Controls">
           <AdminTickControls />
+        </AdminSection>
+
+        <AdminSection title="Map Borders">
+          <AdminBorderControls />
         </AdminSection>
 
         <AdminSection

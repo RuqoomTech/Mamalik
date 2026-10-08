@@ -11,35 +11,21 @@ type MarketingChromeProps = {
 };
 
 const navItems = [
+  { key: "how-to-play", label: "How to play", href: "/how-to-play" },
   { key: "features", label: "Features", href: "/features" },
-  { key: "about", label: "About", href: "/about" },
-  { key: "how-to-play", label: "How to Play", href: "/how-to-play" },
   { key: "roadmap", label: "Roadmap", href: "/roadmap" },
+  { key: "about", label: "About", href: "/about" },
 ] as const;
 
-const gameLinks = [
-  { label: "How to Play", href: "/how-to-play" },
+const footerLinks = [
+  { label: "How to play", href: "/how-to-play" },
   { label: "Roadmap", href: "/roadmap" },
   { label: "Updates", href: "/updates" },
-];
-
-const companyLinks = [
-  { label: "About Us", href: "/about" },
-  { label: "Careers", href: "/careers" },
+  { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
 ];
-
-const legalLinks = [
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms of Service", href: "/terms" },
-];
-
-const communityLinks = [
-  { label: "Community updates", href: "/updates", icon: "chat" },
-  { label: "Roadmap", href: "/roadmap", icon: "bird" },
-  { label: "Player hub", href: "/features", icon: "forum" },
-  { label: "Contact Mamalik", href: "/contact", icon: "mail" },
-] as const;
 
 export function MarketingChrome({
   active,
@@ -50,45 +36,42 @@ export function MarketingChrome({
   secondaryLabel = "Log in",
 }: MarketingChromeProps) {
   return (
-    <main className="marketing-page">
-      <div className="marketing-frame">
-        <header className="marketing-header">
-          <Link className="marketing-brand" href="/" aria-label="Mamalik home">
-            <Image
-              src="/brand/mamalik-logo.png"
-              alt=""
-              width={72}
-              height={72}
-              priority
-              className="marketing-brand-mark"
-            />
-            <span className="marketing-brand-name">Mamalik</span>
+    <main className="flex min-h-screen flex-col bg-mk-surface text-mk-ink">
+      <header className="sticky top-0 z-20 border-b border-mk-line bg-mk-surface/95 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+          <Link aria-label="Mamalik home" className="flex shrink-0 items-center gap-2.5" href="/">
+            <Image alt="" height={34} priority src="/brand/mamalik-mark.png" width={34} />
+            <span className="mamalik-display text-lg tracking-wide">Mamalik</span>
+            <span className="hidden text-sm text-mk-muted sm:inline" lang="ar">
+              ممالك
+            </span>
           </Link>
 
-          <nav className="marketing-nav" aria-label="Main navigation">
+          <nav aria-label="Main navigation" className="hidden items-center gap-6 text-sm md:flex">
             {navItems.map((item) => (
               <Link
-                key={item.key}
-                className={active === item.key ? "is-active" : ""}
+                aria-current={active === item.key ? "page" : undefined}
+                className={active === item.key ? "font-semibold text-mk-ink" : "text-mk-muted hover:text-mk-ink"}
                 href={item.href}
+                key={item.key}
               >
                 {item.label}
               </Link>
             ))}
           </nav>
 
-          <div className="marketing-header-actions">
-            <Link className="marketing-button marketing-button-secondary" href={secondaryHref}>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link className="px-2 py-2 text-sm text-mk-muted hover:text-mk-ink" href={secondaryHref}>
               {secondaryLabel}
             </Link>
-            <Link className="marketing-button marketing-button-primary" href={primaryHref}>
+            <Link className="mamalik-action-primary px-4 py-2" href={primaryHref}>
               {primaryLabel}
             </Link>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {children}
-      </div>
+      <div className="flex-1">{children}</div>
 
       <MarketingFooter />
     </main>
@@ -97,106 +80,20 @@ export function MarketingChrome({
 
 export function MarketingFooter() {
   return (
-    <footer className="marketing-footer">
-      <div className="marketing-footer-inner">
-        <section className="marketing-footer-brand">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/brand/mamalik-logo.png"
-              alt=""
-              width={64}
-              height={64}
-              className="marketing-footer-mark"
-            />
-            <span>Mamalik</span>
-          </div>
-          <p>
-            A browser strategy game where you build, govern, and expand your
-            kingdom across a living world.
-          </p>
-        </section>
-
-        <FooterColumn title="Game" links={gameLinks} />
-        <FooterColumn title="Company" links={companyLinks} />
-        <FooterColumn title="Legal" links={legalLinks} />
-
-        <section className="marketing-footer-community">
-          <h2>Join our community</h2>
-          <div className="marketing-community-links">
-            {communityLinks.map((link) => (
-              <Link key={link.label} href={link.href} aria-label={link.label}>
-                <CommunityIcon kind={link.icon} />
-              </Link>
-            ))}
-          </div>
-        </section>
+    <footer className="border-t border-mk-line">
+      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-sm text-mk-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <p>
+          <span className="mamalik-display text-mk-ink">Mamalik</span> · A strategy game on the real world map.
+        </p>
+        <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-2">
+          {footerLinks.map((link) => (
+            <Link className="hover:text-mk-ink" href={link.href} key={link.href}>
+              {link.label}
+            </Link>
+          ))}
+        </nav>
       </div>
-      <p className="marketing-footer-copy">Copyright 2026 Mamalik. All rights reserved.</p>
     </footer>
-  );
-}
-
-type FooterColumnProps = {
-  title: string;
-  links: Array<{
-    label: string;
-    href: string;
-  }>;
-};
-
-function FooterColumn({ title, links }: FooterColumnProps) {
-  return (
-    <section className="marketing-footer-column">
-      <h2>{title}</h2>
-      <ul>
-        {links.map((link) => (
-          <li key={link.href}>
-            <Link href={link.href}>{link.label}</Link>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-type CommunityIconKind = (typeof communityLinks)[number]["icon"];
-
-function CommunityIcon({ kind }: { kind: CommunityIconKind }) {
-  if (kind === "bird") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M20 6.5c-.7.3-1.4.5-2.2.6.8-.5 1.3-1.1 1.6-2-.7.4-1.5.7-2.4.9A3.7 3.7 0 0 0 10.6 9c0 .3 0 .6.1.8-3.1-.2-5.8-1.6-7.6-3.8-.3.6-.5 1.2-.5 1.9 0 1.3.7 2.4 1.7 3.1-.6 0-1.2-.2-1.7-.5v.1c0 1.8 1.3 3.3 3 3.7-.3.1-.7.1-1.1.1-.3 0-.5 0-.8-.1.5 1.5 1.9 2.6 3.6 2.6A7.5 7.5 0 0 1 2.7 18c-.3 0-.6 0-.9-.1 1.7 1.1 3.7 1.7 5.8 1.7 7 0 10.8-5.8 10.8-10.8v-.5c.7-.5 1.2-1.1 1.6-1.8Z" />
-      </svg>
-    );
-  }
-
-  if (kind === "forum") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="8" />
-        <circle cx="9" cy="11" r="1.2" />
-        <circle cx="12" cy="11" r="1.2" />
-        <circle cx="15" cy="11" r="1.2" />
-        <path d="m8 18-2 3 5-1" />
-      </svg>
-    );
-  }
-
-  if (kind === "mail") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 7h16v10H4V7Z" />
-        <path d="m4 8 8 6 8-6" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M5 6h14v10H9l-4 4V6Z" />
-      <path d="M8 10h8" />
-      <path d="M8 13h5" />
-    </svg>
   );
 }
 
@@ -208,21 +105,17 @@ type MarketingInfoPageProps = {
   children: React.ReactNode;
 };
 
-export function MarketingInfoPage({
-  active,
-  eyebrow,
-  title,
-  description,
-  children,
-}: MarketingInfoPageProps) {
+export function MarketingInfoPage({ active, eyebrow, title, description, children }: MarketingInfoPageProps) {
   return (
     <MarketingChrome active={active}>
-      <section className="marketing-info-hero">
-        <p className="marketing-kicker">{eyebrow}</p>
-        <h1>{title}</h1>
-        <p>{description}</p>
+      <section className="border-b border-mk-line">
+        <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-20">
+          <p className="mamalik-eyebrow">{eyebrow}</p>
+          <h1 className="mamalik-display mt-3 text-4xl leading-tight sm:text-5xl">{title}</h1>
+          <p className="mt-4 text-lg text-mk-muted">{description}</p>
+        </div>
       </section>
-      <section className="marketing-info-content">{children}</section>
+      <section className="marketing-info-content mx-auto max-w-3xl space-y-4 px-4 py-10 sm:px-6">{children}</section>
     </MarketingChrome>
   );
 }

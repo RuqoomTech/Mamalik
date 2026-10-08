@@ -77,7 +77,7 @@ Canonical Markdown backlog for active v0.1 work.
 ## Sprint 4 Maintenance
 
 - [x] 2026-06-27: Complete Sprint 4 QA, stabilization, and closure review.
-- [ ] Future v0.1 map hardening: Expand/recalculate visible borders after land purchases.
+- [x] Future v0.1 map hardening: Expand/recalculate visible borders after land purchases. Done 2026-10-09.
 - [ ] Future v0.1 map hardening: Add non-`STANDARD` area classification before enabling area-type buffer variation.
 - [ ] Future v0.1 map hardening: Import production-grade land-mask and restricted-zone datasets.
 
@@ -95,8 +95,10 @@ Canonical Markdown backlog for active v0.1 work.
 ## UI Maintenance
 
 - [x] 2026-10-09: Redesign kingdom UI in a minimal ledger style with shared design tokens, resource bar, simplified Overview, table-based pages, and readable report sentences.
-- [ ] Switch production `NEXT_PUBLIC_MAP_STYLE_URL` from MapLibre demo tiles to a detailed style.
-- [ ] Add player-facing construction/upgrade/training actions and automatic tick scheduling (v0.1 follow-ups from Sprint 2).
+- [x] 2026-10-09: Switch production `NEXT_PUBLIC_MAP_STYLE_URL` to OpenFreeMap Liberty.
+- [x] 2026-10-09: Add player-facing construction/upgrade/training actions and Supabase pg_cron tick scheduling (v0.1 follow-ups from Sprint 2).
+- [x] 2026-10-09: Organic kingdom borders that grow with land purchases.
+- [x] 2026-10-09: World map with all kingdoms, new home page, atlas hero art, and logo.
 
 ## Sprint 5 - Movement + Scouting + Combat
 

@@ -25,7 +25,7 @@ export function LegalPageLayout({
                 className="size-14 rounded-md border border-mk-line bg-white object-cover shadow-sm"
                 height={56}
                 priority
-                src="/brand/mamalik-logo.png"
+                src="/brand/mamalik-mark.png"
                 width={56}
               />
               <span>
