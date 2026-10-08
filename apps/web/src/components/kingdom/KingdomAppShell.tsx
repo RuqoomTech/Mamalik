@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { NextTickCountdown } from "@/components/kingdom/NextTickCountdown";
 import type { KingdomDashboardData } from "@/lib/kingdom/dashboard-data";
 
 export type KingdomAppSection =
@@ -125,7 +126,12 @@ export function KingdomAppShell({
       </header>
 
       <div className="mamalik-container space-y-7">
-        <ResourceBar data={data} />
+        <div className="space-y-1.5">
+          <div className="flex justify-end">
+            <NextTickCountdown />
+          </div>
+          <ResourceBar data={data} />
+        </div>
         {children}
       </div>
     </main>

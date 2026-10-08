@@ -12,6 +12,8 @@ All notable Mamalik project changes are recorded here.
 - Organic, deterministic kingdom border shapes that regrow after land purchases and are clipped against neighbours and water; admin "Recalculate all borders" action.
 - World map showing every kingdom (dots and names when zoomed out, borders when zoomed in) plus a "Kingdoms by land" ranking; neighbours also appear on the create-kingdom map.
 - New home page with a pen-and-ink atlas hero, "How it works", and key facts; new logo mark and favicons.
+- Next-tick countdown above the resource bar and "what to do next" hints on the Overview (idle builders, idle barracks, unassigned land).
+- Supabase: `pg_cron` and `pg_net` (in the `extensions` schema) enabled; job `mamalik-tick` verified live (22:01 UTC run returned 200 and completed tick 22:00).
 
 ### Changed
 
@@ -20,7 +22,7 @@ All notable Mamalik project changes are recorded here.
 
 ### Checks
 
-- `npm run typecheck`, `npm run lint`: passed. `npm run test`: web 123/123, game 74/74, tick 8/8.
+- `npm run typecheck`, `npm run lint`: passed. `npm run test`: web 126/126, game 74/74, tick 8/8.
 
 ## 2026-10-09
 

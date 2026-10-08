@@ -9,7 +9,9 @@ import {
   formatNumber,
 } from "@/components/kingdom/KingdomPagePanels";
 import { WorldMap } from "@/components/map/WorldMap";
+import { toActionState } from "@/lib/kingdom/action-options";
 import { getKingdomPageData } from "@/lib/kingdom/kingdom-page-data";
+import { getNextSteps } from "@/lib/kingdom/next-steps";
 import { getWorldKingdoms } from "@/lib/map/world-kingdoms";
 
 export const dynamic = "force-dynamic";
@@ -39,11 +41,30 @@ export default async function DashboardPage() {
   const unitsInTraining = dashboardData.trainingQueues.reduce((total, queue) => total + queue.quantity, 0);
   const isProtected = kingdom.protectionRemaining !== "Protection ended";
   const worldKingdoms = await getWorldKingdoms(kingdom.id);
+  const nextSteps = getNextSteps({
+    state: toActionState(dashboardData),
+    activeConstructionCount: dashboardData.activeConstruction.length,
+    trainingQueueCount: dashboardData.trainingQueues.length,
+    unallocatedLandM2: landTotals.unallocatedUsableLandM2,
+  });
 
   return (
     <KingdomAppShell activeSection="dashboard" data={dashboardData} isAdmin={userIsAdmin}>
       {dashboardData.foodStatus.level !== "healthy" ? (
         <FoodStatusPanel foodStatus={dashboardData.foodStatus} />
+      ) : null}
+
+      {nextSteps.length > 0 ? (
+        <ul className="mamalik-card divide-y divide-mk-line">
+          {nextSteps.map((step) => (
+            <li className="flex items-center justify-between gap-3 px-4 py-2.5" key={step.href}>
+              <span className="text-sm text-mk-ink">{step.text}</span>
+              <Link className="mamalik-action-primary shrink-0 px-3 py-1.5" href={step.href}>
+                {step.cta}
+              </Link>
+            </li>
+          ))}
+        </ul>
       ) : null}
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem]">
