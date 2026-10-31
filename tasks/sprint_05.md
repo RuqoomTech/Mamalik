@@ -12,7 +12,7 @@ Players can scout and attack valid targets with distance-based travel and report
 - [x] S5-004: Implement approximate scout reports.
 - [x] S5-005: Implement attack order validation.
 - [x] S5-006: Implement basic battle formula.
-- [ ] S5-007: Implement defender bonuses.
+- [x] S5-007: Implement defender bonuses.
 - [ ] S5-008: Implement siege requirement.
 - [ ] S5-009: Implement war land capture limit.
 - [ ] S5-010: Create battle reports.
@@ -24,7 +24,8 @@ Players can scout and attack valid targets with distance-based travel and report
 - [x] Movement uses distance-based travel time.
 - [x] Scout reports are approximate.
 - [x] Battles resolve with the simple formula (base power only; defender bonuses/siege deferred to S5-007/S5-008, no land capture, no battle report yet).
-- [ ] Defender bonuses and siege rules are applied.
+- [x] Defender bonuses are applied (Wall/Watchtower/Defensive land multipliers; defense tech stub=1).
+- [ ] Siege rules are applied.
 - [ ] Battle reports are created.
 
 ## Status Notes

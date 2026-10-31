@@ -5,9 +5,17 @@ import {
   BATTLE_LOSER_LOSS_RATE,
   BATTLE_WINNER_LOSS_RATE,
   calculateArmyPower,
+  calculateDefenderBonusMultiplier,
+  DEFENSIVE_DISTRICT_BONUS_PER_POINT,
+  DEFENSIVE_DISTRICT_M2_PER_BONUS_POINT,
+  DEFENSE_TECH_BONUS_PER_LEVEL,
+  GARRISON_DEFENSE_BONUS_MULTIPLIER,
   resolveBasicBattle,
+  resolveDefendedBattle,
   UNIT_BASE_ATTACK,
   UNIT_BASE_DEFENSE,
+  WALL_DEFENSE_BONUS_PER_LEVEL,
+  WATCHTOWER_DEFENSE_BONUS_PER_LEVEL,
 } from "./battle-formula";
 
 describe("battle formula power", () => {
@@ -271,5 +279,192 @@ describe("battle formula casualties", () => {
     const second = resolveBasicBattle(input);
 
     assert.deepEqual(first, second);
+  });
+});
+
+describe("defender bonus multiplier (S5-007)", () => {
+  it("returns 1.0 for null, undefined, or empty bonuses", () => {
+    assert.equal(calculateDefenderBonusMultiplier(null), 1.0);
+    assert.equal(calculateDefenderBonusMultiplier(undefined), 1.0);
+    assert.equal(calculateDefenderBonusMultiplier({}), 1.0);
+    assert.equal(
+      calculateDefenderBonusMultiplier({
+        wallLevel: 0,
+        watchtowerLevel: 0,
+        defensiveDistrictLandM2: 0,
+        defenseTechLevel: 0,
+      }),
+      1.0,
+    );
+  });
+
+  it("pins the S5-007 bonus constants", () => {
+    assert.equal(WALL_DEFENSE_BONUS_PER_LEVEL, 0.08);
+    assert.equal(WATCHTOWER_DEFENSE_BONUS_PER_LEVEL, 0.05);
+    assert.equal(DEFENSIVE_DISTRICT_M2_PER_BONUS_POINT, 2000);
+    assert.equal(DEFENSIVE_DISTRICT_BONUS_PER_POINT, 0.01);
+    assert.equal(DEFENSE_TECH_BONUS_PER_LEVEL, 0.0);
+    assert.equal(GARRISON_DEFENSE_BONUS_MULTIPLIER, 1.0);
+  });
+
+  it("scales wall levels at 8 percent per level", () => {
+    assert.equal(calculateDefenderBonusMultiplier({ wallLevel: 1 }), 1.08);
+    assert.ok(
+      Math.abs(calculateDefenderBonusMultiplier({ wallLevel: 2 }) - 1.16) < 1e-9,
+    );
+  });
+
+  it("scales watchtower levels at 5 percent per level", () => {
+    assert.equal(calculateDefenderBonusMultiplier({ watchtowerLevel: 1 }), 1.05);
+    assert.ok(
+      Math.abs(calculateDefenderBonusMultiplier({ watchtowerLevel: 2 }) - 1.1) < 1e-9,
+    );
+  });
+
+  it("awards one district point per 2000 m2 at 1 percent each", () => {
+    assert.equal(
+      calculateDefenderBonusMultiplier({ defensiveDistrictLandM2: 1999 }),
+      1.0,
+    );
+    assert.equal(
+      calculateDefenderBonusMultiplier({ defensiveDistrictLandM2: 2000 }),
+      1.01,
+    );
+    assert.ok(
+      Math.abs(
+        calculateDefenderBonusMultiplier({ defensiveDistrictLandM2: 4000 }) - 1.02,
+      ) < 1e-9,
+    );
+    assert.ok(
+      Math.abs(
+        calculateDefenderBonusMultiplier({ defensiveDistrictLandM2: 5999 }) - 1.02,
+      ) < 1e-9,
+    );
+  });
+
+  it("stacks wall, watchtower, and district multiplicatively", () => {
+    const actual = calculateDefenderBonusMultiplier({
+      wallLevel: 1,
+      watchtowerLevel: 1,
+      defensiveDistrictLandM2: 2000,
+    });
+
+    assert.ok(Math.abs(actual - 1.08 * 1.05 * 1.01) < 1e-9);
+  });
+
+  it("floors and clamps hostile bonus inputs instead of shrinking the defender", () => {
+    assert.equal(
+      calculateDefenderBonusMultiplier({
+        wallLevel: -3,
+        watchtowerLevel: Number.NaN,
+        defensiveDistrictLandM2: -500,
+        defenseTechLevel: Number.POSITIVE_INFINITY,
+      }),
+      1.0,
+    );
+    // Fractional levels floor: 1.9 behaves as level 1.
+    assert.equal(calculateDefenderBonusMultiplier({ wallLevel: 1.9 }), 1.08);
+    assert.equal(
+      calculateDefenderBonusMultiplier({ defensiveDistrictLandM2: 3999.9 }),
+      1.01,
+    );
+  });
+
+  it("keeps the defense tech stub at 1.0 for any level", () => {
+    assert.equal(calculateDefenderBonusMultiplier({ defenseTechLevel: 10 }), 1.0);
+    assert.equal(
+      calculateDefenderBonusMultiplier({ wallLevel: 2, defenseTechLevel: 99 }),
+      calculateDefenderBonusMultiplier({ wallLevel: 2 }),
+    );
+  });
+
+  it("keeps the garrison hook at 1.0", () => {
+    assert.equal(GARRISON_DEFENSE_BONUS_MULTIPLIER, 1.0);
+    assert.equal(
+      calculateDefenderBonusMultiplier({ wallLevel: 1, watchtowerLevel: 1 }),
+      1.08 * 1.05,
+    );
+  });
+
+  it("matches the basic battle exactly with zero bonuses", () => {
+    const input = {
+      attackers: [{ unitType: "INFANTRY", quantity: 100 }],
+      defenders: [{ unitType: "INFANTRY", quantity: 10 }],
+    };
+
+    assert.deepEqual(
+      resolveDefendedBattle({ ...input, defenderBonuses: null }),
+      resolveBasicBattle(input),
+    );
+    assert.deepEqual(
+      resolveDefendedBattle({ ...input, defenderBonuses: {} }),
+      resolveBasicBattle(input),
+    );
+  });
+
+  it("leaves attacker power untouched and floors the defended power", () => {
+    const defended = resolveDefendedBattle({
+      attackers: [{ unitType: "INFANTRY", quantity: 10 }],
+      defenders: [{ unitType: "INFANTRY", quantity: 10 }],
+      defenderBonuses: { wallLevel: 1 },
+    });
+    const base = resolveBasicBattle({
+      attackers: [{ unitType: "INFANTRY", quantity: 10 }],
+      defenders: [{ unitType: "INFANTRY", quantity: 10 }],
+    });
+
+    assert.equal(defended.attackerPower, base.attackerPower);
+    assert.equal(defended.attackerPower, 50);
+    assert.equal(defended.defenderPower, Math.floor(60 * 1.08));
+    assert.equal(defended.defenderPower, 64);
+  });
+
+  it("flips an attacker win into a defender hold and swaps casualty rates", () => {
+    // Base: 7 INFANTRY attack (35) beats 5 INFANTRY defense (30).
+    const base = resolveBasicBattle({
+      attackers: [{ unitType: "INFANTRY", quantity: 7 }],
+      defenders: [{ unitType: "INFANTRY", quantity: 5 }],
+    });
+    assert.equal(base.winner, "ATTACKER");
+
+    // Wall 3 is a 1.24 factor: floor(30 * 1.24) = 37, so the hold flips.
+    const defended = resolveDefendedBattle({
+      attackers: [{ unitType: "INFANTRY", quantity: 7 }],
+      defenders: [{ unitType: "INFANTRY", quantity: 5 }],
+      defenderBonuses: { wallLevel: 3 },
+    });
+
+    assert.equal(defended.attackerPower, 35);
+    assert.equal(defended.defenderPower, 37);
+    assert.equal(defended.winner, "DEFENDER");
+    // Flipped rates: the attacker now takes 30 percent, the defender 10 percent.
+    assert.deepEqual(defended.attackerLosses, [{ unitType: "INFANTRY", quantity: 2 }]);
+    assert.deepEqual(defended.attackerSurvivors, [{ unitType: "INFANTRY", quantity: 5 }]);
+    assert.deepEqual(defended.defenderLosses, [{ unitType: "INFANTRY", quantity: 0 }]);
+    assert.deepEqual(defended.defenderSurvivors, [{ unitType: "INFANTRY", quantity: 5 }]);
+  });
+
+  it("is deterministic across repeated defended resolutions", () => {
+    const input = {
+      attackers: [{ unitType: "CAVALRY", quantity: 7 }],
+      defenders: [{ unitType: "INFANTRY", quantity: 21 }],
+      defenderBonuses: { wallLevel: 2, watchtowerLevel: 1, defensiveDistrictLandM2: 6000 },
+    };
+
+    assert.deepEqual(resolveDefendedBattle(input), resolveDefendedBattle(input));
+  });
+
+  it("holds an empty-versus-empty battle even with bonuses", () => {
+    const result = resolveDefendedBattle({
+      attackers: [],
+      defenders: [],
+      defenderBonuses: { wallLevel: 5, watchtowerLevel: 5, defensiveDistrictLandM2: 20000 },
+    });
+
+    assert.equal(result.attackerPower, 0);
+    assert.equal(result.defenderPower, 0);
+    assert.equal(result.winner, "DEFENDER");
+    assert.equal(result.attackerUnitsLost, 0);
+    assert.equal(result.defenderUnitsLost, 0);
   });
 });

@@ -1,5 +1,5 @@
 /**
- * Basic battle formula for S5-006.
+ * Basic battle formula for S5-006 plus defender bonuses for S5-007.
  *
  * v0.1 BALANCE PLACEHOLDERS, not locked decisions: the per-unit attack and
  * defense values below are deliberately simple so an attack can resolve at
@@ -8,7 +8,9 @@
  * S5-006 owns ONLY the raw unit power comparison. Defender multipliers from
  * WALL, WATCHTOWER, Defensive District land, and defense tech belong to
  * S5-007, and the SIEGE requirement for high-level walls belongs to S5-008.
- * Nothing here reads buildings, districts, tech, land, or reports.
+ * Nothing here reads buildings, districts, tech, land, or reports directly;
+ * S5-007 callers pass already-loaded defender state as `DefenderBonusInput`.
+ * Siege handling is S5-008 and must not be added here.
  *
  * DETERMINISM IS REQUIRED, not incidental: a tick can be retried and a battle
  * must not change on replay. So this module uses no `Math.random()`, no
@@ -49,6 +51,31 @@ export const UNIT_BASE_DEFENSE: Record<MovementUnitType, number> = {
 /** v0.1 balance placeholders, not locked decisions. */
 export const BATTLE_WINNER_LOSS_RATE = 0.1;
 export const BATTLE_LOSER_LOSS_RATE = 0.3;
+
+/**
+ * S5-007 defender bonus constants. v0.1 balance placeholders, not locked
+ * decisions. Siege handling is S5-008 and must not be added here.
+ */
+export const WALL_DEFENSE_BONUS_PER_LEVEL = 0.08;
+export const WATCHTOWER_DEFENSE_BONUS_PER_LEVEL = 0.05;
+export const DEFENSIVE_DISTRICT_M2_PER_BONUS_POINT = 2000;
+export const DEFENSIVE_DISTRICT_BONUS_PER_POINT = 0.01;
+export const DEFENSE_TECH_BONUS_PER_LEVEL = 0.0;
+export const GARRISON_DEFENSE_BONUS_MULTIPLIER = 1.0;
+
+/**
+ * Already-loaded defender fortification state for S5-007.
+ *
+ * Callers load buildings/districts/tech and pass the normalized numbers here;
+ * this module never reads the database. All fields are optional so a caller
+ * with no fortification data gets the 1.0 identity multiplier.
+ */
+export type DefenderBonusInput = {
+  wallLevel?: number | null;
+  watchtowerLevel?: number | null;
+  defensiveDistrictLandM2?: number | null;
+  defenseTechLevel?: number | null;
+};
 
 /** One line of a battle army: a unit type and how many of it fight. */
 export type BattleArmyEntry = {
@@ -165,6 +192,101 @@ export function resolveBasicBattle(input: {
 }
 
 /**
+ * S5-007 defender bonus multiplier.
+ *
+ * Multiplicative stacking by design: wall, watchtower, defensive-district,
+ * defense-tech, and garrison hooks each contribute one factor, so a defender
+ * strong in several fortifications is stronger than the sum of the parts.
+ * Null, undefined, or non-object input is the 1.0 identity (no fortification
+ * data means no bonus). Hostile numbers are floored and clamped at zero, so
+ * negative, non-finite, or fractional levels/land can never shrink the
+ * defender below its base power.
+ *
+ * Defense tech is a stub in S5-007 (`DEFENSE_TECH_BONUS_PER_LEVEL = 0.0`), so
+ * it always contributes 1.0. The garrison hook is likewise a constant 1.0
+ * reserved for future per-unit garrison rules.
+ */
+export function calculateDefenderBonusMultiplier(
+  bonuses: DefenderBonusInput | null | undefined,
+): number {
+  if (typeof bonuses !== "object" || bonuses === null) {
+    return 1.0;
+  }
+
+  const input = bonuses as Record<string, unknown>;
+  const wallLevel = toNonNegativeFloor(input.wallLevel);
+  const watchtowerLevel = toNonNegativeFloor(input.watchtowerLevel);
+  const defensiveDistrictLandM2 = toNonNegativeFloor(input.defensiveDistrictLandM2);
+  const defenseTechLevel = toNonNegativeFloor(input.defenseTechLevel);
+
+  const wallFactor = 1 + wallLevel * WALL_DEFENSE_BONUS_PER_LEVEL;
+  const watchtowerFactor = 1 + watchtowerLevel * WATCHTOWER_DEFENSE_BONUS_PER_LEVEL;
+  const districtPoints = Math.floor(
+    defensiveDistrictLandM2 / DEFENSIVE_DISTRICT_M2_PER_BONUS_POINT,
+  );
+  const districtFactor = 1 + districtPoints * DEFENSIVE_DISTRICT_BONUS_PER_POINT;
+  const techFactor = 1 + defenseTechLevel * DEFENSE_TECH_BONUS_PER_LEVEL;
+
+  return (
+    wallFactor *
+    watchtowerFactor *
+    districtFactor *
+    techFactor *
+    GARRISON_DEFENSE_BONUS_MULTIPLIER
+  );
+}
+
+/**
+ * S5-007 defended battle.
+ *
+ * Calls `resolveBasicBattle` internally, then replaces ONLY the defender
+ * power with `floor(baseDefenderPower * multiplier)`. The attacker power is
+ * never touched. The winner is recomputed with the same strict `>` rule (ties
+ * hold for the defender, empty-versus-empty holds), and casualties are
+ * recomputed from the same per-type `floor(10%)` winner / `floor(30%)` loser
+ * rates against the new winner, so a bonus that flips the outcome also flips
+ * which side takes which rate.
+ */
+export function resolveDefendedBattle(input: {
+  attackers: readonly BattleArmyEntry[] | null | undefined;
+  defenders: readonly BattleArmyEntry[] | null | undefined;
+  defenderBonuses?: DefenderBonusInput | null | undefined;
+}): BattleResult {
+  const base = resolveBasicBattle({ attackers: input.attackers, defenders: input.defenders });
+  const multiplier = calculateDefenderBonusMultiplier(input.defenderBonuses);
+  const defenderPower = Math.floor(base.defenderPower * multiplier);
+  const winner: BattleWinner = base.attackerPower > defenderPower ? "ATTACKER" : "DEFENDER";
+
+  const attackers = Array.isArray(input.attackers) ? input.attackers : [];
+  const defenders = Array.isArray(input.defenders) ? input.defenders : [];
+
+  const attackerTotals = aggregateArmy(attackers);
+  const defenderTotals = aggregateArmy(defenders);
+
+  const attackerRate = winner === "ATTACKER" ? BATTLE_WINNER_LOSS_RATE : BATTLE_LOSER_LOSS_RATE;
+  const defenderRate = winner === "DEFENDER" ? BATTLE_WINNER_LOSS_RATE : BATTLE_LOSER_LOSS_RATE;
+
+  const attackerLosses = toLossEntries(attackerTotals, attackerRate);
+  const defenderLosses = toLossEntries(defenderTotals, defenderRate);
+  const attackerSurvivors = toSurvivorEntries(attackerTotals, attackerLosses);
+  const defenderSurvivors = toSurvivorEntries(defenderTotals, defenderLosses);
+
+  return {
+    attackerPower: base.attackerPower,
+    defenderPower,
+    winner,
+    attackerLosses,
+    defenderLosses,
+    attackerSurvivors,
+    defenderSurvivors,
+    attackerUnitsLost: sumQuantities(attackerLosses),
+    defenderUnitsLost: sumQuantities(defenderLosses),
+    attackerUnitsSurvived: sumQuantities(attackerSurvivors),
+    defenderUnitsSurvived: sumQuantities(defenderSurvivors),
+  };
+}
+
+/**
  * Sum a manifest by unit type so duplicate entries collapse into one
  * requirement per unit type before power and casualty math.
  */
@@ -235,6 +357,19 @@ function sumQuantities(entries: readonly BattleArmyEntry[]): number {
  */
 function toPositiveFloor(value: unknown): number {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 1) {
+    return 0;
+  }
+
+  return Math.floor(value);
+}
+
+/**
+ * Floor a bonus input to a non-negative whole number, or zero when the input
+ * is hostile. Zero is a legal bonus level (no bonus), so unlike manifest
+ * quantities the floor is `value <= 0 -> 0` rather than `value < 1 -> 0`.
+ */
+function toNonNegativeFloor(value: unknown): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) {
     return 0;
   }
 

@@ -62,7 +62,7 @@ Defender Power = unit defense * count * wall/watchtower/defensive district/defen
 - [x] Protected kingdoms cannot be attacked.
 - [ ] Alliance members cannot be attacked.
 - [x] Battle resolves with simple power formula (base power only; bonuses/siege/land/reports deferred).
-- [ ] Defender bonuses are applied.
+- [x] Defender bonuses are applied (Wall +8%/lvl, Watchtower +5%/lvl, Defensive land +1%/2000m2, tech stub=1; siege/land/reports still deferred).
 - [ ] Siege requirement works for high-level walls.
 - [ ] War land capture limit is enforced per enemy per 30 days.
 - [ ] Battle report is created.
@@ -144,10 +144,16 @@ Defender Power = unit defense * count * wall/watchtower/defensive district/defen
 - Worker PASS 3 `processArrivingAttackOrders` after RETURN+SCOUT: parses manifest, reads defender GARRISON stacks only, resolves base battle, applies defender losses via absolute update (clamped >=0), marks outbound `RESOLVED+resolvedAt`, creates RETURN leg with `attackerSurvivors` (reused travelTicks, `parentOrderId` UNIQUE guard). Vanished target resolves + returns full manifest. No `BATTLE` report, no land writes, no bonus reads. Per-order try/catch isolation preserved.
 - 19 game tests (172/172), 9 new arrival tests (32/32 tick). Web typecheck/lint, game/tick typecheck pass.
 
+### S5-007 - Defender bonuses (complete)
+
+- `battle-formula.ts`: `calculateDefenderBonusMultiplier` (wall x watchtower x district x tech(=1) x garrison(=1)) + `resolveDefendedBattle` (replaces only defenderPower with floor(base x multiplier), strict > wins). `resolveBasicBattle` frozen.
+- Worker PASS 3 reads WALL/WATCHTOWER levels + DEFENSIVE land via widened `ATTACK_DEFENDER_SELECT`; tech stub 0. Zero-bonus path is bit-identical to S5-006.
+- 14 game tests (186/186), 6 arrival tests (38/38 tick). Typechecks + lint pass.
+
 ### Remaining
 
-- Attack dispatch AND base resolution now exist: a dispatched attack resolves on arrival with base-power casualties and survivors return home. Defender bonuses (S5-007), siege (S5-008), war land capture (S5-009), and battle report (S5-010) are still absent — treat casualty numbers as base-formula only.
-- A dispatched attack has an EFFECT (casualties + survivors) but still no bonuses, no siege gate, no land capture, and no battle report.
+- Attack dispatch, base resolution, AND defender bonuses now exist: a dispatched attack resolves on arrival with bonused defender power, casualties, and survivors return home. Siege (S5-008), war land capture (S5-009), and battle report (S5-010) are still absent.
+- A dispatched attack has an EFFECT (bonused casualties + survivors) but still no siege gate, no land capture, and no battle report.
 - Arrival handling for scout orders is code-complete: a dispatched scout order resolves on arrival, writes a `SCOUT` `Report` on the source kingdom, and gets a `RETURN` leg that brings the scouts home. The scout round trip works; the attack round trip does not exist yet.
 - The whole movement path is still UNVERIFIED against a real database. No live PostgreSQL/PostGIS database was available for S5-003, S5-004, or S5-005, no browser session was opened, and migration `000008_movement_orders` still has never been applied to a real database. Dispatch and arrival are covered only by unit tests against hand-rolled fake clients.
 - The alliance-dependent rule "alliance members cannot attack each other" still cannot be enforced: Sprint 6 has no `Alliance` schema, so there is nothing authoritative to check. Both validators document that the check belongs as one extra rule after the protection rule and before the army and supply rules, addable later without rewriting either validator or its callers.

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { TICK_DURATION_MS } from "../../../packages/game/src/constants";
+import { resolveDefendedBattle } from "../../../packages/game/src/movement/battle-formula";
 import { getMovementReturnAt } from "../../../packages/game/src/movement/travel-time";
 import {
   processMovementArrivals,
@@ -260,8 +261,9 @@ function createReturnLegOrder(overrides: Partial<FakeOrder> = {}): FakeOrder {
 
 function createDefenderKingdom(
   unitStacks: { unitType: string; quantity: number }[],
+  overrides: Partial<AttackDefenderGarrisonState> = {},
 ): AttackDefenderGarrisonState {
-  return { unitStacks };
+  return { unitStacks, buildings: [], districts: [], ...overrides };
 }
 
 function createOutboundAttackOrder(overrides: Partial<FakeOrder> = {}): FakeOrder {
@@ -1029,5 +1031,223 @@ it("never drives a garrison negative from a bad unit manifest", async () => {
     assert.equal(completedIndex >= 0, true);
     assert.equal(resolvedIndex >= 0, true);
     assert.equal(completedIndex < resolvedIndex, true);
+  });
+
+  it("treats a defender with no fortifications exactly like the base battle", async () => {
+    const fake = createFakeTransaction({
+      orders: [createOutboundAttackOrder()],
+      kingdoms: {
+        [TARGET_KINGDOM_ID]: createDefenderKingdom(
+          [{ unitType: "INFANTRY", quantity: 10 }],
+          { buildings: [], districts: [] },
+        ),
+      },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 10 },
+      ],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    // 100 INFANTRY attack (500) beats 10 INFANTRY defense (60) with a 1.0 bonus.
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.attackerWins, 1);
+    assert.equal(summary.defenderHolds, 0);
+    assert.equal(summary.attackerUnitsLost, 10);
+    assert.equal(summary.defenderUnitsLost, 3);
+    assert.deepEqual(summary.warnings, []);
+
+    const defenderStack = fake.unitStacks.find(
+      (stack) => stack.kingdomId === TARGET_KINGDOM_ID && stack.unitType === "INFANTRY",
+    );
+    assert.equal(defenderStack?.quantity, 7);
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.equal(returnLegs.length, 1);
+    assert.deepEqual(returnLegs[0].unitsJson, [{ unitType: "INFANTRY", quantity: 90 }]);
+  });
+
+  it("lets a high wall flip an attacker win into a defender hold", async () => {
+    const fake = createFakeTransaction({
+      orders: [
+        createOutboundAttackOrder({
+          unitsJson: [{ unitType: "INFANTRY", quantity: 7 }],
+        }),
+      ],
+      kingdoms: {
+        // Base 35 attack beats base 30 defense, but WALL 3 (1.24) lifts the
+        // defense to floor(30 * 1.24) = 37, so the hold flips.
+        [TARGET_KINGDOM_ID]: createDefenderKingdom(
+          [{ unitType: "INFANTRY", quantity: 5 }],
+          { buildings: [{ type: "WALL", level: 3 }] },
+        ),
+      },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 5 },
+      ],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.attackerWins, 0);
+    assert.equal(summary.defenderHolds, 1);
+    // Flipped rates: the attacker now takes 30 percent, the defender 10 percent.
+    assert.equal(summary.attackerUnitsLost, 2);
+    assert.equal(summary.defenderUnitsLost, 0);
+    assert.deepEqual(summary.warnings, []);
+
+    const defenderStack = fake.unitStacks.find(
+      (stack) => stack.kingdomId === TARGET_KINGDOM_ID && stack.unitType === "INFANTRY",
+    );
+    assert.equal(defenderStack?.quantity, 5);
+
+    const outbound = fake.orders.find((order) => order.id === "order-attack-1");
+    assert.equal(outbound?.status, "RESOLVED");
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.equal(returnLegs.length, 1);
+    assert.deepEqual(returnLegs[0].unitsJson, [{ unitType: "INFANTRY", quantity: 5 }]);
+  });
+
+  it("counts defensive district land toward the defender bonus", async () => {
+    const fake = createFakeTransaction({
+      orders: [
+        createOutboundAttackOrder({
+          unitsJson: [{ unitType: "INFANTRY", quantity: 10 }],
+        }),
+      ],
+      kingdoms: {
+        // Base 50 attack beats base 48 defense, but 10,000 m2 of defensive
+        // district land (5 points, 1.05) lifts the defense to
+        // floor(48 * 1.05) = 50, and the tie holds for the defender.
+        [TARGET_KINGDOM_ID]: createDefenderKingdom(
+          [{ unitType: "INFANTRY", quantity: 8 }],
+          { districts: [{ allocatedLandM2: 10_000 }] },
+        ),
+      },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 8 },
+      ],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.attackerWins, 0);
+    assert.equal(summary.defenderHolds, 1);
+    assert.equal(summary.attackerUnitsLost, 3);
+    assert.equal(summary.defenderUnitsLost, 0);
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.equal(returnLegs.length, 1);
+    assert.deepEqual(returnLegs[0].unitsJson, [{ unitType: "INFANTRY", quantity: 7 }]);
+  });
+
+  it("resolves through the zero defense-tech stub", async () => {
+    const defenders = [{ unitType: "INFANTRY", quantity: 5 }];
+    const attackers = [{ unitType: "INFANTRY", quantity: 7 }];
+    const fake = createFakeTransaction({
+      orders: [createOutboundAttackOrder({ unitsJson: attackers })],
+      kingdoms: {
+        [TARGET_KINGDOM_ID]: createDefenderKingdom(defenders, {
+          buildings: [{ type: "WALL", level: 3 }],
+        }),
+      },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 5 },
+      ],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    // The worker hardcodes defenseTechLevel 0, so the arrival must match the
+    // formula evaluated with an explicit zero tech level exactly.
+    const expected = resolveDefendedBattle({
+      attackers,
+      defenders,
+      defenderBonuses: { wallLevel: 3, watchtowerLevel: 0, defensiveDistrictLandM2: 0, defenseTechLevel: 0 },
+    });
+
+    assert.equal(summary.defenderHolds, expected.winner === "DEFENDER" ? 1 : 0);
+    assert.equal(summary.attackerUnitsLost, expected.attackerUnitsLost);
+    assert.equal(summary.defenderUnitsLost, expected.defenderUnitsLost);
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.deepEqual(returnLegs[0].unitsJson, expected.attackerSurvivors);
+  });
+
+  it("ignores hostile building and district rows instead of shrinking the defender", async () => {
+    const fake = createFakeTransaction({
+      orders: [
+        createOutboundAttackOrder({
+          unitsJson: [{ unitType: "INFANTRY", quantity: 7 }],
+        }),
+      ],
+      kingdoms: {
+        [TARGET_KINGDOM_ID]: createDefenderKingdom(
+          [{ unitType: "INFANTRY", quantity: 5 }],
+          {
+            // -5 clamps to 0, CITADEL is not a bonus source, and 1.9 floors to
+            // level 1 (1.08): defended power is floor(30 * 1.08) = 32, so the
+            // 35-power attack still wins and nothing shrinks below base.
+            buildings: [
+              { type: "WALL", level: -5 },
+              { type: "CITADEL", level: 99 },
+              { type: "WALL", level: 1.9 },
+            ],
+            districts: [{ allocatedLandM2: -1000 }],
+          },
+        ),
+      },
+      initialUnitStacks: [
+        { kingdomId: TARGET_KINGDOM_ID, unitType: "INFANTRY", locationType: "GARRISON", quantity: 5 },
+      ],
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.attackerWins, 1);
+    assert.equal(summary.attackerUnitsLost, 0);
+    assert.equal(summary.defenderUnitsLost, 1);
+    assert.deepEqual(summary.warnings, []);
+
+    const defenderStack = fake.unitStacks.find(
+      (stack) => stack.kingdomId === TARGET_KINGDOM_ID && stack.unitType === "INFANTRY",
+    );
+    assert.equal(defenderStack?.quantity, 4);
+  });
+
+  it("still resolves a bonused battle when the defender stack write fails", async () => {
+    const fake = createFakeTransaction({
+      orders: [createOutboundAttackOrder()],
+      kingdoms: {
+        // WALL 1 lifts 10 INFANTRY defense (60) to floor(60 * 1.08) = 64, far
+        // below the 500-power attack, so the attacker still wins and the loss
+        // write is attempted — but no stack row exists, so it warns instead.
+        [TARGET_KINGDOM_ID]: createDefenderKingdom(
+          [{ unitType: "INFANTRY", quantity: 10 }],
+          { buildings: [{ type: "WALL", level: 1 }] },
+        ),
+      },
+    });
+
+    const summary = await processMovementArrivals(fake.tx, { now: NOW, tickKey: TICK_KEY });
+
+    assert.equal(summary.battlesResolved, 1);
+    assert.equal(summary.attackerWins, 1);
+    assert.equal(summary.attackerUnitsLost, 10);
+    assert.equal(summary.defenderUnitsLost, 3);
+    assert.equal(summary.warnings.length, 1);
+    assert.match(summary.warnings[0], /could not apply/);
+    assert.match(summary.warnings[0], /order-attack-1/);
+
+    const outbound = fake.orders.find((order) => order.id === "order-attack-1");
+    assert.equal(outbound?.status, "RESOLVED");
+
+    const returnLegs = fake.orders.filter((order) => order.parentOrderId === "order-attack-1");
+    assert.equal(returnLegs.length, 1);
+    assert.deepEqual(returnLegs[0].unitsJson, [{ unitType: "INFANTRY", quantity: 90 }]);
   });
 });

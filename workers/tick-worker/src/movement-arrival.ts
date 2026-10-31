@@ -1,5 +1,5 @@
 /**
- * Movement arrival resolution for the tick worker (S5-004 through S5-006).
+ * Movement arrival resolution for the tick worker (S5-004 through S5-007).
  *
  * Three ordered passes run inside the caller's tick transaction:
  *
@@ -8,8 +8,9 @@
  *   PASS 2 - SCOUT orders that reached their `arrivalAt` write the scout report
  *            on the SOURCE kingdom, resolve the outbound order, and spawn the
  *            RETURN leg that carries the scouts home.
- *   PASS 3 - ATTACK orders that reached their `arrivalAt` resolve the S5-006
- *            basic battle against the defender garrison, apply defender
+ *   PASS 3 - ATTACK orders that reached their `arrivalAt` resolve the S5-007
+ *            defended battle against the defender garrison (base power plus
+ *            WALL/WATCHTOWER/DEFENSIVE-district/tech bonuses), apply defender
  *            losses, resolve the outbound order, and spawn the RETURN leg that
  *            carries the surviving attackers home.
  *
@@ -24,8 +25,9 @@
  */
 
 import {
-  resolveBasicBattle,
+  resolveDefendedBattle,
   type BattleArmyEntry,
+  type DefenderBonusInput,
 } from "../../../packages/game/src/movement/battle-formula";
 import {
   approximateScoutObservation,
@@ -85,9 +87,11 @@ export type ScoutTargetObservationState = {
   districts: { allocatedLandM2: number }[];
 };
 
-/** Defender garrison state for an ATTACK arrival (S5-006, no buildings). */
+/** Defender garrison state for an ATTACK arrival (S5-007, with fortifications). */
 export type AttackDefenderGarrisonState = {
   unitStacks: { unitType: string; quantity: number }[];
+  buildings?: { type: string; level: number }[];
+  districts?: { allocatedLandM2: number }[];
 };
 
 const MOVEMENT_ARRIVAL_ORDER_SELECT = {
@@ -146,6 +150,25 @@ const ATTACK_DEFENDER_SELECT = {
     select: {
       unitType: true,
       quantity: true,
+    },
+  },
+  buildings: {
+    where: {
+      type: {
+        in: ["WALL", "WATCHTOWER"],
+      },
+    },
+    select: {
+      type: true,
+      level: true,
+    },
+  },
+  districts: {
+    where: {
+      type: "DEFENSIVE",
+    },
+    select: {
+      allocatedLandM2: true,
     },
   },
 } as const;
@@ -433,13 +456,14 @@ async function processArrivingScoutOrders(
   }
 }
 /**
- * PASS 3 - ATTACK orders reaching their target (S5-006).
+ * PASS 3 - ATTACK orders reaching their target (S5-007).
  *
- * The S5-006 basic battle reads only raw unit power: no WALL, WATCHTOWER,
- * district, or tech multipliers (S5-007), no siege rules (S5-008), no land
- * capture (S5-009), and no battle report (S5-010). Defender losses are applied
- * as absolute `unitStack.update` writes clamped at zero, the outbound order
- * is marked RESOLVED, and the surviving attackers get a RETURN leg home.
+ * The S5-007 defended battle scales raw unit power with WALL, WATCHTOWER,
+ * DEFENSIVE-district, and defense-tech (stub) multipliers. No siege rules
+ * (S5-008), no land capture (S5-009), and no battle report (S5-010). Defender
+ * losses are applied as absolute `unitStack.update` writes clamped at zero,
+ * the outbound order is marked RESOLVED, and the surviving attackers get a
+ * RETURN leg home.
  */
 async function processArrivingAttackOrders(
   tx: MovementArrivalTransaction,
@@ -528,7 +552,11 @@ async function resolveAttackOrder(
   }
 
   const defenderEntries = toBattleEntries(defender.unitStacks);
-  const battle = resolveBasicBattle({ attackers: manifest, defenders: defenderEntries });
+  const battle = resolveDefendedBattle({
+    attackers: manifest,
+    defenders: defenderEntries,
+    defenderBonuses: toDefenderBonusInput(defender),
+  });
 
   // Apply defender losses as absolute writes clamped at zero. Each stack gets
   // its own try/catch so one missing row cannot skip the remaining types and
@@ -709,6 +737,20 @@ function toScoutObservationInput(kingdom: ScoutTargetObservationState): ScoutObs
       ? toNonNegativeInteger(kingdom.resourceStockpile.food)
       : 0,
     usableLandM2: toNonNegativeInteger(kingdom.usableLandM2),
+  };
+}
+
+function toDefenderBonusInput(defender: AttackDefenderGarrisonState): DefenderBonusInput {
+  return {
+    wallLevel: highestBuildingLevel(defender.buildings ?? [], "WALL"),
+    watchtowerLevel: highestBuildingLevel(defender.buildings ?? [], "WATCHTOWER"),
+    defensiveDistrictLandM2: (defender.districts ?? []).reduce(
+      (total, district) => total + toNonNegativeInteger(district.allocatedLandM2),
+      0,
+    ),
+    // S5-007 defense-tech stub: no tech source is read yet, so the stub level
+    // is always 0 (a 1.0 factor through the zero tech coefficient).
+    defenseTechLevel: 0,
   };
 }
 

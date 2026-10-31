@@ -18,6 +18,21 @@ All notable Mamalik project changes are recorded here.
 
 - Defender bonuses (S5-007), siege (S5-008), war land capture (S5-009), battle report (S5-010), alliance check (Sprint 6) remain untouched.
 
+## 2026-10-02 - S5-007 Defender Bonuses
+
+### Added
+
+- Added `calculateDefenderBonusMultiplier` + `resolveDefendedBattle` in `battle-formula.ts` (Wall +8%/lvl, Watchtower +5%/lvl, Defensive land +1%/2000m2, tech stub=1, garrison hook=1). Worker PASS 3 now reads WALL/WATCHTOWER + DEFENSIVE land.
+
+### Checks
+
+- `npm run game:test`: 186/186 passed. `npm run tick:test`: 38/38 passed.
+- Web/game/tick typecheck + lint: passed.
+
+### Deferred
+
+- Siege (S5-008), war land capture (S5-009), battle report (S5-010), alliance check (Sprint 6) remain untouched.
+
 ## 2026-10-01 - S5-005 Attack Order Validation
 
 ### Added

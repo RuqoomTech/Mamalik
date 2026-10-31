@@ -2,10 +2,10 @@
 
 ## Current Session
 
-- Current date/time: 2026-10-02 15:00:00 +03:00
-- Current sprint: Sprint 5 is active. S5-001 through S5-006 complete; S5-007 is next.
+- Current date/time: 2026-10-02 15:30:00 +03:00
+- Current sprint: Sprint 5 is active. S5-001 through S5-007 complete; S5-008 is next.
 - Current sprint file: `docs/sprints/SPRINT_05_COMBAT_SCOUTING.md`
-- Current task: S5-006 base battle formula complete via agents (research + plan + implement) and fully checked. Attacks now resolve with base-power casualties and survivors return; bonuses/siege/land/reports still deferred.
+- Current task: S5-007 defender bonuses complete via agents and fully checked (game 186/186, tick 38/38). Attacks resolve with bonused defender power; siege/land/reports still deferred. UNCOMMITTED.
 - Working branch: `sprint-5-movement-scouting`. S5-005 and S5-006 are UNCOMMITTED on top of prior commits. All Sprint 5 work lives on this branch, not on the default branch.
 
 ## Last Completed Task
