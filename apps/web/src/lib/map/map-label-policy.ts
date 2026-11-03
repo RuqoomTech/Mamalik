@@ -57,3 +57,18 @@ export function withHiddenPlaces(existing: FilterSpecification | null | undefine
 
   return existing ? (["all", existing, hidden] as FilterSpecification) : hidden;
 }
+
+export type KingdomMapPalette = {
+  own: string;
+  rival: string;
+  label: string;
+  halo: string;
+  dotStroke: string;
+};
+
+// Kingdom overlay colours that stay readable on the light (Liberty) and dark base maps.
+export function getKingdomMapPalette(theme: MapTheme): KingdomMapPalette {
+  return theme === "dark"
+    ? { own: "#7cc7a6", rival: "#d9d6cc", label: "#ecebe5", halo: "#111311", dotStroke: "#111311" }
+    : { own: "#17493b", rival: "#1f2421", label: "#161816", halo: "#ffffff", dotStroke: "#ffffff" };
+}

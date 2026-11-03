@@ -1,7 +1,7 @@
 import maplibregl, { type Map } from "maplibre-gl";
 import { getLabelTextField, withHiddenPlaces, type MapLocale, type MapTheme } from "@/lib/map/map-label-policy";
 
-export { getThemedMapStyleUrl, type MapLocale, type MapTheme } from "@/lib/map/map-label-policy";
+export { getKingdomMapPalette, getThemedMapStyleUrl, type MapLocale, type MapTheme } from "@/lib/map/map-label-policy";
 
 // Vendored copy of @mapbox/mapbox-gl-rtl-text 0.3.0 (BSD-2). MapLibre needs it to join
 // Arabic letters and lay out right-to-left labels correctly.
@@ -20,8 +20,32 @@ export function getDocumentMapLocale(): MapLocale {
   return typeof document !== "undefined" && document.documentElement.lang === "ar" ? "ar" : "en";
 }
 
+export const THEME_CHANGE_EVENT = "mk-theme-change";
+
 export function getDocumentMapTheme(): MapTheme {
-  return typeof document !== "undefined" && document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+  if (typeof document === "undefined") {
+    return "light";
+  }
+
+  const explicit = document.documentElement.dataset.theme;
+
+  if (explicit === "dark" || explicit === "light") {
+    return explicit;
+  }
+
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+export function subscribeToThemeChanges(onChange: () => void): () => void {
+  const media = window.matchMedia?.("(prefers-color-scheme: dark)");
+
+  window.addEventListener(THEME_CHANGE_EVENT, onChange);
+  media?.addEventListener("change", onChange);
+
+  return () => {
+    window.removeEventListener(THEME_CHANGE_EVENT, onChange);
+    media?.removeEventListener("change", onChange);
+  };
 }
 
 export function applyMapLabelPolicy(map: Map, locale: MapLocale): void {

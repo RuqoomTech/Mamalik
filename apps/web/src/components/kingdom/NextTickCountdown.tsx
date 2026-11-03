@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n/I18nProvider";
 
 const TICK_MS = 10 * 60 * 1000;
 // The scheduler fires one minute into each 10-minute slot.
@@ -21,6 +22,7 @@ function formatRemaining(ms: number): string {
 }
 
 export function NextTickCountdown() {
+  const { m } = useI18n();
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
 
   useEffect(() => {
@@ -33,9 +35,9 @@ export function NextTickCountdown() {
   }, []);
 
   return (
-    <p className="text-xs text-mk-muted" title="Resources, construction, and training advance every 10 minutes">
-      Next tick in{" "}
-      <span className="font-semibold tabular-nums text-mk-ink">
+    <p className="text-xs text-mk-muted" title={m.shell.nextTickTitle}>
+      {m.shell.nextTick}{" "}
+      <span className="font-semibold tabular-nums text-mk-ink" dir="ltr">
         {remainingMs === null ? "–:––" : formatRemaining(remainingMs)}
       </span>
     </p>

@@ -1,15 +1,16 @@
 import { BUILDING_TYPES, planNewBuilding, planTraining, type KingdomActionState } from "@mamalik/game";
 
 export type NextStep = {
-  text: string;
+  kind: "buildersIdle" | "buildersIdleSave" | "barracksIdle" | "landUnassigned";
   href: string;
-  cta: string;
+  cta: "build" | "view" | "train" | "assign";
+  areaM2?: number;
 };
 
 const MIN_UNASSIGNED_LAND_HINT_M2 = 1_000;
-const numberFormatter = new Intl.NumberFormat("en-US");
 
 // Short, actionable nudges for the Overview so a player always knows what to do next.
+// The page turns each kind into localized text.
 export function getNextSteps(input: {
   state: KingdomActionState;
   activeConstructionCount: number;
@@ -23,22 +24,18 @@ export function getNextSteps(input: {
     const canUpgradeSomething = input.state.buildings.length > 0;
 
     if (canBuildSomething) {
-      steps.push({ text: "Your builders are idle.", href: "/buildings", cta: "Build" });
+      steps.push({ kind: "buildersIdle", href: "/buildings", cta: "build" });
     } else if (canUpgradeSomething) {
-      steps.push({ text: "Your builders are idle. Save Money for the next building or upgrade.", href: "/buildings", cta: "View" });
+      steps.push({ kind: "buildersIdleSave", href: "/buildings", cta: "view" });
     }
   }
 
   if (input.trainingQueueCount === 0 && planTraining(input.state, "INFANTRY", 1).ok) {
-    steps.push({ text: "Your barracks are idle.", href: "/army", cta: "Train" });
+    steps.push({ kind: "barracksIdle", href: "/army", cta: "train" });
   }
 
   if (input.unallocatedLandM2 >= MIN_UNASSIGNED_LAND_HINT_M2) {
-    steps.push({
-      text: `${numberFormatter.format(input.unallocatedLandM2)} m² of land is not in a district yet.`,
-      href: "/land",
-      cta: "Assign",
-    });
+    steps.push({ kind: "landUnassigned", href: "/land", cta: "assign", areaM2: input.unallocatedLandM2 });
   }
 
   return steps.slice(0, 3);

@@ -1,14 +1,10 @@
 import Link from "next/link";
 import { KingdomAppShell } from "@/components/kingdom/KingdomAppShell";
-import {
-  FoodStatusPanel,
-  Ledger,
-  ReportList,
-  Section,
-  formatLand,
-  formatNumber,
-} from "@/components/kingdom/KingdomPagePanels";
+import { FoodStatusPanel, Ledger, ReportList, Section } from "@/components/kingdom/KingdomPagePanels";
 import { WorldMap } from "@/components/map/WorldMap";
+import { formatArea, formatRemainingMs } from "@/i18n/game-text";
+import { fill, formatNumber } from "@/i18n/format";
+import { getI18n } from "@/i18n/server";
 import { toActionState } from "@/lib/kingdom/action-options";
 import { getKingdomPageData } from "@/lib/kingdom/kingdom-page-data";
 import { getNextSteps } from "@/lib/kingdom/next-steps";
@@ -34,12 +30,13 @@ function FactRow({ href, label, value }: { href?: string; label: string; value: 
 }
 
 export default async function DashboardPage() {
-  const { dashboardData, userIsAdmin } = await getKingdomPageData();
+  const [{ dashboardData, userIsAdmin }, text] = await Promise.all([getKingdomPageData(), getI18n()]);
+  const { m } = text;
   const mapStyleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "";
   const { kingdom, landTotals } = dashboardData;
   const totalUnits = dashboardData.army.reduce((total, unitStack) => total + unitStack.quantity, 0);
   const unitsInTraining = dashboardData.trainingQueues.reduce((total, queue) => total + queue.quantity, 0);
-  const isProtected = kingdom.protectionRemaining !== "Protection ended";
+  const protectionRemainingMs = kingdom.protectionEndsAt.getTime() - Date.now();
   const worldKingdoms = await getWorldKingdoms(kingdom.id);
   const nextSteps = getNextSteps({
     state: toActionState(dashboardData),
@@ -50,17 +47,17 @@ export default async function DashboardPage() {
 
   return (
     <KingdomAppShell activeSection="dashboard" data={dashboardData} isAdmin={userIsAdmin}>
-      {dashboardData.foodStatus.level !== "healthy" ? (
-        <FoodStatusPanel foodStatus={dashboardData.foodStatus} />
-      ) : null}
+      {dashboardData.foodStatus.level !== "healthy" ? <FoodStatusPanel data={dashboardData} /> : null}
 
       {nextSteps.length > 0 ? (
         <ul className="mamalik-card divide-y divide-mk-line">
           {nextSteps.map((step) => (
-            <li className="flex items-center justify-between gap-3 px-4 py-2.5" key={step.href}>
-              <span className="text-sm text-mk-ink">{step.text}</span>
+            <li className="flex items-center justify-between gap-3 px-4 py-2.5" key={step.kind}>
+              <span className="text-sm text-mk-ink">
+                {fill(m.nextSteps[step.kind], { area: formatArea(text, step.areaM2 ?? 0) })}
+              </span>
               <Link className="mamalik-action-primary shrink-0 px-3 py-1.5" href={step.href}>
-                {step.cta}
+                {m.nextSteps[step.cta]}
               </Link>
             </li>
           ))}
@@ -75,47 +72,45 @@ export default async function DashboardPage() {
             kingdoms={worldKingdoms}
             mapStyleUrl={mapStyleUrl}
           />
-          <Link
-            className="mamalik-action-secondary absolute bottom-3 left-3 px-3 py-1.5"
-            href="/world"
-          >
-            World map
+          <Link className="mamalik-action-secondary absolute bottom-3 start-3 px-3 py-1.5" href="/world">
+            {m.dashboard.worldMap}
           </Link>
         </div>
 
-        <Section title="Kingdom">
+        <Section title={m.dashboard.kingdom}>
           <Ledger>
             <tbody>
-              <FactRow href="/land" label="Land" value={formatLand(kingdom.usableLandM2)} />
+              <FactRow href="/land" label={m.resources.land} value={formatArea(text, kingdom.usableLandM2)} />
               {landTotals.unallocatedUsableLandM2 > 0 ? (
-                <FactRow
-                  href="/land"
-                  label="Not in a district"
-                  value={formatLand(landTotals.unallocatedUsableLandM2)}
-                />
+                <FactRow href="/land" label={m.dashboard.notInDistrict} value={formatArea(text, landTotals.unallocatedUsableLandM2)} />
               ) : null}
-              <FactRow label="Population" value={formatNumber(kingdom.population)} />
+              <FactRow label={m.resources.population} value={formatNumber(kingdom.population)} />
               <FactRow
                 href="/buildings"
-                label="Buildings"
+                label={m.nav.buildings}
                 value={
                   dashboardData.activeConstruction.length > 0
-                    ? `${formatNumber(dashboardData.buildings.length)} (${dashboardData.activeConstruction.length} building)`
+                    ? fill(m.dashboard.buildingsBusy, {
+                        count: dashboardData.buildings.length,
+                        busy: dashboardData.activeConstruction.length,
+                      })
                     : formatNumber(dashboardData.buildings.length)
                 }
               />
               <FactRow
                 href="/army"
-                label="Army"
+                label={m.dashboard.army}
                 value={
-                  unitsInTraining > 0
-                    ? `${formatNumber(totalUnits)} (+${formatNumber(unitsInTraining)})`
-                    : formatNumber(totalUnits)
+                  unitsInTraining > 0 ? `${formatNumber(totalUnits)} (+${formatNumber(unitsInTraining)})` : formatNumber(totalUnits)
                 }
               />
               <FactRow
-                label="Protection"
-                value={isProtected ? `${kingdom.protectionRemaining} left` : "Ended"}
+                label={m.dashboard.protection}
+                value={
+                  protectionRemainingMs > 0
+                    ? fill(m.time.left, { time: formatRemainingMs(text, protectionRemainingMs) })
+                    : m.dashboard.protectionEnded
+                }
               />
             </tbody>
           </Ledger>
@@ -125,10 +120,10 @@ export default async function DashboardPage() {
       <Section
         action={
           <Link className="text-sm text-mk-muted hover:text-mk-ink" href="/reports">
-            All reports
+            {m.dashboard.allReports}
           </Link>
         }
-        title="Recent activity"
+        title={m.dashboard.recentActivity}
       >
         <ReportList reports={dashboardData.reports.slice(0, 5)} />
       </Section>

@@ -7,44 +7,106 @@
  */
 :root {
   color-scheme: light;
-  --mamalik-ink: #161816;
-  --mamalik-muted: #6b6e69;
-  --mamalik-border: #e6e6e3;
-  --mamalik-surface: #ffffff;
-  --mamalik-surface-soft: #fafaf8;
-  --mamalik-map-green: #17493b;
-  --mamalik-gold: #b88a2c;
+  --mk-ink: #161816;
+  --mk-muted: #62655f;
+  --mk-faint: #9a9c97;
+  --mk-canvas: #f7f6f2;
+  --mk-surface: #ffffff;
+  --mk-sunken: #f1f0ec;
+  --mk-line: #e6e5e0;
+  --mk-line-strong: #d3d2cc;
+  --mk-green: #17493b;
+  --mk-green-hover: #0f3a2e;
+  --mk-on-green: #ffffff;
+  --mk-accent: #17493b;
+  --mk-success: #1f6b45;
+  --mk-warn: #8a5a00;
+  --mk-danger: #a12a2a;
+  --mk-hero: #efe9dc;
+  --mk-hero-ink: #3d413b;
+  --mk-autofill: #ffffff;
   --mamalik-font-display: Georgia, "Times New Roman", serif;
   --mamalik-font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-@theme {
-  --color-mk-ink: #161816;
-  --color-mk-muted: #6b6e69;
-  --color-mk-faint: #9a9c97;
-  --color-mk-canvas: #fafaf8;
-  --color-mk-surface: #ffffff;
-  --color-mk-sunken: #f3f3f1;
-  --color-mk-line: #e6e6e3;
-  --color-mk-line-strong: #d4d4d0;
-  --color-mk-green: #17493b;
-  --color-mk-green-hover: #0f3a2e;
-  --color-mk-success: #1f6b45;
-  --color-mk-success-bg: #ffffff;
-  --color-mk-success-line: #e6e6e3;
-  --color-mk-warn: #8a5a00;
-  --color-mk-warn-bg: #ffffff;
-  --color-mk-warn-line: #e6e6e3;
-  --color-mk-danger: #a12a2a;
-  --color-mk-danger-bg: #ffffff;
-  --color-mk-danger-line: #e6e6e3;
-  --font-display: Georgia, "Times New Roman", serif;
+/* Dark palette: warm charcoal, same single green accent. Applied for an explicit choice
+   and for "system" when the OS prefers dark. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --mk-ink: #ecebe5;
+    --mk-muted: #a6a8a1;
+    --mk-faint: #72746e;
+    --mk-canvas: #111311;
+    --mk-surface: #181b19;
+    --mk-sunken: #212522;
+    --mk-line: #2a2f2b;
+    --mk-line-strong: #3a403b;
+    --mk-green: #2c6e57;
+    --mk-green-hover: #367f66;
+    --mk-on-green: #ffffff;
+    --mk-accent: #7cc7a6;
+    --mk-success: #6cc495;
+    --mk-warn: #e2b04f;
+    --mk-danger: #f08a80;
+    --mk-hero: #15191b;
+    --mk-hero-ink: #c9cbc4;
+    --mk-autofill: #181b19;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --mk-ink: #ecebe5;
+  --mk-muted: #a6a8a1;
+  --mk-faint: #72746e;
+  --mk-canvas: #111311;
+  --mk-surface: #181b19;
+  --mk-sunken: #212522;
+  --mk-line: #2a2f2b;
+  --mk-line-strong: #3a403b;
+  --mk-green: #2c6e57;
+  --mk-green-hover: #367f66;
+  --mk-on-green: #ffffff;
+  --mk-accent: #7cc7a6;
+  --mk-success: #6cc495;
+  --mk-warn: #e2b04f;
+  --mk-danger: #f08a80;
+  --mk-hero: #15191b;
+  --mk-hero-ink: #c9cbc4;
+  --mk-autofill: #181b19;
+}
+
+/* Arabic: a clean naskh-friendly sans for text and a classical naskh for display headings. */
+:root[lang="ar"] {
+  --mamalik-font-display: var(--font-amiri), "Noto Naskh Arabic", serif;
+  --mamalik-font-body: var(--font-plex-arabic), "Segoe UI", Tahoma, sans-serif;
+}
+
+@theme inline {
+  --color-mk-ink: var(--mk-ink);
+  --color-mk-muted: var(--mk-muted);
+  --color-mk-faint: var(--mk-faint);
+  --color-mk-canvas: var(--mk-canvas);
+  --color-mk-surface: var(--mk-surface);
+  --color-mk-sunken: var(--mk-sunken);
+  --color-mk-line: var(--mk-line);
+  --color-mk-line-strong: var(--mk-line-strong);
+  --color-mk-green: var(--mk-green);
+  --color-mk-green-hover: var(--mk-green-hover);
+  --color-mk-accent: var(--mk-accent);
+  --color-mk-success: var(--mk-success);
+  --color-mk-warn: var(--mk-warn);
+  --color-mk-danger: var(--mk-danger);
+  --color-mk-hero: var(--mk-hero);
+  --color-mk-hero-ink: var(--mk-hero-ink);
+  --font-display: var(--mamalik-font-display);
 }
 
 body {
   margin: 0;
-  background: var(--mamalik-surface-soft);
-  color: var(--mamalik-ink);
+  background: var(--mk-canvas);
+  color: var(--mk-ink);
   font-family: var(--mamalik-font-body);
   -webkit-font-smoothing: antialiased;
 }
@@ -63,18 +125,18 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--mamalik-map-green);
+  outline: 2px solid var(--mk-accent);
   outline-offset: 2px;
 }
 
 input:-webkit-autofill {
-  -webkit-text-fill-color: var(--mamalik-ink);
-  box-shadow: 0 0 0 1000px #ffffff inset;
+  -webkit-text-fill-color: var(--mk-ink);
+  box-shadow: 0 0 0 1000px var(--mk-autofill) inset;
 }
 
 .mamalik-page {
   min-height: 100vh;
-  background: var(--mamalik-surface-soft);
+  background: var(--mk-canvas);
 }
 
 .mamalik-container {
@@ -91,13 +153,13 @@ input:-webkit-autofill {
 }
 
 .mamalik-card {
-  border: 1px solid var(--mamalik-border);
+  border: 1px solid var(--mk-line);
   border-radius: 0.375rem;
-  background: var(--mamalik-surface);
+  background: var(--mk-surface);
 }
 
 .mamalik-eyebrow {
-  color: var(--mamalik-muted);
+  color: var(--mk-muted);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -114,50 +176,50 @@ input:-webkit-autofill {
   align-items: center;
   justify-content: center;
   border-radius: 0.375rem;
-  background: var(--mamalik-map-green);
-  color: #ffffff;
+  background: var(--mk-green);
+  color: var(--mk-on-green);
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25;
 }
 
 .mamalik-action-primary:hover {
-  background: var(--color-mk-green-hover);
+  background: var(--mk-green-hover);
 }
 
 .mamalik-action-primary:disabled {
   cursor: not-allowed;
-  background: var(--color-mk-sunken);
-  color: var(--color-mk-faint);
+  background: var(--mk-sunken);
+  color: var(--mk-faint);
 }
 
 .mamalik-action-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-mk-line-strong);
+  border: 1px solid var(--mk-line-strong);
   border-radius: 0.375rem;
-  background: var(--mamalik-surface);
-  color: var(--mamalik-ink);
+  background: var(--mk-surface);
+  color: var(--mk-ink);
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25;
 }
 
 .mamalik-action-secondary:hover {
-  background: var(--color-mk-sunken);
+  background: var(--mk-sunken);
 }
 
 .mamalik-input {
   width: 100%;
-  border: 1px solid var(--color-mk-line-strong);
+  border: 1px solid var(--mk-line-strong);
   border-radius: 0.375rem;
-  background: #ffffff;
-  color: var(--mamalik-ink);
+  background: var(--mk-surface);
+  color: var(--mk-ink);
 }
 
 .mamalik-input:focus {
-  border-color: var(--mamalik-ink);
+  border-color: var(--mk-ink);
   outline: none;
 }
 
@@ -169,19 +231,19 @@ input:-webkit-autofill {
 }
 
 .mamalik-table th {
-  border-bottom: 1px solid var(--color-mk-line-strong);
+  border-bottom: 1px solid var(--mk-line-strong);
   padding: 0.5rem 0.75rem;
-  color: var(--mamalik-muted);
+  color: var(--mk-muted);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.06em;
-  text-align: left;
+  text-align: start;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
 .mamalik-table td {
-  border-bottom: 1px solid var(--mamalik-border);
+  border-bottom: 1px solid var(--mk-line);
   padding: 0.625rem 0.75rem;
   vertical-align: middle;
 }
@@ -192,17 +254,17 @@ input:-webkit-autofill {
 
 .mamalik-table th:first-child,
 .mamalik-table td:first-child {
-  padding-left: 1rem;
+  padding-inline-start: 1rem;
 }
 
 .mamalik-table th:last-child,
 .mamalik-table td:last-child {
-  padding-right: 1rem;
+  padding-inline-end: 1rem;
 }
 
 .mamalik-table .num {
   font-variant-numeric: tabular-nums;
-  text-align: right;
+  text-align: end;
   white-space: nowrap;
 }
 
@@ -231,7 +293,7 @@ input:-webkit-autofill {
 }
 
 .marketing-info-card {
-  border-top: 1px solid var(--mamalik-border);
+  border-top: 1px solid var(--mk-line);
   padding-top: 1.25rem;
 }
 
@@ -244,14 +306,14 @@ input:-webkit-autofill {
 .marketing-info-card p,
 .marketing-info-card li {
   margin-top: 0.5rem;
-  color: var(--mamalik-muted);
+  color: var(--mk-muted);
   line-height: 1.65;
 }
 
 .marketing-info-card ul,
 .marketing-info-card ol {
   margin-top: 0.5rem;
-  padding-left: 1.25rem;
+  padding-inline-start: 1.25rem;
 }
 
 .marketing-info-card ul {
@@ -265,10 +327,97 @@ input:-webkit-autofill {
 .marketing-status {
   display: inline-flex;
   margin-top: 0.5rem;
-  border: 1px solid var(--color-mk-line-strong);
+  border: 1px solid var(--mk-line-strong);
   border-radius: 999px;
   padding: 0.125rem 0.625rem;
-  color: var(--mamalik-muted);
+  color: var(--mk-muted);
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+/* MapLibre chrome follows the theme. */
+.maplibregl-popup-content {
+  border: 1px solid var(--mk-line);
+  border-radius: 0.375rem;
+  background: var(--mk-surface);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.12);
+  color: var(--mk-ink);
+  font-family: var(--mamalik-font-body);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+  border-bottom-color: var(--mk-surface);
+}
+
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+  border-top-color: var(--mk-surface);
+}
+
+.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: var(--mk-surface);
+}
+
+.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: var(--mk-surface);
+}
+
+.maplibregl-ctrl-group:not(:empty) {
+  border: 1px solid var(--mk-line);
+  background: var(--mk-surface);
+  box-shadow: none;
+}
+
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--mk-line);
+}
+
+:root[data-theme="dark"] .maplibregl-ctrl-group .maplibregl-ctrl-icon,
+:root[data-theme="dark"] .maplibregl-ctrl-attrib-button {
+  filter: invert(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .maplibregl-ctrl-group .maplibregl-ctrl-icon,
+  :root:not([data-theme="light"]) .maplibregl-ctrl-attrib-button {
+    filter: invert(1);
+  }
+}
+
+:root[data-theme="dark"] .maplibregl-ctrl-attrib,
+:root[data-theme="dark"] .maplibregl-ctrl-attrib.maplibregl-compact {
+  background: var(--mk-surface);
+  color: var(--mk-muted);
+}
+
+:root[data-theme="dark"] .maplibregl-ctrl-attrib a {
+  color: var(--mk-muted);
+}
+
+/* Theme toggle shows the icon for the mode it switches to, without waiting for JS. */
+.mk-show-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .mk-show-light {
+  display: none;
+}
+
+:root[data-theme="dark"] .mk-show-dark {
+  display: inline;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mk-show-light {
+    display: none;
+  }
+
+  :root:not([data-theme="light"]) .mk-show-dark {
+    display: inline;
+  }
 }

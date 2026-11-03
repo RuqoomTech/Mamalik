@@ -229,6 +229,7 @@ export type KingdomDashboardData = {
     type: string;
     typeLabel: string;
     title: string;
+    body: unknown;
     bodySummary: string | null;
     read: boolean;
     createdAt: Date;
@@ -637,6 +638,7 @@ export function shapeKingdomDashboardData(
       type: report.type,
       typeLabel: formatEnumLabel(report.type),
       title: report.title,
+      body: report.bodyJson,
       bodySummary: describeReport(report.type, report.bodyJson),
       read: report.readAt !== null,
       createdAt: report.createdAt,

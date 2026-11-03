@@ -2,7 +2,6 @@ import {
   BUILDING_CATALOG,
   BUILDING_TYPES,
   calculateMaxAffordableUnits,
-  formatTicksAsDuration,
   planBuildingUpgrade,
   planNewBuilding,
   planTraining,
@@ -16,15 +15,15 @@ import {
 } from "@mamalik/game";
 import type { KingdomDashboardData } from "@/lib/kingdom/dashboard-data";
 
+// Options for the Buildings and Army tables. Reasons are codes; the UI localizes them.
+
 export type BuildOption = {
   buildingType: string;
-  label: string;
-  description: string;
-  districtLabel: string;
+  districtType: string;
   money: number;
   manpower: number;
-  duration: string;
-  blockedReason: string | null;
+  ticks: number;
+  blockedReason: ConstructionFailureReason | null;
 };
 
 export type UpgradeOption = {
@@ -32,51 +31,19 @@ export type UpgradeOption = {
   targetLevel: number;
   money: number;
   manpower: number;
-  duration: string;
-  blockedReason: string | null;
+  ticks: number;
+  blockedReason: ConstructionFailureReason | null;
 };
 
 export type TrainOption = {
   unitType: string;
-  label: string;
-  description: string;
   attack: number;
   defense: number;
   money: number;
   manpower: number;
-  duration: string;
+  ticks: number;
   maxAffordable: number;
-  blockedReason: string | null;
-};
-
-const SHORT_CONSTRUCTION_REASONS: Record<ConstructionFailureReason, string> = {
-  INVALID_BUILDING: "Unavailable",
-  NOT_BUILDABLE: "Coming later",
-  MAX_INSTANCES: "Already built",
-  MAX_LEVEL: "Max level",
-  BUILDING_NOT_FOUND: "Unavailable",
-  BUILDING_BUSY: "In progress",
-  SLOT_BUSY: "Builders busy",
-  MISSING_STOCKPILE: "Unavailable",
-  NOT_ENOUGH_LAND: "Needs district land",
-  INSUFFICIENT_MONEY: "Not enough Money",
-  INSUFFICIENT_MANPOWER: "Not enough Manpower",
-};
-
-const SHORT_TRAINING_REASONS: Partial<Record<TrainingFailureReason, string>> = {
-  NO_BARRACKS: "Needs Barracks",
-  BARRACKS_LEVEL_TOO_LOW: "Needs better Barracks",
-  QUEUE_BUSY: "Barracks busy",
-  INSUFFICIENT_MONEY: "Not enough Money",
-  INSUFFICIENT_MANPOWER: "Not enough Manpower",
-};
-
-const districtLabels: Record<string, string> = {
-  ECONOMIC: "Economic",
-  RESIDENTIAL: "Residential",
-  MILITARY: "Military",
-  DEFENSIVE: "Defensive",
-  RESEARCH: "Research",
+  blockedReason: TrainingFailureReason | null;
 };
 
 export function toActionState(data: KingdomDashboardData): KingdomActionState {
@@ -107,13 +74,11 @@ export function createBuildOptions(data: KingdomDashboardData): BuildOption[] {
 
     return {
       buildingType: type,
-      label: definition.label,
-      description: definition.description,
-      districtLabel: districtLabels[definition.districtType] ?? definition.districtType,
+      districtType: definition.districtType,
       money: definition.baseCost.money,
       manpower: definition.baseCost.manpower,
-      duration: formatTicksAsDuration(definition.baseTicks),
-      blockedReason: plan.ok ? null : SHORT_CONSTRUCTION_REASONS[plan.reason],
+      ticks: definition.baseTicks,
+      blockedReason: plan.ok ? null : plan.reason,
     };
   });
 }
@@ -132,8 +97,8 @@ export function createUpgradeOptions(data: KingdomDashboardData): Map<string, Up
       targetLevel,
       money: definition.baseCost.money * targetLevel,
       manpower: definition.baseCost.manpower * targetLevel,
-      duration: formatTicksAsDuration(definition.baseTicks * targetLevel),
-      blockedReason: plan.ok ? null : SHORT_CONSTRUCTION_REASONS[plan.reason],
+      ticks: definition.baseTicks * targetLevel,
+      blockedReason: plan.ok ? null : plan.reason,
     });
   }
 
@@ -149,15 +114,13 @@ export function createTrainOptions(data: KingdomDashboardData): TrainOption[] {
 
     return {
       unitType: type,
-      label: definition.label,
-      description: definition.description,
       attack: definition.attack,
       defense: definition.defense,
       money: definition.costPerUnit.money,
       manpower: definition.costPerUnit.manpower,
-      duration: formatTicksAsDuration(definition.trainingTicks),
+      ticks: definition.trainingTicks,
       maxAffordable: calculateMaxAffordableUnits(state.stockpile, type),
-      blockedReason: plan.ok ? null : (SHORT_TRAINING_REASONS[plan.reason] ?? "Unavailable"),
+      blockedReason: plan.ok ? null : plan.reason,
     };
   });
 }

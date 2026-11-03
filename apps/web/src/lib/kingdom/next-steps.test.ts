@@ -51,5 +51,6 @@ test("tells broke players to save instead of offering a build", () => {
   });
 
   assert.equal(steps.length, 1);
-  assert.equal(steps[0]?.cta, "View");
+  assert.equal(steps[0]?.cta, "view");
+  assert.equal(steps[0]?.kind, "buildersIdleSave");
 });
